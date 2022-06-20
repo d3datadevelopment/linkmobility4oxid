@@ -1,0 +1,36 @@
+{
+    "name": "d3/linkmobility4oxid",
+    "description": "Linkmobility for OXID eShop",
+    "type": "oxideshop-module",
+    "keywords": [
+        "linkmobility",
+        "php",
+        "sms",
+        "sms gateway"
+    ],
+    "homepage": "https://d3data.de/",
+    "authors": [
+      {
+        "name": "D3 Data Development (Inh. Thomas Dartsch)",
+        "email": "info@shopmodule.com",
+        "homepage": "https://www.d3data.de",
+        "role": "Owner"
+      }
+    ],
+    "require": {
+        "php": "^7.0 || ^8.0",
+        "oxid-esales/oxideshop-ce": "6.7 - 6.10",
+        "d3/linkmobility-php-client": "*"
+    },
+    "extra": {
+      "oxideshop": {
+        "source-directory": "/src",
+        "target-directory": "d3/linkmobility"
+      }
+    },
+    "autoload": {
+        "psr-4": {
+            "D3\\Linkmobility4OXID\\": "src"
+        }
+    }
+}
