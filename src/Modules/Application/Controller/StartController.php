@@ -18,6 +18,8 @@ namespace D3\Linkmobility4OXID\Modules\Application\Controller;
 use D3\LinkmobilityClient\Client;
 use D3\LinkmobilityClient\Request\RequestInterface;
 use D3\LinkmobilityClient\SMS\Request;
+use D3\LinkmobilityClient\SMS\TextRequest;
+use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\LinkmobilityClient\ValueObject\Sender;
 use D3\LinkmobilityClient\ValueObject\SmsMessage;
 use OxidEsales\Eshop\Core\Registry;
@@ -26,11 +28,27 @@ class StartController extends StartController_parent
 {
     public function render()
     {
+        $message = "testMessage";
         $lmClient = oxNew(Client::class, trim(Registry::getConfig()->getConfigParam('d3linkmobility_apitoken')));
-        $request = oxNew(Request::class, oxNew(Sender::class, 'sender'), oxNew(SmsMessage::class, $message));
-        $request->setMethod(RequestInterface::METHOD_POST);
-        $response = $lmClient->request($request);
-        dumpvar($response);
+        $request = oxNew(TextRequest::class, oxNew(SmsMessage::class, $message));
+        $request->setTest((bool) Registry::getConfig()->getConfigParam('d3linkmobility_debug'))
+                ->setMethod(RequestInterface::METHOD_POST)
+                ->setSenderAddress(oxNew(Sender::class, '017621164371', 'DE'))
+                ->setSenderAddressType(RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL);
+        $recipientsList = $request->getRecipientsList()
+                                  ->add(oxNew(Recipient::class, '+49(0)176-21164371', 'DE'))
+                                  ->add(oxNew(Recipient::class, '+49176 211def64372', 'DE'))
+                                  ->add(oxNew(Recipient::class, '03721268090', 'DE'))
+                                  ->add(oxNew(Recipient::class, '0049176abc21164373', 'DE'));
+
+        try {
+            $response = $lmClient->request( $request );
+        } catch (\Exception $e) {
+            dumpvar($e->getMessage());
+        }
+
+        dumpvar($response->isSuccessful());
+        dumpvar($response->getSmsCount());
 
         return parent::render();
     }
