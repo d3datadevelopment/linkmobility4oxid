@@ -15,11 +15,13 @@
 
 namespace D3\Linkmobility4OXID\Modules\Application\Controller;
 
+use D3\Linkmobility4OXID\Application\Model\Sms;
 use D3\LinkmobilityClient\Client;
 use D3\LinkmobilityClient\Request\RequestInterface;
 use D3\LinkmobilityClient\SMS\RequestFactory;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\LinkmobilityClient\ValueObject\Sender;
+use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Registry;
 
 class StartController extends StartController_parent
@@ -28,6 +30,11 @@ class StartController extends StartController_parent
     {
         $message = "testMessagetestMessagetestMessagetestMessagetestMessagetestMessage";
         //$message = "test\tMessage\ttest\tMessage";
+
+        $user = oxNew(User::class);
+        $user->load('oxdefaultadmin');
+        $sms = oxNew(Sms::class)->sendMessageToUser($user, $message);
+die();
 
         $lmClient = oxNew(Client::class, trim(Registry::getConfig()->getConfigParam('d3linkmobility_apitoken')));
         $lmClient->setLogger(Registry::getLogger());
@@ -41,6 +48,7 @@ class StartController extends StartController_parent
                 ->add(oxNew(Recipient::class, '+49176 21164372', 'DE'))
                 ->add(oxNew(Recipient::class, '03721268090', 'DE'))
                 ->add(oxNew(Recipient::class, '0049176abc21164373', 'DE'));
+
         try {
             $response = $lmClient->request( $request );
         } catch (\Exception $e) {
@@ -48,6 +56,7 @@ class StartController extends StartController_parent
         }
 
         dumpvar($response->isSuccessful());
+        dumpvar($response->getInternalStatus());
         dumpvar($response->getErrorMessage());
         dumpvar($response->getSmsCount());
 

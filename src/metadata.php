@@ -40,6 +40,18 @@ $aModule = [
             'name'      => $sModuleId.'_apitoken',
             'type'      => 'str',
             'value'     => false
+        ],
+        [
+            'group'     => $sModuleId.'_general',
+            'name'      => $sModuleId.'_smsSenderNumber',
+            'type'      => 'str',
+            'value'     => false
+        ],
+        [
+            'group'     => $sModuleId.'_general',
+            'name'      => $sModuleId.'_smsSenderCountry',
+            'type'      => 'str',
+            'value'     => 'DE'
         ]
     ]
 ];

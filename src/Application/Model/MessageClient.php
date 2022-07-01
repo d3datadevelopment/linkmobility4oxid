@@ -16,19 +16,17 @@
 namespace D3\Linkmobility4OXID\Application\Model;
 
 use D3\LinkmobilityClient\Client;
-use D3\LinkmobilityClient\Request\RequestInterface;
-use D3\LinkmobilityClient\SMS\Request;
-use D3\LinkmobilityClient\ValueObject\Sender;
-use D3\LinkmobilityClient\ValueObject\SmsMessage;
+use OxidEsales\Eshop\Core\Registry;
 
-class contactMessageSender
+class MessageClient
 {
-    public function send($email, $subject, $message)
+    /**
+     * @return Client
+     */
+    public function getClient(): Client
     {
-        $lmClient = oxNew(Client::class, 'token');
-        $request = oxNew(Request::class, oxNew(Sender::class, 'sender'), oxNew(SmsMessage::class, $message));
-        $request->setMethod(RequestInterface::METHOD_POST);
-        $response = $lmClient->request($request);
-        dumpvar($response);
+        $client = oxNew(Client::class, oxNew(Configuration::class)->getApiToken());
+        $client->setLogger(Registry::getLogger());
+        return $client;
     }
 }
