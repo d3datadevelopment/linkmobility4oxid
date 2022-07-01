@@ -15,39 +15,51 @@
 
 namespace D3\Linkmobility4OXID\Application\Model;
 
+use D3\Linkmobility4OXID\Application\Model\Exceptions\abortSendingExceptionInterface;
+use D3\LinkmobilityClient\Exceptions\ApiException;
 use D3\LinkmobilityClient\Request\RequestInterface;
 use D3\LinkmobilityClient\SMS\RequestFactory;
-use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\LinkmobilityClient\ValueObject\Sender;
+use GuzzleHttp\Exception\GuzzleException;
 use OxidEsales\Eshop\Application\Model\User;
+use OxidEsales\Eshop\Core\Registry;
 
 class Sms
 {
-    public function sendMessageToUser(User $user, $message)
+    /**
+     * @param User $user
+     * @param      $message
+     *
+     * @return bool
+     */
+    public function sendUserAccountMessage(User $user, $message): bool
     {
-        $configuration = oxNew(Configuration::class);
-        $client = oxNew(MessageClient::class)->getClient();
+        try {
+            $configuration = oxNew( Configuration::class );
+            $client        = oxNew( MessageClient::class )->getClient();
 
-        $request = oxNew(RequestFactory::class, $message, $client)->getSmsRequest();
-        $request->setTestMode( $configuration->getTestMode())
-            ->setMethod(RequestInterface::METHOD_POST)
-            ->setSenderAddress(
-                oxNew(Sender::class, $configuration->getSmsSenderNumber(), $configuration->getSmsSenderCountry())
-            )
-            ->setSenderAddressType(RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL);
+            $request = oxNew( RequestFactory::class, $message, $client )->getSmsRequest();
+            $request->setTestMode( $configuration->getTestMode() )->setMethod( RequestInterface::METHOD_POST )->setSenderAddress( oxNew( Sender::class, $configuration->getSmsSenderNumber(), $configuration->getSmsSenderCountry() ) )->setSenderAddressType( RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL );
 
-        $recipientsList = $request->getRecipientsList();
-        dumpvar($recipientsList);
-        /*
-        foreach (oxNew(UserRecipients::class)->getSmsRecipients() as $recipient) {
-            $recipientsList->
+            $recipientsList = $request->getRecipientsList();
+            $recipientsList->add(oxNew( UserRecipients::class, $user )->getSmsRecipient());
+            $response = $client->request( $request );
+
+            return $response->isSuccessful();
+        } catch (abortSendingExceptionInterface $e) {
+            Registry::getLogger()->warning($e->getMessage());
+            Registry::getUtilsView()->addErrorToDisplay($e);
+        } catch (GuzzleException $e) {
+            Registry::getLogger()->warning($e->getMessage());
+            Registry::getUtilsView()->addErrorToDisplay($e);
+        } catch (ApiException $e) {
+            Registry::getLogger()->warning($e->getMessage());
+            Registry::getUtilsView()->addErrorToDisplay($e);
+        } catch (\InvalidArgumentException $e) {
+            Registry::getLogger()->warning($e->getMessage());
+            Registry::getUtilsView()->addErrorToDisplay($e);
         }
-        */
-        /*
-            ->add(oxNew(Recipient::class, '+49(0)176-21164371', 'DE'))
-            ->add(oxNew(Recipient::class, '+49176 21164372', 'DE'))
-            ->add(oxNew(Recipient::class, '03721268090', 'DE'))
-            ->add(oxNew(Recipient::class, '0049176abc21164373', 'DE'));
-        */
+
+        return false;
     }
 }

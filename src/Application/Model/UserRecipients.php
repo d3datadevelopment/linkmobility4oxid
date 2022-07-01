@@ -15,6 +15,9 @@
 
 namespace D3\Linkmobility4OXID\Application\Model;
 
+use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
+use D3\LinkmobilityClient\ValueObject\Recipient;
+use OxidEsales\Eshop\Application\Model\Country;
 use OxidEsales\Eshop\Application\Model\User;
 
 class UserRecipients
@@ -29,14 +32,25 @@ class UserRecipients
         $this->user = $user;
     }
 
-    public function getSmsRecipients()
+    /**
+     * @return Recipient
+     * @throws noRecipientFoundException
+     */
+    public function getSmsRecipient(): Recipient
     {
-        dumpvar(array_map(
-            function ($fieldName) {
-dumpvar($fieldName);
-            },
-            $this->getSmsRecipientFields()
-        ));
+        foreach ($this->getSmsRecipientFields() as $fieldName)
+        {
+            $content = trim($this->user->getFieldData($fieldName));
+            if (strlen($content)) {
+
+                $country = oxNew(Country::class);
+                $country->load($this->user->getFieldData('oxcountryid'));
+
+                return oxNew(Recipient::class, $content, $country->getFieldData('oxisoalpha2'));
+            }
+        }
+
+        throw oxNew(noRecipientFoundException::class);
     }
 
     /**
@@ -49,10 +63,5 @@ dumpvar($fieldName);
             'oxfon',
             'oxprivfon'
         ];
-    }
-
-    public function getSmsCountry()
-    {
-
     }
 }
