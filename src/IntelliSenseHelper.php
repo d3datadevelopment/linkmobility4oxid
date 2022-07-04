@@ -19,3 +19,10 @@ namespace D3\Linkmobility4OXID\Modules\Application\Controller
 
     class StartController_parent extends StartController {}
 }
+
+namespace D3\Linkmobility4OXID\Modules\Core {
+
+    use OxidEsales\Eshop\Core\Email;
+
+    class EmailCore_parent extends Email{}
+}

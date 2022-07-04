@@ -85,19 +85,16 @@ class AdminOrder extends AdminController
         $order = oxNew(Order::class);
         $order->load($this->getEditObjectId());
 
-        $sms = oxNew(Sms::class);
-        if ($sms->sendOrderMessage($order, $messageBody)) {
-            $this->setRemark( $messageBody );
-            Registry::getUtilsView()->addErrorToDisplay(
-                sprintf(
-                    Registry::getLang()->translateString('D3LM_EXC_SMS_SUCC_SENT'),
-                    $sms->getResponse()->getSmsCount()
-                )
-            );
-        } else {
-            Registry::getUtilsView()->addErrorToDisplay(
-                Registry::getLang()->translateString('D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND')
-            );
+        try {
+            $sms = oxNew( Sms::class );
+            if ( $sms->sendOrderMessage( $order, $messageBody ) ) {
+                $this->setRemark( $messageBody );
+                Registry::getUtilsView()->addErrorToDisplay( sprintf( Registry::getLang()->translateString( 'D3LM_EXC_SMS_SUCC_SENT' ), $sms->getResponse()->getSmsCount() ) );
+            } else {
+                Registry::getUtilsView()->addErrorToDisplay( Registry::getLang()->translateString( 'D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND' ) );
+            }
+        } catch (noRecipientFoundException $e) {
+            Registry::getUtilsView()->addErrorToDisplay($e);
         }
     }
 

@@ -16,7 +16,10 @@
 namespace D3\Linkmobility4OXID\Modules\Application\Controller;
 
 use D3\Linkmobility4OXID\Application\Model\Sms;
+use D3\Linkmobility4OXID\Modules\Core\EmailCore;
+use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
+use OxidEsales\Eshop\Core\Email;
 
 class StartController extends StartController_parent
 {
@@ -25,6 +28,13 @@ class StartController extends StartController_parent
         $message = "testMessagetestMessagetestMessagetestMessagetestMessagetestMessage";
         //$message = "test\tMessage\ttest\tMessage";
 
+        $order = oxNew(Order::class);
+        $order->load('03444d89ad35b138c150003e69fdff34');
+dumpvar(__METHOD__.__LINE__.PHP_EOL);
+        /** @var EmailCore $mail */
+        $mail = oxNew(Email::class);
+        $mail->d3SendOrderMessage($order);
+die();
         $user = oxNew(User::class);
         $user->load('oxdefaultadmin');
         $success = oxNew(Sms::class)->sendUserAccountMessage($user, $message);

@@ -5,6 +5,8 @@
 
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
+use D3\Linkmobility4OXID\Modules\Core\EmailCore;
+use OxidEsales\Eshop\Core\Email;
 
 $sMetadataVersion = '2.1';
 $sModuleId        = 'd3linkmobility';
@@ -27,7 +29,8 @@ $aModule = [
     'url'          => 'https://www.oxidmodule.com/',
     'extend'       => [
         \OxidEsales\Eshop\Application\Controller\StartController::class => \D3\Linkmobility4OXID\Modules\Application\Controller\StartController::class,
-        \OxidEsales\Eshop\Application\Controller\ContactController::class   => \D3\Linkmobility4OXID\Modules\Application\Controller\ContactController::class
+        \OxidEsales\Eshop\Application\Controller\ContactController::class   => \D3\Linkmobility4OXID\Modules\Application\Controller\ContactController::class,
+        Email::class => EmailCore::class
     ],
     'controllers'  => [
         'd3linkmobility_user'   => AdminUser::class,
@@ -35,7 +38,8 @@ $aModule = [
     ],
     'templates'    => [
         'd3adminuser.tpl'       => 'd3/linkmobility/Application/views/admin/tpl/adminuser.tpl',
-        'd3adminorder.tpl'       => 'd3/linkmobility/Application/views/admin/tpl/adminuser.tpl'
+        'd3adminorder.tpl'       => 'd3/linkmobility/Application/views/admin/tpl/adminuser.tpl',
+        'd3sms_ordercust.tpl'   => 'd3/linkmobility/Application/views/tpl/SMS/order_cust.tpl',
     ],
     'events'       => [],
     'settings'     => [
@@ -62,6 +66,12 @@ $aModule = [
             'name'      => $sModuleId.'_smsSenderCountry',
             'type'      => 'str',
             'value'     => 'DE'
+        ],
+        [
+            'group'     => $sModuleId.'_order',
+            'name'      => $sModuleId.'_orderActive',
+            'type'      => 'bool',
+            'value'     => false
         ]
     ]
 ];

@@ -17,7 +17,7 @@ namespace D3\Linkmobility4OXID\Application\Model;
 
 use D3\Linkmobility4OXID\Application\Model\Exceptions\abortSendingExceptionInterface;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
-use D3\Linkmobility4OXID\Modules\Application\Model\RequestFactory;
+use D3\Linkmobility4OXID\Application\Model\RequestFactory;
 use D3\LinkmobilityClient\Exceptions\ApiException;
 use D3\LinkmobilityClient\Request\RequestInterface;
 use D3\LinkmobilityClient\Response\ResponseInterface;
@@ -54,9 +54,10 @@ class Sms
 
     /**
      * @param Order $order
-     * @param      $message
+     * @param       $message
      *
      * @return bool
+     * @throws noRecipientFoundException
      */
     public function sendOrderMessage(Order $order, $message): bool
     {
@@ -67,10 +68,8 @@ class Sms
             );
         } catch (noRecipientFoundException $e) {
             Registry::getLogger()->warning($e->getMessage());
-            Registry::getUtilsView()->addErrorToDisplay($e);
+            throw $e;
         }
-
-        return false;
     }
 
     /**

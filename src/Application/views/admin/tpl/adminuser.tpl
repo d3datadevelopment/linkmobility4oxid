@@ -23,7 +23,7 @@
                                 <label for="recipient">[{oxmultilang ident="D3LM_ADMIN_USER_RECIPIENT"}]</label>
                             </td>
                             <td class="edittext">
-                                <input type="text" id="recipient" name="recipient" class="editinput" size="60" value="[{$oView->getRecipientFromCurrentUser()}]" readonly disabled>
+                                <input type="text" id="recipient" name="recipient" class="editinput" size="60" value="[{$recipient}]" readonly disabled>
                             </td>
                         </tr>
                         <tr>

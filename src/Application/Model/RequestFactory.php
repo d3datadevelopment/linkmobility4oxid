@@ -15,20 +15,23 @@
 
 namespace D3\Linkmobility4OXID\Application\Model;
 
-use D3\LinkmobilityClient\Client;
 use D3\LinkmobilityClient\Request\RequestInterface;
-use D3\LinkmobilityClient\SMS\Request;
+use D3\LinkmobilityClient\SMS\SmsRequestInterface;
 use D3\LinkmobilityClient\ValueObject\Sender;
-use D3\LinkmobilityClient\ValueObject\SmsMessage;
 
-class contactMessageSender
+class RequestFactory extends \D3\LinkmobilityClient\SMS\RequestFactory
 {
-    public function send($email, $subject, $message)
+    public function getSmsRequest(): SmsRequestInterface
     {
-        $lmClient = oxNew(Client::class, 'token');
-        $request = oxNew(Request::class, oxNew(Sender::class, 'sender'), oxNew(SmsMessage::class, $message));
-        $request->setMethod(RequestInterface::METHOD_POST);
-        $response = $lmClient->request($request);
-        dumpvar($response);
+        $configuration = oxNew( Configuration::class );
+
+        $request = parent::getSmsRequest();
+        $request->setTestMode($configuration->getTestMode())
+            ->setSenderAddress(
+                oxNew( Sender::class, $configuration->getSmsSenderNumber(), $configuration->getSmsSenderCountry() )
+            )
+            ->setSenderAddressType( RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL );
+
+        return $request;
     }
 }

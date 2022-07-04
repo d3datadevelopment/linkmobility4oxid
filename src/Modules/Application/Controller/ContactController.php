@@ -32,7 +32,7 @@ class ContactController extends ContactController_parent
         $form->handleRequest($this->getMappedContactFormRequest());
 
         if ($form->isValid()) {
-            $contactMessageSender = oxNew(contactMessageSender::class);
+            $contactMessageSender = oxNew(MessageSender::class);
             $contactMessageSender->send(
                 $form->email->getValue(),
                 $form->subject->getValue(),
