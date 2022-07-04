@@ -23,6 +23,7 @@ use D3\LinkmobilityClient\Request\RequestInterface;
 use D3\LinkmobilityClient\Response\ResponseInterface;
 use D3\LinkmobilityClient\ValueObject\Sender;
 use GuzzleHttp\Exception\GuzzleException;
+use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Registry;
 
@@ -41,6 +42,27 @@ class Sms
         try {
             return $this->sendCustomRecipientMessage(
                 [ oxNew( UserRecipients::class, $user )->getSmsRecipient() ],
+                $message
+            );
+        } catch (noRecipientFoundException $e) {
+            Registry::getLogger()->warning($e->getMessage());
+            Registry::getUtilsView()->addErrorToDisplay($e);
+        }
+
+        return false;
+    }
+
+    /**
+     * @param Order $order
+     * @param      $message
+     *
+     * @return bool
+     */
+    public function sendOrderMessage(Order $order, $message): bool
+    {
+        try {
+            return $this->sendCustomRecipientMessage(
+                [ oxNew( OrderRecipients::class, $order )->getSmsRecipient() ],
                 $message
             );
         } catch (noRecipientFoundException $e) {

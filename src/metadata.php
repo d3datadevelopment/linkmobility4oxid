@@ -3,6 +3,7 @@
  * Metadata version
  */
 
+use D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
 
 $sMetadataVersion = '2.1';
@@ -29,10 +30,12 @@ $aModule = [
         \OxidEsales\Eshop\Application\Controller\ContactController::class   => \D3\Linkmobility4OXID\Modules\Application\Controller\ContactController::class
     ],
     'controllers'  => [
-        'd3linkmobility_user'   => AdminUser::class
+        'd3linkmobility_user'   => AdminUser::class,
+        'd3linkmobility_order'  => AdminOrder::class
     ],
     'templates'    => [
-        'd3adminuser.tpl'       => 'd3/linkmobility/Application/views/admin/tpl/adminuser.tpl'
+        'd3adminuser.tpl'       => 'd3/linkmobility/Application/views/admin/tpl/adminuser.tpl',
+        'd3adminorder.tpl'       => 'd3/linkmobility/Application/views/admin/tpl/adminuser.tpl'
     ],
     'events'       => [],
     'settings'     => [
