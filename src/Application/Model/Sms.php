@@ -16,9 +16,11 @@
 namespace D3\Linkmobility4OXID\Application\Model;
 
 use D3\Linkmobility4OXID\Application\Model\Exceptions\abortSendingExceptionInterface;
+use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
+use D3\Linkmobility4OXID\Modules\Application\Model\RequestFactory;
 use D3\LinkmobilityClient\Exceptions\ApiException;
 use D3\LinkmobilityClient\Request\RequestInterface;
-use D3\LinkmobilityClient\SMS\RequestFactory;
+use D3\LinkmobilityClient\Response\ResponseInterface;
 use D3\LinkmobilityClient\ValueObject\Sender;
 use GuzzleHttp\Exception\GuzzleException;
 use OxidEsales\Eshop\Application\Model\User;
@@ -26,6 +28,8 @@ use OxidEsales\Eshop\Core\Registry;
 
 class Sms
 {
+    private $response;
+
     /**
      * @param User $user
      * @param      $message
@@ -35,6 +39,27 @@ class Sms
     public function sendUserAccountMessage(User $user, $message): bool
     {
         try {
+            return $this->sendCustomRecipientMessage(
+                [ oxNew( UserRecipients::class, $user )->getSmsRecipient() ],
+                $message
+            );
+        } catch (noRecipientFoundException $e) {
+            Registry::getLogger()->warning($e->getMessage());
+            Registry::getUtilsView()->addErrorToDisplay($e);
+        }
+
+        return false;
+    }
+
+    /**
+     * @param array $recipientsArray
+     * @param       $message
+     *
+     * @return bool
+     */
+    public function sendCustomRecipientMessage(array $recipientsArray, $message): bool
+    {
+        try {
             $configuration = oxNew( Configuration::class );
             $client        = oxNew( MessageClient::class )->getClient();
 
@@ -42,8 +67,12 @@ class Sms
             $request->setTestMode( $configuration->getTestMode() )->setMethod( RequestInterface::METHOD_POST )->setSenderAddress( oxNew( Sender::class, $configuration->getSmsSenderNumber(), $configuration->getSmsSenderCountry() ) )->setSenderAddressType( RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL );
 
             $recipientsList = $request->getRecipientsList();
-            $recipientsList->add(oxNew( UserRecipients::class, $user )->getSmsRecipient());
+            foreach ($recipientsArray as $recipient) {
+                $recipientsList->add( $recipient );
+            }
             $response = $client->request( $request );
+
+            $this->response = $response;
 
             return $response->isSuccessful();
         } catch (abortSendingExceptionInterface $e) {
@@ -61,5 +90,13 @@ class Sms
         }
 
         return false;
+    }
+
+    /**
+     * @return ResponseInterface|null
+     */
+    public function getResponse()
+    {
+        return $this->response;
     }
 }

@@ -2,9 +2,12 @@
 /**
  * Metadata version
  */
+
+use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
+
 $sMetadataVersion = '2.1';
-$sModuleId = 'd3linkmobility';
-$sD3Logo = '<img src="https://logos.oxidmodule.com/d3logo.svg" alt="(D3)" style="height:1em;width:1em"> ';
+$sModuleId        = 'd3linkmobility';
+$sD3Logo          = '<img src="https://logos.oxidmodule.com/d3logo.svg" alt="(D3)" style="height:1em;width:1em"> ';
 
 /**
  * Module information
@@ -25,8 +28,12 @@ $aModule = [
         \OxidEsales\Eshop\Application\Controller\StartController::class => \D3\Linkmobility4OXID\Modules\Application\Controller\StartController::class,
         \OxidEsales\Eshop\Application\Controller\ContactController::class   => \D3\Linkmobility4OXID\Modules\Application\Controller\ContactController::class
     ],
-    'controllers'  => [],
-    'templates'    => [],
+    'controllers'  => [
+        'd3linkmobility_user'   => AdminUser::class
+    ],
+    'templates'    => [
+        'd3adminuser.tpl'       => 'd3/linkmobility/Application/views/admin/tpl/adminuser.tpl'
+    ],
     'events'       => [],
     'settings'     => [
         [
