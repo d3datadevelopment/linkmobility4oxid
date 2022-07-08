@@ -62,10 +62,19 @@ class Sms
     public function sendOrderMessage(Order $order, $message): bool
     {
         try {
-            return $this->sendCustomRecipientMessage(
+            oxNew( OrderRecipients::class, $order )->getSmsRecipient();
+        } catch (Exception $e) {
+            dumpvar($e->getMessage());
+        }
+
+        try {
+            Registry::getLogger()->debug('startRequest', ['orderId' => $order->getId()]);
+            $return = $this->sendCustomRecipientMessage(
                 [ oxNew( OrderRecipients::class, $order )->getSmsRecipient() ],
                 $message
             );
+            Registry::getLogger()->debug('finishRequest', ['orderId' => $order->getId()]);
+            return $return;
         } catch (noRecipientFoundException $e) {
             Registry::getLogger()->warning($e->getMessage());
             throw $e;
@@ -91,6 +100,7 @@ class Sms
             foreach ($recipientsArray as $recipient) {
                 $recipientsList->add( $recipient );
             }
+
             $response = $client->request( $request );
 
             $this->response = $response;

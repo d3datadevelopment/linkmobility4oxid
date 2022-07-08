@@ -1,0 +1,1 @@
+Ihre Bestellung wurde storniert.

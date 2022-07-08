@@ -39,13 +39,13 @@ class OrderRecipients
      */
     public function getSmsRecipient(): Recipient
     {
-        foreach ($this->getSmsRecipientFields() as $fieldName)
+        foreach ($this->getSmsRecipientFields() as $phoneFieldName => $countryIdFieldName)
         {
-            $content = trim($this->order->getFieldData($fieldName));
-            if (strlen($content)) {
+            $content = trim($this->order->getFieldData($phoneFieldName));
 
+            if (strlen($content)) {
                 $country = oxNew(Country::class);
-                $country->load($this->order->getUser()->getFieldData('oxcountryid'));
+                $country->load($this->order->getFieldData($countryIdFieldName));
 
                 return oxNew(Recipient::class, $content, $country->getFieldData('oxisoalpha2'));
             }
@@ -60,8 +60,8 @@ class OrderRecipients
     public function getSmsRecipientFields(): array
     {
         return [
-            'oxdelfon',
-            'oxbillfon'
+            'oxdelfon'  => 'oxdelcountryid',
+            'oxbillfon' => 'oxbillcountryid'
         ];
     }
 }

@@ -19,7 +19,7 @@ $aModule = [
     'id'           => $sModuleId,
     'title'        => $sD3Logo . ' Linkmobility',
     'description'  => [
-        'de'    =>  'Anbiundung an die Linkmobility API <ul><li>Nachrichtenversand per SMS</li></ul>',
+        'de'    =>  'Anbindung an die Linkmobility API <ul><li>Nachrichtenversand per SMS</li></ul>',
         'en'    =>  '',
     ],
     'thumbnail'    => 'picture.png',
@@ -29,17 +29,19 @@ $aModule = [
     'url'          => 'https://www.oxidmodule.com/',
     'extend'       => [
         \OxidEsales\Eshop\Application\Controller\StartController::class => \D3\Linkmobility4OXID\Modules\Application\Controller\StartController::class,
-        \OxidEsales\Eshop\Application\Controller\ContactController::class   => \D3\Linkmobility4OXID\Modules\Application\Controller\ContactController::class,
-        Email::class => EmailCore::class
+        Email::class => EmailCore::class,
+        \OxidEsales\Eshop\Application\Model\Order::class    => \D3\Linkmobility4OXID\Modules\Application\Model\OrderModel::class
     ],
     'controllers'  => [
         'd3linkmobility_user'   => AdminUser::class,
         'd3linkmobility_order'  => AdminOrder::class
     ],
     'templates'    => [
-        'd3adminuser.tpl'       => 'd3/linkmobility/Application/views/admin/tpl/adminuser.tpl',
-        'd3adminorder.tpl'       => 'd3/linkmobility/Application/views/admin/tpl/adminuser.tpl',
-        'd3sms_ordercust.tpl'   => 'd3/linkmobility/Application/views/tpl/SMS/order_cust.tpl',
+        'd3adminuser.tpl'           => 'd3/linkmobility/Application/views/admin/tpl/adminuser.tpl',
+        'd3adminorder.tpl'          => 'd3/linkmobility/Application/views/admin/tpl/adminuser.tpl',
+        'd3sms_ordercust.tpl'       => 'd3/linkmobility/Application/views/tpl/SMS/order_cust.tpl',
+        'd3sms_sendednow.tpl'       => 'd3/linkmobility/Application/views/tpl/SMS/sendednow.tpl',
+        'd3sms_ordercanceled.tpl'   => 'd3/linkmobility/Application/views/tpl/SMS/ordercanceled.tpl',
     ],
     'events'       => [],
     'settings'     => [

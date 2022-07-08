@@ -13,23 +13,20 @@
  * @link          http://www.oxidmodule.com
  */
 
-namespace D3\Linkmobility4OXID\Modules\Application\Controller
+namespace D3\Linkmobility4OXID\Modules\Application\Model;
+
+use D3\Linkmobility4OXID\Application\Model\MessageSender;
+use OxidEsales\Eshop\Core\Email;
+
+class OrderModel extends OrderModel_parent
 {
-    class ContactController_parent extends ContactController {}
+    public function cancelOrder()
+    {
+        parent::cancelOrder();
 
-    class StartController_parent extends StartController {}
-}
-
-namespace D3\Linkmobility4OXID\Modules\Aplication\Model {
-
-    use OxidEsales\Eshop\Application\Model\Order;
-
-    class OrderModel_parent extends Order{}
-}
-
-namespace D3\Linkmobility4OXID\Modules\Core {
-
-    use OxidEsales\Eshop\Core\Email;
-
-    class EmailCore_parent extends Email{}
+        if ($this->getFieldData('oxstorno') === 1) {
+            $Email = oxNew( Email::class );
+            $Email->d3SendCancelMessage($this);
+        }
+    }
 }

@@ -16,6 +16,7 @@
 namespace D3\Linkmobility4OXID\Application\Controller\Admin;
 
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
+use D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException;
 use D3\Linkmobility4OXID\Application\Model\OrderRecipients;
 use D3\Linkmobility4OXID\Application\Model\Sms;
 use D3\Linkmobility4OXID\Application\Model\UserRecipients;
@@ -89,7 +90,9 @@ class AdminOrder extends AdminController
             $sms = oxNew( Sms::class );
             if ( $sms->sendOrderMessage( $order, $messageBody ) ) {
                 $this->setRemark( $messageBody );
-                Registry::getUtilsView()->addErrorToDisplay( sprintf( Registry::getLang()->translateString( 'D3LM_EXC_SMS_SUCC_SENT' ), $sms->getResponse()->getSmsCount() ) );
+                Registry::getUtilsView()->addErrorToDisplay(
+                    oxNew(successfullySentException::class, $sms->getResponse()->getSmsCount() )
+                );
             } else {
                 Registry::getUtilsView()->addErrorToDisplay( Registry::getLang()->translateString( 'D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND' ) );
             }

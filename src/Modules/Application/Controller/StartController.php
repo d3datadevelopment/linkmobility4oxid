@@ -29,16 +29,13 @@ class StartController extends StartController_parent
         //$message = "test\tMessage\ttest\tMessage";
 
         $order = oxNew(Order::class);
-        $order->load('03444d89ad35b138c150003e69fdff34');
-dumpvar(__METHOD__.__LINE__.PHP_EOL);
+        $order->load('eda00356201d7ec2bcf31166fa6c37dd');
+
+
         /** @var EmailCore $mail */
         $mail = oxNew(Email::class);
         $mail->d3SendOrderMessage($order);
-die();
-        $user = oxNew(User::class);
-        $user->load('oxdefaultadmin');
-        $success = oxNew(Sms::class)->sendUserAccountMessage($user, $message);
-dumpvar($success);
+
         return parent::render();
     }
 }
