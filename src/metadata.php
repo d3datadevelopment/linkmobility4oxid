@@ -70,19 +70,31 @@ $aModule = [
             'value'     => false
         ],
         [
-            'group'     => $sModuleId.'_general',
+            'group'     => $sModuleId.'_sms',
             'name'      => $sModuleId.'_smsSenderNumber',
             'type'      => 'str',
             'value'     => false
         ],
         [
-            'group'     => $sModuleId.'_general',
+            'group'     => $sModuleId.'_sms',
             'name'      => $sModuleId.'_smsSenderCountry',
             'type'      => 'str',
             'value'     => 'DE'
         ],
         [
-            'group'     => $sModuleId.'_order',
+            'group'     => $sModuleId.'_sms',
+            'name'      => $sModuleId.'_smsUserRecipientsFields',
+            'type'      => 'arr',
+            'value'     => [],
+        ],
+        [
+            'group'     => $sModuleId.'_sms',
+            'name'      => $sModuleId.'_smsOrderRecipientsFields',
+            'type'      => 'aarr',
+            'value'     => [],
+        ],
+        [
+            'group'     => $sModuleId.'_trigger',
             'name'      => $sModuleId.'_orderActive',
             'type'      => 'bool',
             'value'     => false

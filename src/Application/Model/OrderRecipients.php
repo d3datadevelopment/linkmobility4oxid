@@ -20,6 +20,7 @@ use D3\LinkmobilityClient\ValueObject\Recipient;
 use OxidEsales\Eshop\Application\Model\Country;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
+use OxidEsales\Eshop\Core\Registry;
 
 class OrderRecipients
 {
@@ -59,9 +60,35 @@ class OrderRecipients
      */
     public function getSmsRecipientFields(): array
     {
-        return [
-            'oxdelfon'  => 'oxdelcountryid',
-            'oxbillfon' => 'oxbillcountryid'
-        ];
+        $customFields = $this->getSanitizedCustomFields();
+
+        return count($customFields) ?
+            $customFields :
+            [
+                'oxdelfon'  => 'oxdelcountryid',
+                'oxbillfon' => 'oxbillcountryid'
+            ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getSanitizedCustomFields() : array
+    {
+        $customFields = (array) Registry::getConfig()->getConfigParam('d3linkmobility_smsOrderRecipientsFields');
+        array_walk($customFields, [$this, 'checkFieldExists']);
+        return array_filter($customFields);
+    }
+
+    public function checkFieldExists(&$checkPhoneFieldName, $checkCountryFieldName)
+    {
+        $checkCountryFieldName = trim($checkCountryFieldName);
+        $checkPhoneFieldName = trim($checkPhoneFieldName);
+        $allFieldNames = oxNew(Order::class)->getFieldNames();
+
+        array_walk($allFieldNames, function(&$value) {$value = strtolower($value);});
+
+        $checkPhoneFieldName = in_array(strtolower($checkPhoneFieldName), $allFieldNames) &&
+               in_array(strtolower($checkCountryFieldName), $allFieldNames) ? $checkPhoneFieldName : null;
     }
 }

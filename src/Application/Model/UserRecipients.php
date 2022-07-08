@@ -19,6 +19,7 @@ use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use OxidEsales\Eshop\Application\Model\Country;
 use OxidEsales\Eshop\Application\Model\User;
+use OxidEsales\Eshop\Core\Registry;
 
 class UserRecipients
 {
@@ -58,10 +59,39 @@ class UserRecipients
      */
     public function getSmsRecipientFields(): array
     {
-        return [
-            'oxmobfon',
-            'oxfon',
-            'oxprivfon'
-        ];
+        $customFields = $this->getSanitizedCustomFields();
+
+        return count($customFields) ?
+            $customFields :
+            [
+                'oxmobfon',
+                'oxfon',
+                'oxprivfon'
+            ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getSanitizedCustomFields() : array
+    {
+        $customFields = (array) Registry::getConfig()->getConfigParam('d3linkmobility_smsUserRecipientsFields');
+        array_walk($customFields, [$this, 'checkFieldExists']);
+        return array_filter($customFields);
+    }
+
+    /**
+     * @param $checkFieldName
+     *
+     * @return string|null
+     */
+    public function checkFieldExists(&$checkFieldName)
+    {
+        $checkFieldName = trim($checkFieldName);
+        $allFieldNames = oxNew(User::class)->getFieldNames();
+
+        array_walk($allFieldNames, function(&$value) {$value = strtolower($value);});
+
+        $checkFieldName = in_array(strtolower($checkFieldName), $allFieldNames) ? $checkFieldName : null;
     }
 }
