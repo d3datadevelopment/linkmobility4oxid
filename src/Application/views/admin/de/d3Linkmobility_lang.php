@@ -23,7 +23,7 @@ $aLang = [
     'charset'                                           => 'UTF-8',
 
     'SHOP_MODULE_GROUP_d3linkmobility_general'          => 'Grundeinstellungen',
-    'SHOP_MODULE_d3linkmobility_debug'                  => 'Debug-Modus',
+    'SHOP_MODULE_d3linkmobility_debug'                  => 'Test-Modus',
     'HELP_SHOP_MODULE_d3linkmobility_debug'             => 'Mit aktiviertem Test-Modus wird Linkmobility die Nachrichten nicht versenden. Die Anfrage wird jedoch verarbeitet und liefert eine Systemantwort zurück.',
     'SHOP_MODULE_d3linkmobility_apitoken'               => 'API-Token',
     'HELP_SHOP_MODULE_d3linkmobility_apitoken'          => 'Den API-Token generieren Sie sich bitte in Ihrem Linkmobility-Konto.',
@@ -40,6 +40,11 @@ $aLang = [
 
     'SHOP_MODULE_GROUP_d3linkmobility_trigger'          => 'Nachrichtenversand bei ...',
     'SHOP_MODULE_d3linkmobility_orderActive'            => 'abgeschlossener Bestellung',
+    'HELP_SHOP_MODULE_d3linkmobility_orderActive'       => 'Wurde eine Bestellung im Frontend erfolgreich abgeschlossen, wird zum Versand der Bestellbestätigungsmail an den Kunden auch die SMS-Nachricht verschickt. Den Inhalt der SMS-Benachrichtigung finden Sie im Template "Application/views/tpl/SMS/order_cust.tpl".',
+    'SHOP_MODULE_d3linkmobility_sendedNowActive'        => 'Benachrichtigung über Versand',
+    'HELP_SHOP_MODULE_d3linkmobility_sendedNowActive'   => 'Wird im Shopbackend das Versanddatum gesetzt und dieses per Mail an den Kunden mitgeteilt (separate Checkbox), erfolgt gleichermaßen die Information via SMS. Den Inhalt der SMS-Benachrichtigung finden Sie im Template "Application/views/tpl/SMS/sendednow.tpl".',
+    'SHOP_MODULE_d3linkmobility_cancelOrderActive'      => 'Bestellstornierung',
+    'HELP_SHOP_MODULE_d3linkmobility_cancelOrderActive' => 'Beim Stornieren der Bestellung erhält der Kunde eine Information per SMS. Den Inhalt der SMS-Benachrichtigung finden Sie im Template "Application/views/tpl/SMS/ordercanceled.tpl".',
 
     'D3LM_ADMIN_USER_RECIPIENT'                         => 'Empfängernummer',
     'D3LM_ADMIN_USER_MESSAGE'                           => 'Nachricht',

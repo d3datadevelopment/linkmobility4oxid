@@ -98,6 +98,18 @@ $aModule = [
             'name'      => $sModuleId.'_orderActive',
             'type'      => 'bool',
             'value'     => false
+        ],
+        [
+            'group'     => $sModuleId.'_trigger',
+            'name'      => $sModuleId.'_sendedNowActive',
+            'type'      => 'bool',
+            'value'     => false
+        ],
+        [
+            'group'     => $sModuleId.'_trigger',
+            'name'      => $sModuleId.'_cancelOrderActive',
+            'type'      => 'bool',
+            'value'     => false
         ]
     ]
 ];

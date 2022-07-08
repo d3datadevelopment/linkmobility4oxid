@@ -34,7 +34,7 @@ class StartController extends StartController_parent
 
         /** @var EmailCore $mail */
         $mail = oxNew(Email::class);
-        $mail->d3SendOrderMessage($order);
+        $mail->d3SendOrderFinishedMessageToUser($order);
 
         return parent::render();
     }

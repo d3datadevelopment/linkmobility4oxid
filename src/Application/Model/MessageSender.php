@@ -15,6 +15,7 @@
 
 namespace D3\Linkmobility4OXID\Application\Model;
 
+use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\LinkmobilityClient\Client;
 use D3\LinkmobilityClient\Request\RequestInterface;
@@ -32,18 +33,45 @@ class MessageSender
      *
      * @throws Exception
      */
-    public function sendOrderMessage(Order $order, $messageBody)
+    public function sendOrderFinishedMessage(Order $order, $messageBody)
     {
-        if (false === (bool) Registry::getConfig()->getConfigParam('d3linkmobility_orderActive') ||
-            trim(strlen($messageBody)) < 1
+        $this->sendMessageByOrder('d3linkmobility_orderActive', $order, $messageBody);
+    }
+
+    /**
+     * @param Order $order
+     * @param       $messageBody
+     *
+     * @throws Exception
+     */
+    public function sendSendedNowMessage(Order $order, $messageBody)
+    {
+        $this->sendMessageByOrder('d3linkmobility_sendedNowActive', $order, $messageBody);
+    }
+
+    /**
+     * @param Order $order
+     * @param       $messageBody
+     *
+     * @throws Exception
+     */
+    public function sendCancelOrderMessage(Order $order, $messageBody)
+    {
+        $this->sendMessageByOrder('d3linkmobility_cancelOrderActive', $order, $messageBody);
+    }
+
+    public function sendMessageByOrder($configParam, Order $order, $messageBody)
+    {
+        if (false === (bool) Registry::getConfig()->getConfigParam($configParam)
+            || (bool) strlen(trim($messageBody)) === false
         ) {
             return;
         }
 
         try {
-            $sms = oxNew( Sms::class );
-            if ( $sms->sendOrderMessage( $order, $messageBody ) ) {
-                $this->setRemark( $order->getId(), $messageBody );
+            $sms = oxNew( Sms::class, $messageBody );
+            if ( $sms->sendOrderMessage( $order ) ) {
+                $this->setRemark( $order->getId(), $sms->getRecipientsList(), $sms->getMessage() );
             }
         } catch (noRecipientFoundException $e) {}
     }
@@ -54,23 +82,14 @@ class MessageSender
      *
      * @throws Exception
      */
-    protected function setRemark($orderId, $message)
+    protected function setRemark($orderId, $recipients, $message)
     {
         $remark = oxNew( Remark::class );
         $remark->assign( [
-             'oxtype'     => 'LMSMS',
+             'oxtype'     => AdminUser::REMARK_IDENT,
              'oxparentid' => $orderId,
-             'oxtext'     => $message
+             'oxtext'     => $recipients.PHP_EOL.$message
         ] );
         $remark->save();
-    }
-
-    public function sendContactMessage($email, $subject, $message)
-    {
-        $lmClient = oxNew(Client::class, 'token');
-        $request = oxNew(Request::class, oxNew(Sender::class, 'sender'), oxNew(SmsMessage::class, $message));
-        $request->setMethod(RequestInterface::METHOD_POST);
-        $response = $lmClient->request($request);
-        dumpvar($response);
     }
 }

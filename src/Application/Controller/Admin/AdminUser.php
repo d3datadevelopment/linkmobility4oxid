@@ -46,8 +46,6 @@ class AdminUser extends AdminController
         $this->user = $user = oxNew(User::class);
         $user->load($this->getEditObjectId());
 
-        $this->sms = oxNew(Sms::class);
-
         $this->addTplParam('recipient', $this->getRecipientFromCurrentUser());
 
         parent::__construct();
@@ -85,9 +83,9 @@ class AdminUser extends AdminController
         $user = oxNew(User::class);
         $user->load($this->getEditObjectId());
 
-        $sms = oxNew(Sms::class);
-        if ($sms->sendUserAccountMessage($user, $messageBody)) {
-            $this->setRemark( $sms->getRecipientsList(), $messageBody );
+        $sms = oxNew(Sms::class, $messageBody);
+        if ($sms->sendUserAccountMessage($user)) {
+            $this->setRemark( $sms->getRecipientsList(), $sms->getMessage() );
             Registry::getUtilsView()->addErrorToDisplay(
                 sprintf(
                     Registry::getLang()->translateString('D3LM_EXC_SMS_SUCC_SENT'),

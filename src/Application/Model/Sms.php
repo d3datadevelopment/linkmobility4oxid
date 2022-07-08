@@ -32,19 +32,25 @@ class Sms
 {
     private $response;
     private $recipients = [];
+    private $message;
+    protected $removeLineBreaks = true;
+    protected $removeMultipleSpaces = true;
+
+    public function __construct(string $message)
+    {
+        $this->message = $this->sanitizeMessage($message);
+    }
 
     /**
      * @param User $user
-     * @param      $message
      *
      * @return bool
      */
-    public function sendUserAccountMessage(User $user, $message): bool
+    public function sendUserAccountMessage(User $user): bool
     {
         try {
             return $this->sendCustomRecipientMessage(
-                [ oxNew( UserRecipients::class, $user )->getSmsRecipient() ],
-                $message
+                [ oxNew( UserRecipients::class, $user )->getSmsRecipient() ]
             );
         } catch (noRecipientFoundException $e) {
             Registry::getLogger()->warning($e->getMessage());
@@ -56,12 +62,11 @@ class Sms
 
     /**
      * @param Order $order
-     * @param       $message
      *
      * @return bool
      * @throws noRecipientFoundException
      */
-    public function sendOrderMessage(Order $order, $message): bool
+    public function sendOrderMessage(Order $order): bool
     {
         try {
             oxNew( OrderRecipients::class, $order )->getSmsRecipient();
@@ -72,8 +77,7 @@ class Sms
         try {
             Registry::getLogger()->debug('startRequest', ['orderId' => $order->getId()]);
             $return = $this->sendCustomRecipientMessage(
-                [ oxNew( OrderRecipients::class, $order )->getSmsRecipient() ],
-                $message
+                [ oxNew( OrderRecipients::class, $order )->getSmsRecipient() ]
             );
             Registry::getLogger()->debug('finishRequest', ['orderId' => $order->getId()]);
             return $return;
@@ -85,18 +89,17 @@ class Sms
 
     /**
      * @param array $recipientsArray
-     * @param       $message
      *
      * @return bool
      */
-    public function sendCustomRecipientMessage(array $recipientsArray, $message): bool
+    public function sendCustomRecipientMessage(array $recipientsArray): bool
     {
         try {
             $this->setRecipients($recipientsArray);
             $configuration = oxNew( Configuration::class );
             $client        = oxNew( MessageClient::class )->getClient();
 
-            $request = oxNew( RequestFactory::class, $message, $client )->getSmsRequest();
+            $request = oxNew( RequestFactory::class, $this->getMessage(), $client )->getSmsRequest();
             $request->setTestMode( $configuration->getTestMode() )->setMethod( RequestInterface::METHOD_POST )->setSenderAddress( oxNew( Sender::class, $configuration->getSmsSenderNumber(), $configuration->getSmsSenderCountry() ) )->setSenderAddressType( RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL );
 
             $recipientsList = $request->getRecipientsList();
@@ -148,5 +151,23 @@ class Sms
         }
 
         return implode(', ', $list);
+    }
+
+    /**
+     * @param $message
+     *
+     * @return string
+     */
+    protected function sanitizeMessage($message) : string
+    {
+        $message = trim(strip_tags($message));
+        $message = $this->removeLineBreaks ? str_replace(["\r", "\n"], ' ', $message) : $message;
+        $regexp = '/\s{2,}/m';
+        return $this->removeMultipleSpaces ? preg_replace($regexp, ' ', $message) : $message;
+    }
+
+    public function getMessage() : string
+    {
+        return $this->message;
     }
 }

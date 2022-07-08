@@ -23,9 +23,9 @@ use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererInte
 
 class EmailCore extends EmailCore_parent
 {
-    protected $orderCustSmsTemplate = 'd3sms_ordercust.tpl';
-    protected $orderSendedNowSmsTemplate = 'd3sms_sendednow.tpl';
-    protected $orderCanceledSmsTemplate = 'd3sms_ordercanceled.tpl';
+    protected $d3OrderCustSmsTemplate = 'd3sms_ordercust.tpl';
+    protected $d3OrderSendedNowSmsTemplate = 'd3sms_sendednow.tpl';
+    protected $d3OrderCanceledSmsTemplate = 'd3sms_ordercanceled.tpl';
 
     /**
      * @param Order $order
@@ -37,7 +37,7 @@ class EmailCore extends EmailCore_parent
     {
         $ret = parent::sendOrderEmailToUser($order, $subject);
 
-        $this->d3SendOrderMessage($order);
+        $this->d3SendOrderFinishedMessageToUser($order);
 
         return $ret;
     }
@@ -62,10 +62,10 @@ class EmailCore extends EmailCore_parent
      *
      * @throws Exception
      */
-    public function d3SendOrderMessage(Order $order)
+    public function d3SendOrderFinishedMessageToUser(Order $order)
     {
         $messageSender = oxNew(MessageSender::class);
-        $messageSender->sendOrderMessage($order, $this->d3GetOrderSmsMessageBody($order));
+        $messageSender->sendOrderFinishedMessage($order, $this->d3GetOrderFinishedSmsMessageBody($order));
     }
 
     /**
@@ -73,12 +73,12 @@ class EmailCore extends EmailCore_parent
      *
      * @return string
      */
-    protected function d3GetOrderSmsMessageBody(Order $order): string
+    protected function d3GetOrderFinishedSmsMessageBody(Order $order): string
     {
         $renderer = $this->d3GetTplRenderer();
         $this->setViewData("order", $order);
 
-        return $renderer->renderTemplate($this->orderCustSmsTemplate, $this->getViewData());
+        return $renderer->renderTemplate($this->d3OrderCustSmsTemplate, $this->getViewData());
     }
 
     /**
@@ -89,7 +89,7 @@ class EmailCore extends EmailCore_parent
     public function d3SendedNowMessage(Order $order)
     {
         $messageSender = oxNew(MessageSender::class);
-        $messageSender->sendOrderMessage($order, $this->d3GetSendedNowSmsMessageBody($order));
+        $messageSender->sendSendedNowMessage($order, $this->d3GetSendedNowSmsMessageBody($order));
     }
 
     /**
@@ -102,7 +102,7 @@ class EmailCore extends EmailCore_parent
         $renderer = $this->d3GetTplRenderer();
         $this->setViewData("order", $order);
 
-        return $renderer->renderTemplate($this->orderSendedNowSmsTemplate, $this->getViewData());
+        return $renderer->renderTemplate($this->d3OrderSendedNowSmsTemplate, $this->getViewData());
     }
 
     public function d3SendCancelMessage($order)
@@ -121,7 +121,7 @@ class EmailCore extends EmailCore_parent
         $renderer = $this->d3GetTplRenderer();
         $this->setViewData("order", $order);
 
-        return $renderer->renderTemplate($this->orderCanceledSmsTemplate, $this->getViewData());
+        return $renderer->renderTemplate($this->d3OrderCanceledSmsTemplate, $this->getViewData());
     }
 
     /**
@@ -129,7 +129,7 @@ class EmailCore extends EmailCore_parent
      *
      * @return TemplateRendererInterface
      */
-    protected function d3GetTplRenderer()
+    protected function d3GetTplRenderer() : TemplateRendererInterface
     {
         $bridge = \OxidEsales\EshopCommunity\Internal\Container\ContainerFactory::getInstance()->getContainer()
             ->get(TemplateRendererBridgeInterface::class);

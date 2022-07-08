@@ -47,8 +47,6 @@ class AdminOrder extends AdminController
         $this->order = $order = oxNew(Order::class);
         $order->load($this->getEditObjectId());
 
-        $this->sms = oxNew(Sms::class);
-
         $this->addTplParam('recipient', $this->getRecipientFromCurrentOrder());
 
         parent::__construct();
@@ -87,9 +85,9 @@ class AdminOrder extends AdminController
         $order->load($this->getEditObjectId());
 
         try {
-            $sms = oxNew( Sms::class );
-            if ( $sms->sendOrderMessage( $order, $messageBody ) ) {
-                $this->setRemark( $sms->getRecipientsList(), $messageBody );
+            $sms = oxNew( Sms::class, $messageBody );
+            if ( $sms->sendOrderMessage( $order ) ) {
+                $this->setRemark( $sms->getRecipientsList(), $sms->getMessage() );
                 Registry::getUtilsView()->addErrorToDisplay(
                     oxNew(successfullySentException::class, $sms->getResponse()->getSmsCount() )
                 );
