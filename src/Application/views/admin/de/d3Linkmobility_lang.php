@@ -35,6 +35,8 @@ $aLang = [
     'D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND'            => 'Beim Versenden der Nachricht(en) ist ein unerwarteter Fehler aufgetreten.',
     'D3LM_EXC_NO_RECIPIENT_SET'                       => 'Kein (verwendbarer) Empfänger gesetzt.',
 
+    'D3LM_REMARK_SMS'                                 => 'SMS-Nachr.',
+
     'tbcluser_linkmobility'                           => 'SMS-Versand',
     'tbclorder_linkmobility'                          => 'SMS-Versand'
 ];

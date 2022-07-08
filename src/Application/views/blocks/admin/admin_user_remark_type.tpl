@@ -1,0 +1,5 @@
+[{if $allitem->oxremark__oxtype->value == "LMSMS"}]
+    [{oxmultilang ident="D3LM_REMARK_SMS"}]
+[{else}]
+    [{$smarty.block.parent}]
+[{/if}]

@@ -44,6 +44,18 @@ $aModule = [
         'd3sms_ordercanceled.tpl'   => 'd3/linkmobility/Application/views/tpl/SMS/ordercanceled.tpl',
     ],
     'events'       => [],
+    'blocks'        => [
+        [
+            'template'  => 'order_remark.tpl',
+            'block'     => 'admin_order_remark_type',
+            'file'      => 'Application/views/blocks/admin/admin_user_remark_type.tpl',
+        ],
+        [
+            'template'  => 'user_remark.tpl',
+            'block'     => 'admin_user_remark_type',
+            'file'      => 'Application/views/blocks/admin/admin_user_remark_type.tpl',
+        ]
+    ],
     'settings'     => [
         [
             'group'     => $sModuleId.'_general',

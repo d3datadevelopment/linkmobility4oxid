@@ -27,6 +27,8 @@ use OxidEsales\Eshop\Core\Registry;
 
 class AdminUser extends AdminController
 {
+    const REMARK_IDENT = 'LMSMS';
+    
     protected $_sThisTemplate = 'd3adminuser.tpl';
 
     /**
@@ -85,7 +87,7 @@ class AdminUser extends AdminController
 
         $sms = oxNew(Sms::class);
         if ($sms->sendUserAccountMessage($user, $messageBody)) {
-            $this->setRemark( $messageBody );
+            $this->setRemark( $sms->getRecipientsList(), $messageBody );
             Registry::getUtilsView()->addErrorToDisplay(
                 sprintf(
                     Registry::getLang()->translateString('D3LM_EXC_SMS_SUCC_SENT'),
@@ -104,13 +106,13 @@ class AdminUser extends AdminController
      *
      * @throws Exception
      */
-    protected function setRemark( $messageBody )
+    protected function setRemark( $recipients, $messageBody )
     {
         $remark = oxNew( Remark::class );
         $remark->assign( [
-            'oxtype'     => 'LMSMS',
+            'oxtype'     => AdminUser::REMARK_IDENT,
             'oxparentid' => $this->getEditObjectId(),
-            'oxtext'     => $messageBody
+            'oxtext'     => $recipients.PHP_EOL.$messageBody
         ] );
         $remark->save();
     }

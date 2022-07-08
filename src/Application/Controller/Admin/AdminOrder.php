@@ -89,7 +89,7 @@ class AdminOrder extends AdminController
         try {
             $sms = oxNew( Sms::class );
             if ( $sms->sendOrderMessage( $order, $messageBody ) ) {
-                $this->setRemark( $messageBody );
+                $this->setRemark( $sms->getRecipientsList(), $messageBody );
                 Registry::getUtilsView()->addErrorToDisplay(
                     oxNew(successfullySentException::class, $sms->getResponse()->getSmsCount() )
                 );
@@ -106,13 +106,13 @@ class AdminOrder extends AdminController
      *
      * @throws Exception
      */
-    protected function setRemark( $messageBody )
+    protected function setRemark( $recipients, $messageBody )
     {
         $remark = oxNew( Remark::class );
         $remark->assign( [
-            'oxtype'     => 'LMSMS',
-            'oxparentid' => $this->getEditObjectId(),
-            'oxtext'     => $messageBody
+            'oxtype'     => AdminUser::REMARK_IDENT,
+            'oxparentid' => $this->order->getUser()->getId(),
+            'oxtext'     => $recipients.PHP_EOL.$messageBody
         ] );
         $remark->save();
     }

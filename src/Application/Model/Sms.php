@@ -21,6 +21,7 @@ use D3\Linkmobility4OXID\Application\Model\RequestFactory;
 use D3\LinkmobilityClient\Exceptions\ApiException;
 use D3\LinkmobilityClient\Request\RequestInterface;
 use D3\LinkmobilityClient\Response\ResponseInterface;
+use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\LinkmobilityClient\ValueObject\Sender;
 use GuzzleHttp\Exception\GuzzleException;
 use OxidEsales\Eshop\Application\Model\Order;
@@ -30,6 +31,7 @@ use OxidEsales\Eshop\Core\Registry;
 class Sms
 {
     private $response;
+    private $recipients = [];
 
     /**
      * @param User $user
@@ -90,6 +92,7 @@ class Sms
     public function sendCustomRecipientMessage(array $recipientsArray, $message): bool
     {
         try {
+            $this->setRecipients($recipientsArray);
             $configuration = oxNew( Configuration::class );
             $client        = oxNew( MessageClient::class )->getClient();
 
@@ -129,5 +132,21 @@ class Sms
     public function getResponse()
     {
         return $this->response;
+    }
+
+    protected function setRecipients(array $recipients)
+    {
+        $this->recipients = $recipients;
+    }
+
+    public function getRecipientsList() : string
+    {
+        $list = [];
+        /** @var Recipient $recipient */
+        foreach ($this->recipients as $recipient) {
+            $list[] = $recipient->get();
+        }
+
+        return implode(', ', $list);
     }
 }
