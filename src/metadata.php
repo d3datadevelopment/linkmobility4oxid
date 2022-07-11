@@ -5,7 +5,9 @@
 
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
+use D3\Linkmobility4OXID\Modules\Application\Model\OrderModel;
 use D3\Linkmobility4OXID\Modules\Core\EmailCore;
+use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Core\Email;
 
 $sMetadataVersion = '2.1';
@@ -28,9 +30,8 @@ $aModule = [
     'email'        => 'support@shopmodule.com',
     'url'          => 'https://www.oxidmodule.com/',
     'extend'       => [
-        \OxidEsales\Eshop\Application\Controller\StartController::class => \D3\Linkmobility4OXID\Modules\Application\Controller\StartController::class,
         Email::class => EmailCore::class,
-        \OxidEsales\Eshop\Application\Model\Order::class    => \D3\Linkmobility4OXID\Modules\Application\Model\OrderModel::class
+        Order::class => OrderModel::class
     ],
     'controllers'  => [
         'd3linkmobility_user'   => AdminUser::class,
