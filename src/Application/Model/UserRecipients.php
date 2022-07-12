@@ -82,8 +82,6 @@ class UserRecipients
 
     /**
      * @param $checkFieldName
-     *
-     * @return string|null
      */
     public function checkFieldExists(&$checkFieldName)
     {

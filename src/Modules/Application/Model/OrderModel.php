@@ -15,7 +15,6 @@
 
 namespace D3\Linkmobility4OXID\Modules\Application\Model;
 
-use D3\Linkmobility4OXID\Application\Model\MessageSender;
 use OxidEsales\Eshop\Core\Email;
 
 class OrderModel extends OrderModel_parent

@@ -15,10 +15,11 @@
 
 namespace D3\Linkmobility4OXID\Application\Model\Exceptions;
 
+use Exception;
 use OxidEsales\Eshop\Core\Registry;
 use Throwable;
 
-class successfullySentException extends \Exception
+class successfullySentException extends Exception
 {
     /**
      * @param int            $messageCount

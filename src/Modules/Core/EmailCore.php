@@ -18,6 +18,7 @@ namespace D3\Linkmobility4OXID\Modules\Core;
 use D3\Linkmobility4OXID\Application\Model\MessageSender;
 use Exception;
 use OxidEsales\Eshop\Application\Model\Order;
+use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererBridgeInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererInterface;
 
@@ -59,8 +60,6 @@ class EmailCore extends EmailCore_parent
 
     /**
      * @param Order $order
-     *
-     * @throws Exception
      */
     public function d3SendOrderFinishedMessageToUser(Order $order)
     {
@@ -131,7 +130,7 @@ class EmailCore extends EmailCore_parent
      */
     protected function d3GetTplRenderer() : TemplateRendererInterface
     {
-        $bridge = \OxidEsales\EshopCommunity\Internal\Container\ContainerFactory::getInstance()->getContainer()
+        $bridge = ContainerFactory::getInstance()->getContainer()
             ->get(TemplateRendererBridgeInterface::class);
         $bridge->setEngine($this->_getSmarty());
 

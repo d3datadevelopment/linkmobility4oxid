@@ -19,13 +19,11 @@ use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException;
 use D3\Linkmobility4OXID\Application\Model\OrderRecipients;
 use D3\Linkmobility4OXID\Application\Model\Sms;
-use D3\Linkmobility4OXID\Application\Model\UserRecipients;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use Exception;
 use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\Remark;
-use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Registry;
 
 class AdminOrder extends AdminController

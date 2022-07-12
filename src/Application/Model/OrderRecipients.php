@@ -19,7 +19,6 @@ use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use OxidEsales\Eshop\Application\Model\Country;
 use OxidEsales\Eshop\Application\Model\Order;
-use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Registry;
 
 class OrderRecipients

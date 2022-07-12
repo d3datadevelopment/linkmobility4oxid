@@ -17,10 +17,6 @@ namespace D3\Linkmobility4OXID\Application\Model;
 
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
-use D3\LinkmobilityClient\Client;
-use D3\LinkmobilityClient\Request\RequestInterface;
-use D3\LinkmobilityClient\ValueObject\Sender;
-use Exception;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\Remark;
 use OxidEsales\Eshop\Core\Registry;
@@ -30,8 +26,6 @@ class MessageSender
     /**
      * @param Order $order
      * @param       $messageBody
-     *
-     * @throws Exception
      */
     public function sendOrderFinishedMessage(Order $order, $messageBody)
     {
@@ -41,8 +35,6 @@ class MessageSender
     /**
      * @param Order $order
      * @param       $messageBody
-     *
-     * @throws Exception
      */
     public function sendSendedNowMessage(Order $order, $messageBody)
     {
@@ -52,14 +44,17 @@ class MessageSender
     /**
      * @param Order $order
      * @param       $messageBody
-     *
-     * @throws Exception
      */
     public function sendCancelOrderMessage(Order $order, $messageBody)
     {
         $this->sendMessageByOrder('d3linkmobility_cancelOrderActive', $order, $messageBody);
     }
 
+    /**
+     * @param       $configParam
+     * @param Order $order
+     * @param       $messageBody
+     */
     public function sendMessageByOrder($configParam, Order $order, $messageBody)
     {
         if (false === (bool) Registry::getConfig()->getConfigParam($configParam)
@@ -79,8 +74,6 @@ class MessageSender
     /**
      * @param $orderId
      * @param $message
-     *
-     * @throws Exception
      */
     protected function setRemark($orderId, $recipients, $message)
     {

@@ -17,7 +17,6 @@ namespace D3\Linkmobility4OXID\Application\Model;
 
 use D3\Linkmobility4OXID\Application\Model\Exceptions\abortSendingExceptionInterface;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
-use D3\Linkmobility4OXID\Application\Model\RequestFactory;
 use D3\LinkmobilityClient\Exceptions\ApiException;
 use D3\LinkmobilityClient\Request\RequestInterface;
 use D3\LinkmobilityClient\Response\ResponseInterface;
@@ -25,6 +24,7 @@ use D3\LinkmobilityClient\SMS\SmsRequestInterface;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\LinkmobilityClient\ValueObject\Sender;
 use GuzzleHttp\Exception\GuzzleException;
+use InvalidArgumentException;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Registry;
@@ -69,12 +69,6 @@ class Sms
      */
     public function sendOrderMessage(Order $order): bool
     {
-        try {
-            oxNew( OrderRecipients::class, $order )->getSmsRecipient();
-        } catch (Exception $e) {
-            dumpvar($e->getMessage());
-        }
-
         try {
             Registry::getLogger()->debug('startRequest', ['orderId' => $order->getId()]);
             $return = $this->sendCustomRecipientMessage(
@@ -135,7 +129,7 @@ class Sms
         } catch (ApiException $e) {
             Registry::getLogger()->warning($e->getMessage());
             Registry::getUtilsView()->addErrorToDisplay($e);
-        } catch (\InvalidArgumentException $e) {
+        } catch ( InvalidArgumentException $e) {
             Registry::getLogger()->warning($e->getMessage());
             Registry::getUtilsView()->addErrorToDisplay($e);
         }

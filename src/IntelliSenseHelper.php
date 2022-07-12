@@ -13,13 +13,6 @@
  * @link          http://www.oxidmodule.com
  */
 
-namespace D3\Linkmobility4OXID\Modules\Application\Controller
-{
-    class ContactController_parent extends ContactController {}
-
-    class StartController_parent extends StartController {}
-}
-
 namespace D3\Linkmobility4OXID\Modules\Aplication\Model {
 
     use OxidEsales\Eshop\Application\Model\Order;

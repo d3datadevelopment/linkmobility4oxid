@@ -13,11 +13,11 @@
         <input type="hidden" name="fnc" value="">
         <input type="hidden" name="oxid" value="[{$oxid}]">
 
-        <table cellspacing="0" cellpadding="0" border="0" width="98%">
+        <table style="border: 0; width: 98%; padding: 0; border-spacing: 0">
             <tr>
                 <!-- Anfang linke Seite -->
-                <td valign="top" class="edittext" align="left" width="100%">
-                    <table cellspacing="0" cellpadding="0" border="0">
+                <td style="text-align: left; width: 100%; vertical-align: top;" class="edittext">
+                    <table style="border: 0; padding: 0; border-spacing: 0">
                         <tr>
                             <td class="edittext">
                                 <label for="recipient">[{oxmultilang ident="D3LM_ADMIN_USER_RECIPIENT"}]</label>
