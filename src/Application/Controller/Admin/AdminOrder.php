@@ -92,7 +92,12 @@ class AdminOrder extends AdminController
                     oxNew(successfullySentException::class, $sms->getResponse()->getSmsCount() )
                 );
             } else {
-                Registry::getUtilsView()->addErrorToDisplay( Registry::getLang()->translateString( 'D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND' ) );
+                Registry::getUtilsView()->addErrorToDisplay(
+                    sprintf(
+                        Registry::getLang()->translateString( 'D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND' ),
+                        $sms->getResponse()->getErrorMessage()
+                    )
+                );
             }
         } catch (noRecipientFoundException $e) {
             Registry::getUtilsView()->addErrorToDisplay($e);

@@ -94,7 +94,10 @@ class AdminUser extends AdminController
             );
         } else {
             Registry::getUtilsView()->addErrorToDisplay(
-                Registry::getLang()->translateString('D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND')
+                sprintf(
+                    Registry::getLang()->translateString( 'D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND' ),
+                    $sms->getResponse()->getErrorMessage()
+                )
             );
         }
     }

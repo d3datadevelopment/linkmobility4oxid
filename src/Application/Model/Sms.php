@@ -21,6 +21,7 @@ use D3\Linkmobility4OXID\Application\Model\RequestFactory;
 use D3\LinkmobilityClient\Exceptions\ApiException;
 use D3\LinkmobilityClient\Request\RequestInterface;
 use D3\LinkmobilityClient\Response\ResponseInterface;
+use D3\LinkmobilityClient\SMS\SmsRequestInterface;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\LinkmobilityClient\ValueObject\Sender;
 use GuzzleHttp\Exception\GuzzleException;
@@ -99,8 +100,17 @@ class Sms
             $configuration = oxNew( Configuration::class );
             $client        = oxNew( MessageClient::class )->getClient();
 
+            /** @var SmsRequestInterface $request */
             $request = oxNew( RequestFactory::class, $this->getMessage(), $client )->getSmsRequest();
-            $request->setTestMode( $configuration->getTestMode() )->setMethod( RequestInterface::METHOD_POST )->setSenderAddress( oxNew( Sender::class, $configuration->getSmsSenderNumber(), $configuration->getSmsSenderCountry() ) )->setSenderAddressType( RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL );
+            $request->setTestMode( $configuration->getTestMode() )->setMethod( RequestInterface::METHOD_POST )
+                ->setSenderAddress(
+                    oxNew(
+                        Sender::class,
+                        $configuration->getSmsSenderNumber(),
+                        $configuration->getSmsSenderCountry()
+                    )
+                )
+                ->setSenderAddressType( RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL );
 
             $recipientsList = $request->getRecipientsList();
             foreach ($recipientsArray as $recipient) {
@@ -110,6 +120,10 @@ class Sms
             $response = $client->request( $request );
 
             $this->response = $response;
+
+            if (false === $response->isSuccessful()) {
+                Registry::getLogger()->warning( $response->getErrorMessage(), [$request->getBody()] );
+            }
 
             return $response->isSuccessful();
         } catch (abortSendingExceptionInterface $e) {
