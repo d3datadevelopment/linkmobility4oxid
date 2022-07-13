@@ -7,7 +7,7 @@
  * https://www.d3data.de
  *
  * @copyright (C) D3 Data Development (Inh. Thomas Dartsch)
- * @author    D3 Data Development - Daniel Seifert <info@shopmodule.com>
+ * @author    D3 Data Development - Daniel Seifert <support@shopmodule.com>
  * @link      https://www.oxidmodule.com
  */
 
