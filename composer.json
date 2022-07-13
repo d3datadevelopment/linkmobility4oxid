@@ -20,7 +20,7 @@
     "require": {
         "php": "^7.0 || ^8.0",
         "oxid-esales/oxideshop-ce": "6.7 - 6.10",
-        "d3/linkmobility-php-client": "*"
+        "d3/linkmobility-php-client": "^1.0"
     },
     "extra": {
       "oxideshop": {
