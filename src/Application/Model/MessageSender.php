@@ -64,11 +64,12 @@ class MessageSender
         }
 
         try {
-            $sms = oxNew( Sms::class, $messageBody );
-            if ( $sms->sendOrderMessage( $order ) ) {
-                $this->setRemark( $order->getId(), $sms->getRecipientsList(), $sms->getMessage() );
+            $sms = oxNew(Sms::class, $messageBody);
+            if ($sms->sendOrderMessage($order)) {
+                $this->setRemark($order->getId(), $sms->getRecipientsList(), $sms->getMessage());
             }
-        } catch (noRecipientFoundException $e) {}
+        } catch (noRecipientFoundException $e) {
+        }
     }
 
     /**
@@ -77,12 +78,12 @@ class MessageSender
      */
     protected function setRemark($orderId, $recipients, $message)
     {
-        $remark = oxNew( Remark::class );
-        $remark->assign( [
+        $remark = oxNew(Remark::class);
+        $remark->assign([
              'oxtype'     => AdminUser::REMARK_IDENT,
              'oxparentid' => $orderId,
              'oxtext'     => $recipients.PHP_EOL.$message
-        ] );
+        ]);
         $remark->save();
     }
 }

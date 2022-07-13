@@ -27,8 +27,8 @@ use OxidEsales\Eshop\Core\Registry;
 
 class AdminUser extends AdminController
 {
-    const REMARK_IDENT = 'LMSMS';
-    
+    public const REMARK_IDENT = 'LMSMS';
+
     protected $_sThisTemplate = 'd3adminuser.tpl';
 
     /**
@@ -57,7 +57,7 @@ class AdminUser extends AdminController
     public function getRecipientFromCurrentUser()
     {
         try {
-            return oxNew( UserRecipients::class, $this->user )->getSmsRecipient();
+            return oxNew(UserRecipients::class, $this->user)->getSmsRecipient();
         } catch (noRecipientFoundException $e) {
             Registry::getUtilsView()->addErrorToDisplay(
                 Registry::getLang()->translateString($e->getMessage())
@@ -71,7 +71,7 @@ class AdminUser extends AdminController
      */
     public function send()
     {
-        $messageBody = Registry::getRequest()->getRequestEscapedParameter( 'messagebody' );
+        $messageBody = Registry::getRequest()->getRequestEscapedParameter('messagebody');
 
         if (strlen($messageBody) <= 1) {
             Registry::getUtilsView()->addErrorToDisplay(
@@ -85,7 +85,7 @@ class AdminUser extends AdminController
 
         $sms = oxNew(Sms::class, $messageBody);
         if ($sms->sendUserAccountMessage($user)) {
-            $this->setRemark( $sms->getRecipientsList(), $sms->getMessage() );
+            $this->setRemark($sms->getRecipientsList(), $sms->getMessage());
             Registry::getUtilsView()->addErrorToDisplay(
                 sprintf(
                     Registry::getLang()->translateString('D3LM_EXC_SMS_SUCC_SENT'),
@@ -95,7 +95,7 @@ class AdminUser extends AdminController
         } else {
             Registry::getUtilsView()->addErrorToDisplay(
                 sprintf(
-                    Registry::getLang()->translateString( 'D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND' ),
+                    Registry::getLang()->translateString('D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND'),
                     $sms->getResponse()->getErrorMessage()
                 )
             );
@@ -107,14 +107,14 @@ class AdminUser extends AdminController
      *
      * @throws Exception
      */
-    protected function setRemark( $recipients, $messageBody )
+    protected function setRemark($recipients, $messageBody)
     {
-        $remark = oxNew( Remark::class );
-        $remark->assign( [
+        $remark = oxNew(Remark::class);
+        $remark->assign([
             'oxtype'     => AdminUser::REMARK_IDENT,
             'oxparentid' => $this->getEditObjectId(),
             'oxtext'     => $recipients.PHP_EOL.$messageBody
-        ] );
+        ]);
         $remark->save();
     }
 }

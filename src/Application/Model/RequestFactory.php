@@ -23,14 +23,14 @@ class RequestFactory extends \D3\LinkmobilityClient\SMS\RequestFactory
 {
     public function getSmsRequest(): SmsRequestInterface
     {
-        $configuration = oxNew( Configuration::class );
+        $configuration = oxNew(Configuration::class);
 
         $request = parent::getSmsRequest();
         $request->setTestMode($configuration->getTestMode())
             ->setSenderAddress(
-                oxNew( Sender::class, $configuration->getSmsSenderNumber(), $configuration->getSmsSenderCountry() )
+                oxNew(Sender::class, $configuration->getSmsSenderNumber(), $configuration->getSmsSenderCountry())
             )
-            ->setSenderAddressType( RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL );
+            ->setSenderAddressType(RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL);
 
         return $request;
     }

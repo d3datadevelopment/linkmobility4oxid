@@ -26,10 +26,10 @@ class successfullySentException extends Exception
      * @param int            $code
      * @param Throwable|null $previous
      */
-    public function __construct( $messageCount = 1, $code = 0, Throwable $previous = null )
+    public function __construct($messageCount = 1, $code = 0, Throwable $previous = null)
     {
-        $message = sprintf( Registry::getLang()->translateString( 'D3LM_EXC_SMS_SUCC_SENT' ), $messageCount);
+        $message = sprintf(Registry::getLang()->translateString('D3LM_EXC_SMS_SUCC_SENT'), $messageCount);
 
-        parent::__construct( $message, $code, $previous );
+        parent::__construct($message, $code, $previous);
     }
 }

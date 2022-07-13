@@ -17,12 +17,16 @@ namespace D3\Linkmobility4OXID\Modules\Aplication\Model {
 
     use OxidEsales\Eshop\Application\Model\Order;
 
-    class OrderModel_parent extends Order{}
+    class OrderModel_parent extends Order
+    {
+    }
 }
 
 namespace D3\Linkmobility4OXID\Modules\Core {
 
     use OxidEsales\Eshop\Core\Email;
 
-    class EmailCore_parent extends Email{}
+    class EmailCore_parent extends Email
+    {
+    }
 }

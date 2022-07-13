@@ -128,7 +128,7 @@ class EmailCore extends EmailCore_parent
      *
      * @return TemplateRendererInterface
      */
-    protected function d3GetTplRenderer() : TemplateRendererInterface
+    protected function d3GetTplRenderer(): TemplateRendererInterface
     {
         $bridge = ContainerFactory::getInstance()->getContainer()
             ->get(TemplateRendererBridgeInterface::class);

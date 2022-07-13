@@ -37,7 +37,7 @@ class Configuration
      */
     public function getTestMode(): bool
     {
-        return (bool) Registry::getConfig()->getConfigParam( 'd3linkmobility_debug');
+        return (bool) Registry::getConfig()->getConfigParam('d3linkmobility_debug');
     }
 
     /**

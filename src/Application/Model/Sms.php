@@ -51,7 +51,7 @@ class Sms
     {
         try {
             return $this->sendCustomRecipientMessage(
-                [ oxNew( UserRecipients::class, $user )->getSmsRecipient() ]
+                [ oxNew(UserRecipients::class, $user)->getSmsRecipient() ]
             );
         } catch (noRecipientFoundException $e) {
             Registry::getLogger()->warning($e->getMessage());
@@ -72,7 +72,7 @@ class Sms
         try {
             Registry::getLogger()->debug('startRequest', ['orderId' => $order->getId()]);
             $return = $this->sendCustomRecipientMessage(
-                [ oxNew( OrderRecipients::class, $order )->getSmsRecipient() ]
+                [ oxNew(OrderRecipients::class, $order)->getSmsRecipient() ]
             );
             Registry::getLogger()->debug('finishRequest', ['orderId' => $order->getId()]);
             return $return;
@@ -91,12 +91,12 @@ class Sms
     {
         try {
             $this->setRecipients($recipientsArray);
-            $configuration = oxNew( Configuration::class );
-            $client        = oxNew( MessageClient::class )->getClient();
+            $configuration = oxNew(Configuration::class);
+            $client        = oxNew(MessageClient::class)->getClient();
 
             /** @var SmsRequestInterface $request */
-            $request = oxNew( RequestFactory::class, $this->getMessage(), $client )->getSmsRequest();
-            $request->setTestMode( $configuration->getTestMode() )->setMethod( RequestInterface::METHOD_POST )
+            $request = oxNew(RequestFactory::class, $this->getMessage(), $client)->getSmsRequest();
+            $request->setTestMode($configuration->getTestMode())->setMethod(RequestInterface::METHOD_POST)
                 ->setSenderAddress(
                     oxNew(
                         Sender::class,
@@ -104,19 +104,19 @@ class Sms
                         $configuration->getSmsSenderCountry()
                     )
                 )
-                ->setSenderAddressType( RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL );
+                ->setSenderAddressType(RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL);
 
             $recipientsList = $request->getRecipientsList();
             foreach ($recipientsArray as $recipient) {
-                $recipientsList->add( $recipient );
+                $recipientsList->add($recipient);
             }
 
-            $response = $client->request( $request );
+            $response = $client->request($request);
 
             $this->response = $response;
 
             if (false === $response->isSuccessful()) {
-                Registry::getLogger()->warning( $response->getErrorMessage(), [$request->getBody()] );
+                Registry::getLogger()->warning($response->getErrorMessage(), [$request->getBody()]);
             }
 
             return $response->isSuccessful();
@@ -129,7 +129,7 @@ class Sms
         } catch (ApiException $e) {
             Registry::getLogger()->warning($e->getMessage());
             Registry::getUtilsView()->addErrorToDisplay($e);
-        } catch ( InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             Registry::getLogger()->warning($e->getMessage());
             Registry::getUtilsView()->addErrorToDisplay($e);
         }
@@ -150,7 +150,7 @@ class Sms
         $this->recipients = $recipients;
     }
 
-    public function getRecipientsList() : string
+    public function getRecipientsList(): string
     {
         $list = [];
         /** @var Recipient $recipient */
@@ -166,7 +166,7 @@ class Sms
      *
      * @return string
      */
-    protected function sanitizeMessage($message) : string
+    protected function sanitizeMessage($message): string
     {
         $message = trim(strip_tags($message));
         $message = $this->removeLineBreaks ? str_replace(["\r", "\n"], ' ', $message) : $message;
@@ -174,7 +174,7 @@ class Sms
         return $this->removeMultipleSpaces ? preg_replace($regexp, ' ', $message) : $message;
     }
 
-    public function getMessage() : string
+    public function getMessage(): string
     {
         return $this->message;
     }

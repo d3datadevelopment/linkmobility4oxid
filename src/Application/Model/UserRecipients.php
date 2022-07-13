@@ -39,11 +39,9 @@ class UserRecipients
      */
     public function getSmsRecipient(): Recipient
     {
-        foreach ($this->getSmsRecipientFields() as $fieldName)
-        {
+        foreach ($this->getSmsRecipientFields() as $fieldName) {
             $content = trim($this->user->getFieldData($fieldName));
             if (strlen($content)) {
-
                 $country = oxNew(Country::class);
                 $country->load($this->user->getFieldData('oxcountryid'));
 
@@ -73,7 +71,7 @@ class UserRecipients
     /**
      * @return array
      */
-    public function getSanitizedCustomFields() : array
+    public function getSanitizedCustomFields(): array
     {
         $customFields = (array) Registry::getConfig()->getConfigParam('d3linkmobility_smsUserRecipientsFields');
         array_walk($customFields, [$this, 'checkFieldExists']);
@@ -88,7 +86,9 @@ class UserRecipients
         $checkFieldName = trim($checkFieldName);
         $allFieldNames = oxNew(User::class)->getFieldNames();
 
-        array_walk($allFieldNames, function(&$value) {$value = strtolower($value);});
+        array_walk($allFieldNames, function (&$value) {
+            $value = strtolower($value);
+        });
 
         $checkFieldName = in_array(strtolower($checkFieldName), $allFieldNames) ? $checkFieldName : null;
     }

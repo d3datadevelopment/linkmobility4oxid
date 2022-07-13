@@ -56,7 +56,7 @@ class AdminOrder extends AdminController
     public function getRecipientFromCurrentOrder()
     {
         try {
-            return oxNew( OrderRecipients::class, $this->order )->getSmsRecipient();
+            return oxNew(OrderRecipients::class, $this->order)->getSmsRecipient();
         } catch (noRecipientFoundException $e) {
             Registry::getUtilsView()->addErrorToDisplay(
                 Registry::getLang()->translateString($e->getMessage())
@@ -70,7 +70,7 @@ class AdminOrder extends AdminController
      */
     public function send()
     {
-        $messageBody = Registry::getRequest()->getRequestEscapedParameter( 'messagebody' );
+        $messageBody = Registry::getRequest()->getRequestEscapedParameter('messagebody');
 
         if (strlen($messageBody) <= 1) {
             Registry::getUtilsView()->addErrorToDisplay(
@@ -83,16 +83,16 @@ class AdminOrder extends AdminController
         $order->load($this->getEditObjectId());
 
         try {
-            $sms = oxNew( Sms::class, $messageBody );
-            if ( $sms->sendOrderMessage( $order ) ) {
-                $this->setRemark( $sms->getRecipientsList(), $sms->getMessage() );
+            $sms = oxNew(Sms::class, $messageBody);
+            if ($sms->sendOrderMessage($order)) {
+                $this->setRemark($sms->getRecipientsList(), $sms->getMessage());
                 Registry::getUtilsView()->addErrorToDisplay(
-                    oxNew(successfullySentException::class, $sms->getResponse()->getSmsCount() )
+                    oxNew(successfullySentException::class, $sms->getResponse()->getSmsCount())
                 );
             } else {
                 Registry::getUtilsView()->addErrorToDisplay(
                     sprintf(
-                        Registry::getLang()->translateString( 'D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND' ),
+                        Registry::getLang()->translateString('D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND'),
                         $sms->getResponse()->getErrorMessage()
                     )
                 );
@@ -107,14 +107,14 @@ class AdminOrder extends AdminController
      *
      * @throws Exception
      */
-    protected function setRemark( $recipients, $messageBody )
+    protected function setRemark($recipients, $messageBody)
     {
-        $remark = oxNew( Remark::class );
-        $remark->assign( [
+        $remark = oxNew(Remark::class);
+        $remark->assign([
             'oxtype'     => AdminUser::REMARK_IDENT,
             'oxparentid' => $this->order->getUser()->getId(),
             'oxtext'     => $recipients.PHP_EOL.$messageBody
-        ] );
+        ]);
         $remark->save();
     }
 }

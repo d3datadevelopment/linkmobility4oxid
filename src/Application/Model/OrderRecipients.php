@@ -39,8 +39,7 @@ class OrderRecipients
      */
     public function getSmsRecipient(): Recipient
     {
-        foreach ($this->getSmsRecipientFields() as $phoneFieldName => $countryIdFieldName)
-        {
+        foreach ($this->getSmsRecipientFields() as $phoneFieldName => $countryIdFieldName) {
             $content = trim($this->order->getFieldData($phoneFieldName));
 
             if (strlen($content)) {
@@ -72,7 +71,7 @@ class OrderRecipients
     /**
      * @return array
      */
-    public function getSanitizedCustomFields() : array
+    public function getSanitizedCustomFields(): array
     {
         $customFields = (array) Registry::getConfig()->getConfigParam('d3linkmobility_smsOrderRecipientsFields');
         array_walk($customFields, [$this, 'checkFieldExists']);
@@ -85,7 +84,9 @@ class OrderRecipients
         $checkPhoneFieldName = trim($checkPhoneFieldName);
         $allFieldNames = oxNew(Order::class)->getFieldNames();
 
-        array_walk($allFieldNames, function(&$value) {$value = strtolower($value);});
+        array_walk($allFieldNames, function (&$value) {
+            $value = strtolower($value);
+        });
 
         $checkPhoneFieldName = in_array(strtolower($checkPhoneFieldName), $allFieldNames) &&
                in_array(strtolower($checkCountryFieldName), $allFieldNames) ? $checkPhoneFieldName : null;

@@ -24,7 +24,7 @@ class OrderModel extends OrderModel_parent
         parent::cancelOrder();
 
         if ($this->getFieldData('oxstorno') === 1) {
-            $Email = oxNew( Email::class );
+            $Email = oxNew(Email::class);
             $Email->d3SendCancelMessage($this);
         }
     }
