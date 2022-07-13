@@ -5,7 +5,9 @@
             <SUBMENU id="mxusers" cl="admin_user" list="user_list">
                 <TAB id="tbcluser_linkmobility" cl="d3linkmobility_user" />
             </SUBMENU>
-            <SUBMENU id="mxorders" cl="admin_orders" list="order_list">
+        </MAINMENU>
+        <MAINMENU id="mxorders">
+            <SUBMENU id="mxdisplayorders" cl="admin_order" list="order_list">
                 <TAB id="tbclorder_linkmobility" cl="d3linkmobility_order" />
             </SUBMENU>
         </MAINMENU>

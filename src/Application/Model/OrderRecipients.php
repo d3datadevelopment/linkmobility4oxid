@@ -40,7 +40,7 @@ class OrderRecipients
     public function getSmsRecipient(): Recipient
     {
         foreach ($this->getSmsRecipientFields() as $phoneFieldName => $countryIdFieldName) {
-            $content = trim($this->order->getFieldData($phoneFieldName));
+            $content = trim((string) $this->order->getFieldData($phoneFieldName));
 
             if (strlen($content)) {
                 $country = oxNew(Country::class);

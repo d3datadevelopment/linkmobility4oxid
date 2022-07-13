@@ -18,6 +18,7 @@ namespace D3\Linkmobility4OXID\Application\Controller\Admin;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\Sms;
 use D3\Linkmobility4OXID\Application\Model\UserRecipients;
+use D3\LinkmobilityClient\Response\ResponseInterface;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use Exception;
 use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
@@ -93,10 +94,11 @@ class AdminUser extends AdminController
                 )
             );
         } else {
+            $errorMsg = $sms->getResponse() instanceof ResponseInterface ? $sms->getResponse()->getErrorMessage() : 'no response';
             Registry::getUtilsView()->addErrorToDisplay(
                 sprintf(
                     Registry::getLang()->translateString('D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND'),
-                    $sms->getResponse()->getErrorMessage()
+                    $errorMsg
                 )
             );
         }
