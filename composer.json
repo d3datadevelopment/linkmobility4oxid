@@ -1,6 +1,6 @@
 {
     "name": "d3/linkmobility4oxid",
-    "description": "Linkmobility for OXID eShop",
+    "description": "LINK Mobility service integration for OXID eShop",
     "type": "oxideshop-module",
     "keywords": [
         "linkmobility",

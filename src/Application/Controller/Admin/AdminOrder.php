@@ -103,6 +103,7 @@ class AdminOrder extends AdminController
     }
 
     /**
+     * @param $recipients
      * @param $messageBody
      *
      * @throws Exception

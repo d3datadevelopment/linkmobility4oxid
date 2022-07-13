@@ -29,13 +29,13 @@ $sD3Logo          = '<img src="https://logos.oxidmodule.com/d3logo.svg" alt="(D3
  */
 $aModule = [
     'id'           => $sModuleId,
-    'title'        => $sD3Logo . ' Linkmobility',
+    'title'        => $sD3Logo . ' LINK Mobility Mobile Messaging',
     'description'  => [
-        'de'    =>  'Anbindung an die Linkmobility API <ul><li>Nachrichtenversand per SMS</li></ul>',
+        'de'    =>  'Anbindung der LINK Mobility API <ul><li>Nachrichtenversand per SMS</li></ul> an den Shop',
         'en'    =>  '',
     ],
+    'version'      => '1.0.0.0',
     'thumbnail'    => 'picture.png',
-    'version'      => '0.1',
     'author'       => 'D&sup3; Data Development (Inh.: Thomas Dartsch)',
     'email'        => 'support@shopmodule.com',
     'url'          => 'https://www.oxidmodule.com/',

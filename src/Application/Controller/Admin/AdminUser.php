@@ -103,6 +103,7 @@ class AdminUser extends AdminController
     }
 
     /**
+     * @param $recipients
      * @param $messageBody
      *
      * @throws Exception

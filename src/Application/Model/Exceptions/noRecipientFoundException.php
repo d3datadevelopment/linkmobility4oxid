@@ -20,6 +20,11 @@ use OxidEsales\Eshop\Core\Exception\StandardException;
 
 class noRecipientFoundException extends StandardException implements abortSendingExceptionInterface
 {
+    /**
+     * @param string         $sMessage
+     * @param int            $iCode
+     * @param Exception|null $previous
+     */
     public function __construct($sMessage = "D3LM_EXC_NO_RECIPIENT_SET", $iCode = 0, Exception $previous = null)
     {
         parent::__construct($sMessage, $iCode, $previous);

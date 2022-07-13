@@ -74,7 +74,10 @@ class MessageSender
 
     /**
      * @param $orderId
+     * @param $recipients
      * @param $message
+     *
+     * @throws \Exception
      */
     protected function setRemark($orderId, $recipients, $message)
     {
