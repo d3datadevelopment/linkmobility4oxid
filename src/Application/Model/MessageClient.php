@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace D3\Linkmobility4OXID\Application\Model;
 
 use D3\LinkmobilityClient\Client;
+use D3\LinkmobilityClient\LoggerHandler;
 use OxidEsales\Eshop\Core\Registry;
 
 class MessageClient
@@ -26,7 +27,8 @@ class MessageClient
     public function getClient(): Client
     {
         $client = oxNew(Client::class, oxNew(Configuration::class)->getApiToken());
-        $client->setLogger(Registry::getLogger());
+        LoggerHandler::getInstance()->setLogger(Registry::getLogger());
+
         return $client;
     }
 }
