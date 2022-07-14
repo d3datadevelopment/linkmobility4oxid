@@ -41,26 +41,25 @@ class Configuration
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSmsSenderNumber(): string
+    public function getSmsSenderNumber()
     {
         $number = trim(Registry::getConfig()->getConfigParam('d3linkmobility_smsSenderNumber'));
 
-        Assert::that($number)->string()->notEmpty();
-
-        return $number;
+        return strlen($number) ? $number : null;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getSmsSenderCountry(): string
     {
         $country = trim(Registry::getConfig()->getConfigParam('d3linkmobility_smsSenderCountry'));
+        $country = strlen($country) ? strtoupper($country) : null;
 
-        Assert::that($country)->string()->length(2);
+        Assert::that($country)->null() || Assert::that($country)->string()->length(2);
 
-        return strtoupper($country);
+        return $country;
     }
 }
