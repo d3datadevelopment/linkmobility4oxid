@@ -22,6 +22,9 @@
         "oxid-esales/oxideshop-ce": "6.7 - 6.10",
         "d3/linkmobility-php-client": "^1.2.0"
     },
+    "require-dev": {
+        "d3/modcfg": "^5.3.7.0 || ^6.0"
+    },
     "extra": {
       "oxideshop": {
         "source-directory": "/src",

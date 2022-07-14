@@ -73,7 +73,7 @@ class AdminOrder extends AdminController
     {
         $messageBody = Registry::getRequest()->getRequestEscapedParameter('messagebody');
 
-        if (strlen($messageBody) <= 1) {
+        if (false === is_string($messageBody) || strlen($messageBody) <= 1) {
             Registry::getUtilsView()->addErrorToDisplay(
                 Registry::getLang()->translateString('D3LM_EXC_MESSAGE_NO_LENGTH')
             );

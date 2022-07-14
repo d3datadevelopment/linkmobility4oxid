@@ -72,7 +72,7 @@ class Sms
         try {
             Registry::getLogger()->debug('startRequest', ['orderId' => $order->getId()]);
             $return = $this->sendCustomRecipientMessage(
-                [ oxNew(OrderRecipients::class, $order)->getSmsRecipient() ]
+                [ $this->getOrderRecipient($order) ]
             );
             Registry::getLogger()->debug('finishRequest', ['orderId' => $order->getId()]);
             return $return;
@@ -80,6 +80,16 @@ class Sms
             Registry::getLogger()->warning($e->getMessage());
             throw $e;
         }
+    }
+
+    /**
+     * @param Order $order
+     * @return Recipient
+     * @throws noRecipientFoundException
+     */
+    protected function getOrderRecipient(Order $order): Recipient
+    {
+        return oxNew(OrderRecipients::class, $order)->getSmsRecipient();
     }
 
     /**

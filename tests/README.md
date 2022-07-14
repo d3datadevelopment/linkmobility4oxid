@@ -7,6 +7,8 @@ See https://github.com/OXID-eSales/testing_library
 
 ### Configuration
 
+Set up the module completely with your personal data (API Key, transmitter, country code). These will be used to test the successful configuration.
+
 Please install the packages listed in the composer.json in "require-dev". Unfortunately Composer does not provide an automatic installation.
 
 Here is an example of Testing Library configuration file `oxideshop/test_config.yml`
