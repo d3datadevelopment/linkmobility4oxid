@@ -30,7 +30,8 @@
     },
     "autoload": {
         "psr-4": {
-            "D3\\Linkmobility4OXID\\": "src"
+            "D3\\Linkmobility4OXID\\": "src",
+            "D3\\Linkmobility4OXID\\Tests\\": "tests"
         }
     }
 }
