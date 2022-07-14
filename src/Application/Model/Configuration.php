@@ -58,7 +58,7 @@ class Configuration
         $country = trim(Registry::getConfig()->getConfigParam('d3linkmobility_smsSenderCountry'));
         $country = strlen($country) ? strtoupper($country) : null;
 
-        Assert::that($country)->null() || Assert::that($country)->string()->length(2);
+        Assert::that($country)->nullOr() || Assert::that($country)->string()->length(2);
 
         return $country;
     }
