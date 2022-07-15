@@ -30,13 +30,13 @@ $aLang = [
 
     'SHOP_MODULE_GROUP_d3linkmobility_sms'              => 'SMS-Versand',
     'SHOP_MODULE_d3linkmobility_smsSenderNumber'        => 'Sendernummer',
-    'HELP_SHOP_MODULE_d3linkmobility_smsSenderNumber'   => 'Ihre Mobilfunknummer, die als Antwortziel verwendet werden kann., Bitte lassen Sie die gewünschte Telefonnummer in Ihrem Konto hinterlegen.',
+    'HELP_SHOP_MODULE_d3linkmobility_smsSenderNumber'   => 'Ihre Mobilfunknummer, die als Absender verwendet wird. Bitte lassen Sie die gewünschte Telefonnummer in Ihrem Konto hinterlegen. Ist dort nur eine Nummer hinterlegt, brauchen Sie hier keine Angabe machen. Dann wird automatisch die Telefonnummer aus Ihrem Konto verwendet.',
     'SHOP_MODULE_d3linkmobility_smsSenderCountry'       => 'Landeskürzel',
-    'HELP_SHOP_MODULE_d3linkmobility_smsSenderCountry'  => 'Geben Sie hier das Landeskürzel (ISO-Alpha-2, z.B. DE, AT, FR) an, zu dem Ihre Mobilfunknummer zugeordnet ist.',
+    'HELP_SHOP_MODULE_d3linkmobility_smsSenderCountry'  => 'Geben Sie hier das Landeskürzel (ISO-Alpha-2, z.B. DE, AT, FR) an, zu dem Ihre Mobilfunknummer zugeordnet ist. Diese Angabe ist nur nötig, wenn Sie eine Sendernummer angegeben haben.',
     'SHOP_MODULE_d3linkmobility_smsUserRecipientsFields'=> 'Felder des Benutzerkontos, die auf gültige Mobilfunknummern geprüft werden',
     'HELP_SHOP_MODULE_d3linkmobility_smsUserRecipientsFields'   => 'Die Felder werden in dieser Reihenfolge geprüft und das erste valide Vorkommen wird zum Senden der Nachricht verwendet. Ohne (gültige) Feldangabe werden die Felder "oxmobfon", "oxfon" und "oxprivfon" geprüft.',
     'SHOP_MODULE_d3linkmobility_smsOrderRecipientsFields'=> 'Felder der Bestellung, die auf gültige Mobilfunknummern und zugehörige Länderident geprüft werden',
-    'HELP_SHOP_MODULE_d3linkmobility_smsOrderRecipientsFields'  => 'Die Felder werden in dieser Reihenfolge geprüft und das erste valide Vorkommen wird zum Senden der Nachricht verwendet. Ohne (gültige) Feldangabe werden die Felder "oxdelfon", und "oxbillfon" geprüft. Zum Telefonnummernfeld ist die Angabe des dazugehörigen Landesidentfeldes erforderlich. Individuelle Angaben erfolgen in diesem Format:<br><div>Telefonnummernfeld => LänderIdFeld</div><div>Bsp.: "oxdelfon => oxdelcuntryid"</div>',
+    'HELP_SHOP_MODULE_d3linkmobility_smsOrderRecipientsFields'  => 'Die Felder werden in dieser Reihenfolge geprüft und das erste valide Vorkommen wird zum Senden der Nachricht verwendet. Ohne (gültige) Feldangabe werden die Felder "oxdelfon", und "oxbillfon" geprüft. Zum Telefonnummernfeld ist die Angabe des dazugehörigen Landesidentfeldes erforderlich. Individuelle Angaben erfolgen in diesem Format:<br><div>Telefonnummernfeld => LänderIdFeld</div><div>Bsp.: "oxdelfon => oxdelcountryid"</div>',
 
     'SHOP_MODULE_GROUP_d3linkmobility_trigger'          => 'Nachrichtenversand bei ...',
     'SHOP_MODULE_d3linkmobility_orderActive'            => 'abgeschlossener Bestellung',
