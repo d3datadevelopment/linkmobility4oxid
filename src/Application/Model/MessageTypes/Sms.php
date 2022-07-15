@@ -13,46 +13,46 @@
 
 declare(strict_types=1);
 
-namespace D3\Linkmobility4OXID\Application\Model;
+namespace D3\Linkmobility4OXID\Application\Model\MessageTypes;
 
+use D3\Linkmobility4OXID\Application\Model\Configuration;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\abortSendingExceptionInterface;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
+use D3\Linkmobility4OXID\Application\Model\MessageClient;
+use D3\Linkmobility4OXID\Application\Model\OrderRecipients;
+use D3\Linkmobility4OXID\Application\Model\RequestFactory;
+use D3\Linkmobility4OXID\Application\Model\UserRecipients;
 use D3\LinkmobilityClient\Exceptions\ApiException;
 use D3\LinkmobilityClient\Request\RequestInterface;
-use D3\LinkmobilityClient\Response\ResponseInterface;
 use D3\LinkmobilityClient\SMS\SmsRequestInterface;
-use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\LinkmobilityClient\ValueObject\Sender;
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Registry;
 
-class Sms
+class Sms extends AbstractMessage
 {
-    private $response;
-    private $recipients = [];
-    private $message;
-    protected $removeLineBreaks = true;
-    protected $removeMultipleSpaces = true;
-
-    public function __construct(string $message)
-    {
-        $this->message = $this->sanitizeMessage($message);
-    }
-
     /**
      * @param User $user
      *
      * @return bool
+     * @throws Exception
      */
     public function sendUserAccountMessage(User $user): bool
     {
         try {
-            return $this->sendCustomRecipientMessage(
+            Registry::getLogger()->debug('startRequest', ['userId' => $user->getId()]);
+            $return = $this->sendCustomRecipientMessage(
                 [ oxNew(UserRecipients::class, $user)->getSmsRecipient() ]
             );
+            if ($return) {
+                $this->setRemark($user->getId(), $this->getRecipientsList(), $this->getMessage());
+            }
+            Registry::getLogger()->debug('finishRequest', ['userId' => $user->getId()]);
+            return $return;
         } catch (noRecipientFoundException $e) {
             Registry::getLogger()->warning($e->getMessage());
             Registry::getUtilsView()->addErrorToDisplay($e);
@@ -66,6 +66,7 @@ class Sms
      *
      * @return bool
      * @throws noRecipientFoundException
+     * @throws Exception
      */
     public function sendOrderMessage(Order $order): bool
     {
@@ -74,6 +75,9 @@ class Sms
             $return = $this->sendCustomRecipientMessage(
                 [ oxNew(OrderRecipients::class, $order)->getSmsRecipient() ]
             );
+            if ($return) {
+                $this->setRemark($order->getOrderUser()->getId(), $this->getRecipientsList(), $this->getMessage());
+            }
             Registry::getLogger()->debug('finishRequest', ['orderId' => $order->getId()]);
             return $return;
         } catch (noRecipientFoundException $e) {
@@ -138,44 +142,10 @@ class Sms
     }
 
     /**
-     * @return ResponseInterface|null
-     */
-    public function getResponse()
-    {
-        return $this->response;
-    }
-
-    protected function setRecipients(array $recipients)
-    {
-        $this->recipients = $recipients;
-    }
-
-    public function getRecipientsList(): string
-    {
-        $list = [];
-        /** @var Recipient $recipient */
-        foreach ($this->recipients as $recipient) {
-            $list[] = $recipient->get();
-        }
-
-        return implode(', ', $list);
-    }
-
-    /**
-     * @param $message
-     *
      * @return string
      */
-    protected function sanitizeMessage($message): string
+    public function getTypeName(): string
     {
-        $message = trim(strip_tags($message));
-        $message = $this->removeLineBreaks ? str_replace(["\r", "\n"], ' ', $message) : $message;
-        $regexp = '/\s{2,}/m';
-        return $this->removeMultipleSpaces ? preg_replace($regexp, ' ', $message) : $message;
-    }
-
-    public function getMessage(): string
-    {
-        return $this->message;
+        return 'SMS';
     }
 }
