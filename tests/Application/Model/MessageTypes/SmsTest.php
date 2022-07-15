@@ -13,11 +13,13 @@
 
 declare(strict_types=1);
 
-namespace D3\Linkmobility4OXID\Tests\Application\Model;
+namespace D3\Linkmobility4OXID\Tests\Application\Model\MessageTypes;
 
-use D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder;
-use D3\Linkmobility4OXID\Application\Model\Sms;
+use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\ModCfg\Tests\unit\d3ModCfgUnitTestCase;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberType;
+use libphonenumber\PhoneNumberUtil;
 use OxidEsales\Eshop\Application\Model\Country;
 use OxidEsales\Eshop\Application\Model\Order;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -28,6 +30,7 @@ class SmsTest extends d3ModCfgUnitTestCase
     /** @var Sms */
     protected $model;
     protected $countryId = 'countryIdNo1';
+    protected $exampleNumber;
 
     public function setUp()
     {
@@ -41,6 +44,10 @@ class SmsTest extends d3ModCfgUnitTestCase
             'oxisoalpha2'   => 'DE'
         ]);
         $country->save();
+
+        $phoneUtil = PhoneNumberUtil::getInstance();
+        $example = $phoneUtil->getExampleNumberForType('DE', PhoneNumberType::MOBILE);
+        $this->exampleNumber = $phoneUtil->format($example,  PhoneNumberFormat::NATIONAL);
     }
 
     public function tearDown()
@@ -82,11 +89,10 @@ class SmsTest extends d3ModCfgUnitTestCase
 
         switch ($aArgs[0]) {
             case 'oxdelfon':
-                return '015792300219';
+            case 'oxbillfon':
+                return $this->exampleNumber;
             case 'oxdelcountryid':
                 return $this->countryId;
-            case 'oxbillfon':
-                return '015792300219';
         }
 
         $this->fail('Unknown variable '.$aArgs[0]);

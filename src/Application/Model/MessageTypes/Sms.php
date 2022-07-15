@@ -25,6 +25,7 @@ use D3\Linkmobility4OXID\Application\Model\UserRecipients;
 use D3\LinkmobilityClient\Exceptions\ApiException;
 use D3\LinkmobilityClient\Request\RequestInterface;
 use D3\LinkmobilityClient\SMS\SmsRequestInterface;
+use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\LinkmobilityClient\ValueObject\Sender;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;

@@ -25,7 +25,7 @@ class Configuration
      */
     public function getApiToken(): string
     {
-        $token = trim(Registry::getConfig()->getConfigParam('d3linkmobility_apitoken'));
+        $token = trim((string) Registry::getConfig()->getConfigParam('d3linkmobility_apitoken'));
 
         Assert::that($token)->string()->notEmpty();
 
