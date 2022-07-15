@@ -15,10 +15,10 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\Application\Model;
 
-use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
+use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
+use Exception;
 use OxidEsales\Eshop\Application\Model\Order;
-use OxidEsales\Eshop\Application\Model\Remark;
 use OxidEsales\Eshop\Core\Registry;
 
 class MessageSender
@@ -26,6 +26,7 @@ class MessageSender
     /**
      * @param Order $order
      * @param       $messageBody
+     * @throws Exception
      */
     public function sendOrderFinishedMessage(Order $order, $messageBody)
     {
@@ -35,6 +36,7 @@ class MessageSender
     /**
      * @param Order $order
      * @param       $messageBody
+     * @throws Exception
      */
     public function sendSendedNowMessage(Order $order, $messageBody)
     {
@@ -44,6 +46,7 @@ class MessageSender
     /**
      * @param Order $order
      * @param       $messageBody
+     * @throws Exception
      */
     public function sendCancelOrderMessage(Order $order, $messageBody)
     {
@@ -54,6 +57,7 @@ class MessageSender
      * @param       $configParam
      * @param Order $order
      * @param       $messageBody
+     * @throws Exception
      */
     public function sendMessageByOrder($configParam, Order $order, $messageBody)
     {
@@ -65,28 +69,8 @@ class MessageSender
 
         try {
             $sms = oxNew(Sms::class, $messageBody);
-            if ($sms->sendOrderMessage($order)) {
-                $this->setRemark($order->getId(), $sms->getRecipientsList(), $sms->getMessage());
-            }
+            $sms->sendOrderMessage($order);
         } catch (noRecipientFoundException $e) {
         }
-    }
-
-    /**
-     * @param $orderId
-     * @param $recipients
-     * @param $message
-     *
-     * @throws \Exception
-     */
-    protected function setRemark($orderId, $recipients, $message)
-    {
-        $remark = oxNew(Remark::class);
-        $remark->assign([
-             'oxtype'     => AdminUser::REMARK_IDENT,
-             'oxparentid' => $orderId,
-             'oxtext'     => $recipients.PHP_EOL.$message
-        ]);
-        $remark->save();
     }
 }

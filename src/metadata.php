@@ -31,8 +31,8 @@ $aModule = [
     'id'           => $sModuleId,
     'title'        => $sD3Logo . ' LINK Mobility Mobile Messaging',
     'description'  => [
-        'de'    =>  'Anbindung der LINK Mobility API <ul><li>Nachrichtenversand per SMS</li></ul> an den Shop',
-        'en'    =>  '',
+        'de'    =>  'Anbindung der LINK Mobility API (Nachrichtenversand per SMS) an den Shop',
+        'en'    =>  'Connection of the LINK Mobility API ( sending messages via SMS) to the shop',
     ],
     'version'      => '1.0.0.0',
     'thumbnail'    => 'picture.png',

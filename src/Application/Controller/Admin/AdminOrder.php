@@ -17,14 +17,13 @@ namespace D3\Linkmobility4OXID\Application\Controller\Admin;
 
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException;
+use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\Linkmobility4OXID\Application\Model\OrderRecipients;
-use D3\Linkmobility4OXID\Application\Model\Sms;
 use D3\LinkmobilityClient\Response\ResponseInterface;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use Exception;
 use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
 use OxidEsales\Eshop\Application\Model\Order;
-use OxidEsales\Eshop\Application\Model\Remark;
 use OxidEsales\Eshop\Core\Registry;
 
 class AdminOrder extends AdminController
@@ -86,7 +85,6 @@ class AdminOrder extends AdminController
         try {
             $sms = oxNew(Sms::class, $messageBody);
             if ($sms->sendOrderMessage($order)) {
-                $this->setRemark($sms->getRecipientsList(), $sms->getMessage());
                 Registry::getUtilsView()->addErrorToDisplay(
                     oxNew(successfullySentException::class, $sms->getResponse()->getSmsCount())
                 );
@@ -102,22 +100,5 @@ class AdminOrder extends AdminController
         } catch (noRecipientFoundException $e) {
             Registry::getUtilsView()->addErrorToDisplay($e);
         }
-    }
-
-    /**
-     * @param $recipients
-     * @param $messageBody
-     *
-     * @throws Exception
-     */
-    protected function setRemark($recipients, $messageBody)
-    {
-        $remark = oxNew(Remark::class);
-        $remark->assign([
-            'oxtype'     => AdminUser::REMARK_IDENT,
-            'oxparentid' => $this->order->getUser()->getId(),
-            'oxtext'     => $recipients.PHP_EOL.$messageBody
-        ]);
-        $remark->save();
     }
 }
