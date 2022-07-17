@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace D3\Linkmobility4OXID\Tests\Application\Controller\Admin;
+namespace D3\Linkmobility4OXID\Tests\Integration\Application\Controller\Admin;
 
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder;
 use D3\ModCfg\Tests\unit\d3ModCfgUnitTestCase;

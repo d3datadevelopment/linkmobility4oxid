@@ -20,6 +20,8 @@ use OxidEsales\Eshop\Core\Registry;
 
 class Configuration
 {
+    public const DEBUG = "d3linkmobility_debug";
+
     /**
      * @return string
      */
@@ -37,7 +39,7 @@ class Configuration
      */
     public function getTestMode(): bool
     {
-        return (bool) Registry::getConfig()->getConfigParam('d3linkmobility_debug');
+        return (bool) Registry::getConfig()->getConfigParam(self::DEBUG);
     }
 
     /**
