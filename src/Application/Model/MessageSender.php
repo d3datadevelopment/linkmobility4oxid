@@ -19,7 +19,6 @@ use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use Exception;
 use OxidEsales\Eshop\Application\Model\Order;
-use OxidEsales\Eshop\Core\Registry;
 
 class MessageSender
 {
@@ -30,7 +29,9 @@ class MessageSender
      */
     public function sendOrderFinishedMessage(Order $order, $messageBody)
     {
-        $this->sendMessageByOrder('d3linkmobility_orderActive', $order, $messageBody);
+        if ((oxNew(Configuration::class))->sendOrderFinishedMessage()) {
+            $this->sendMessageByOrder( $order, $messageBody);
+        }
     }
 
     /**
@@ -40,7 +41,9 @@ class MessageSender
      */
     public function sendSendedNowMessage(Order $order, $messageBody)
     {
-        $this->sendMessageByOrder('d3linkmobility_sendedNowActive', $order, $messageBody);
+        if ((oxNew(Configuration::class))->sendOrderSendedNowMessage()) {
+            $this->sendMessageByOrder($order, $messageBody);
+        }
     }
 
     /**
@@ -50,20 +53,19 @@ class MessageSender
      */
     public function sendCancelOrderMessage(Order $order, $messageBody)
     {
-        $this->sendMessageByOrder('d3linkmobility_cancelOrderActive', $order, $messageBody);
+        if ((oxNew(Configuration::class))->sendOrderCanceledMessage()) {
+            $this->sendMessageByOrder($order, $messageBody);
+        }
     }
 
     /**
-     * @param       $configParam
      * @param Order $order
      * @param       $messageBody
      * @throws Exception
      */
-    public function sendMessageByOrder($configParam, Order $order, $messageBody)
+    public function sendMessageByOrder(Order $order, $messageBody)
     {
-        if (false === (bool) Registry::getConfig()->getConfigParam($configParam)
-            || (bool) strlen(trim($messageBody)) === false
-        ) {
+        if ((bool) strlen(trim($messageBody)) === false) {
             return;
         }
 

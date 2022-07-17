@@ -57,7 +57,7 @@ class UserRecipients
      */
     public function getSmsRecipientFields(): array
     {
-        $customFields = $this->getSanitizedCustomFields();
+        $customFields = (oxNew(Configuration::class))->getUserRecipientFields();
 
         return count($customFields) ?
             $customFields :
@@ -66,30 +66,5 @@ class UserRecipients
                 'oxfon',
                 'oxprivfon'
             ];
-    }
-
-    /**
-     * @return array
-     */
-    public function getSanitizedCustomFields(): array
-    {
-        $customFields = (array) Registry::getConfig()->getConfigParam('d3linkmobility_smsUserRecipientsFields');
-        array_walk($customFields, [$this, 'checkFieldExists']);
-        return array_filter($customFields);
-    }
-
-    /**
-     * @param $checkFieldName
-     */
-    public function checkFieldExists(&$checkFieldName)
-    {
-        $checkFieldName = trim($checkFieldName);
-        $allFieldNames = oxNew(User::class)->getFieldNames();
-
-        array_walk($allFieldNames, function (&$value) {
-            $value = strtolower($value);
-        });
-
-        $checkFieldName = in_array(strtolower($checkFieldName), $allFieldNames) ? $checkFieldName : null;
     }
 }
