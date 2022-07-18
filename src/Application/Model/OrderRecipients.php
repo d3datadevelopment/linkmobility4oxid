@@ -16,10 +16,12 @@ declare(strict_types=1);
 namespace D3\Linkmobility4OXID\Application\Model;
 
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
+use D3\LinkmobilityClient\Exceptions\RecipientException;
+use D3\LinkmobilityClient\LoggerHandler;
 use D3\LinkmobilityClient\ValueObject\Recipient;
+use libphonenumber\NumberParseException;
 use OxidEsales\Eshop\Application\Model\Country;
 use OxidEsales\Eshop\Application\Model\Order;
-use OxidEsales\Eshop\Core\Registry;
 
 class OrderRecipients
 {
@@ -41,12 +43,17 @@ class OrderRecipients
     {
         foreach ($this->getSmsRecipientFields() as $phoneFieldName => $countryIdFieldName) {
             $content = trim((string) $this->order->getFieldData($phoneFieldName));
+            $country = oxNew( Country::class );
 
-            if (strlen($content)) {
-                $country = oxNew(Country::class);
-                $country->load($this->order->getFieldData($countryIdFieldName));
-
-                return oxNew(Recipient::class, $content, $country->getFieldData('oxisoalpha2'));
+            try {
+                if ( strlen( $content ) ) {
+                    $country->load( $this->order->getFieldData( $countryIdFieldName ) );
+                    return oxNew( Recipient::class, $content, $country->getFieldData( 'oxisoalpha2' ) );
+                }
+            } catch (NumberParseException $e) {
+                LoggerHandler::getInstance()->getLogger()->info($e->getMessage(), [$content, $country->getFieldData( 'oxisoalpha2' )]);
+            } catch (RecipientException $e) {
+                LoggerHandler::getInstance()->getLogger()->info($e->getMessage(), [$content, $country->getFieldData( 'oxisoalpha2' )]);
             }
         }
 
