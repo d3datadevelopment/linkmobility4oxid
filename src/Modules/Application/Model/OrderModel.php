@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\Modules\Application\Model;
 
+use D3\Linkmobility4OXID\Modules\Core\EmailCore;
 use OxidEsales\Eshop\Core\Email;
 
 class OrderModel extends OrderModel_parent
@@ -24,6 +25,7 @@ class OrderModel extends OrderModel_parent
         parent::cancelOrder();
 
         if ($this->getFieldData('oxstorno') === 1) {
+            /** @var EmailCore $Email */
             $Email = oxNew(Email::class);
             $Email->d3SendCancelMessage($this);
         }

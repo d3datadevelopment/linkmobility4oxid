@@ -57,7 +57,9 @@ class OrderRecipients
             }
         }
 
-        throw oxNew(noRecipientFoundException::class);
+        /** @var noRecipientFoundException $exc */
+        $exc = oxNew(noRecipientFoundException::class);
+        throw $exc;
     }
 
     /**
