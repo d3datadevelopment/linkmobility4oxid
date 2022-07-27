@@ -1,0 +1,7 @@
+parameters:
+    scanFiles:
+      - src/IntelliSenseHelper.php
+    paths:
+        - src
+    level: 0
+    phpVersion: 70100
