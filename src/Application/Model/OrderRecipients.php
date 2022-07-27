@@ -43,17 +43,17 @@ class OrderRecipients
     {
         foreach ($this->getSmsRecipientFields() as $phoneFieldName => $countryIdFieldName) {
             $content = trim((string) $this->order->getFieldData($phoneFieldName));
-            $country = oxNew( Country::class );
+            $country = oxNew(Country::class);
 
             try {
-                if ( strlen( $content ) ) {
-                    $country->load( $this->order->getFieldData( $countryIdFieldName ) );
-                    return oxNew( Recipient::class, $content, $country->getFieldData( 'oxisoalpha2' ) );
+                if (strlen($content)) {
+                    $country->load($this->order->getFieldData($countryIdFieldName));
+                    return oxNew(Recipient::class, $content, $country->getFieldData('oxisoalpha2'));
                 }
             } catch (NumberParseException $e) {
-                LoggerHandler::getInstance()->getLogger()->info($e->getMessage(), [$content, $country->getFieldData( 'oxisoalpha2' )]);
+                LoggerHandler::getInstance()->getLogger()->info($e->getMessage(), [$content, $country->getFieldData('oxisoalpha2')]);
             } catch (RecipientException $e) {
-                LoggerHandler::getInstance()->getLogger()->info($e->getMessage(), [$content, $country->getFieldData( 'oxisoalpha2' )]);
+                LoggerHandler::getInstance()->getLogger()->info($e->getMessage(), [$content, $country->getFieldData('oxisoalpha2')]);
             }
         }
 

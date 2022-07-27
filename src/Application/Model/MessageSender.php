@@ -30,7 +30,7 @@ class MessageSender
     public function sendOrderFinishedMessage(Order $order, $messageBody)
     {
         if ((oxNew(Configuration::class))->sendOrderFinishedMessage()) {
-            $this->sendMessageByOrder( $order, $messageBody);
+            $this->sendMessageByOrder($order, $messageBody);
         }
     }
 

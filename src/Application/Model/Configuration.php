@@ -22,21 +22,21 @@ use OxidEsales\Eshop\Core\Registry;
 
 class Configuration
 {
-    const GENERAL_APITOKEN  = "d3linkmobility_apitoken";
-    const GENERAL_DEBUG     = "d3linkmobility_debug";
+    public const GENERAL_APITOKEN  = "d3linkmobility_apitoken";
+    public const GENERAL_DEBUG     = "d3linkmobility_debug";
 
-    const ORDER_RECFIELDS   = "d3linkmobility_smsOrderRecipientsFields";
-    const USER_RECFIELDS    = "d3linkmobility_smsUserRecipientsFields";
+    public const ORDER_RECFIELDS   = "d3linkmobility_smsOrderRecipientsFields";
+    public const USER_RECFIELDS    = "d3linkmobility_smsUserRecipientsFields";
 
-    const SMS_SENDERNR      = "d3linkmobility_smsSenderNumber";
-    const SMS_SENDERCOUNTRY = "d3linkmobility_smsSenderCountry";
+    public const SMS_SENDERNR      = "d3linkmobility_smsSenderNumber";
+    public const SMS_SENDERCOUNTRY = "d3linkmobility_smsSenderCountry";
 
-    const SENDBY_ORDERED    = "d3linkmobility_orderActive";
-    const SENDBY_SENDEDNOW  = "d3linkmobility_sendedNowActive";
-    const SENDBY_CANCELED   = "d3linkmobility_cancelOrderActive";
+    public const SENDBY_ORDERED    = "d3linkmobility_orderActive";
+    public const SENDBY_SENDEDNOW  = "d3linkmobility_sendedNowActive";
+    public const SENDBY_CANCELED   = "d3linkmobility_cancelOrderActive";
 
-    const ARGS_CHECKKEYS    = "checkKeys";
-    const ARGS_CHECKCLASS   = "checkClassName";
+    public const ARGS_CHECKKEYS    = "checkKeys";
+    public const ARGS_CHECKCLASS   = "checkClassName";
 
     /**
      * @return string

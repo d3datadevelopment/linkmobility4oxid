@@ -22,7 +22,7 @@ use OxidEsales\Eshop\Application\Model\Remark;
 
 abstract class AbstractMessage
 {
-    const REMARK_IDENT = 'LINKMOB';
+    public const REMARK_IDENT = 'LINKMOB';
 
     protected $message;
     protected $removeLineBreaks = true;
@@ -109,5 +109,5 @@ abstract class AbstractMessage
         return $this->removeMultipleSpaces ? preg_replace($regexp, ' ', $message) : $message;
     }
 
-    abstract public function getTypeName() : string;
+    abstract public function getTypeName(): string;
 }
