@@ -57,24 +57,26 @@ class AdminUser extends AdminController
         try {
             return oxNew(UserRecipients::class, $this->user)->getSmsRecipient();
         } catch (noRecipientFoundException $e) {
-            Registry::getUtilsView()->addErrorToDisplay(
-                Registry::getLang()->translateString($e->getMessage())
-            );
+            /** @var string $message */
+            $message = Registry::getLang()->translateString($e->getMessage());
+            Registry::getUtilsView()->addErrorToDisplay($message);
         }
         return false;
     }
 
     /**
+     * @return void
      * @throws Exception
      */
-    public function send()
+    public function send(): void
     {
+        /** @var string $messageBody */
         $messageBody = Registry::getRequest()->getRequestEscapedParameter('messagebody');
 
         if (strlen($messageBody) <= 1) {
-            Registry::getUtilsView()->addErrorToDisplay(
-                Registry::getLang()->translateString('D3LM_EXC_MESSAGE_NO_LENGTH')
-            );
+            /** @var string $message */
+            $message = Registry::getLang()->translateString('D3LM_EXC_MESSAGE_NO_LENGTH');
+            Registry::getUtilsView()->addErrorToDisplay($message);
             return;
         }
 
@@ -83,20 +85,15 @@ class AdminUser extends AdminController
 
         $sms = oxNew(Sms::class, $messageBody);
         if ($sms->sendUserAccountMessage($user)) {
-            Registry::getUtilsView()->addErrorToDisplay(
-                sprintf(
-                    Registry::getLang()->translateString('D3LM_EXC_SMS_SUCC_SENT'),
-                    $sms->getResponse()->getSmsCount()
-                )
-            );
+            /** @var string $format */
+            $format = Registry::getLang()->translateString('D3LM_EXC_SMS_SUCC_SENT');
+            $smsCount = $sms->getResponse() ? $sms->getResponse()->getSmsCount() : 0;
+            Registry::getUtilsView()->addErrorToDisplay(sprintf($format, $smsCount));
         } else {
             $errorMsg = $sms->getResponse() instanceof ResponseInterface ? $sms->getResponse()->getErrorMessage() : 'no response';
-            Registry::getUtilsView()->addErrorToDisplay(
-                sprintf(
-                    Registry::getLang()->translateString('D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND'),
-                    $errorMsg
-                )
-            );
+            /** @var string $format */
+            $format = Registry::getLang()->translateString('D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND');
+            Registry::getUtilsView()->addErrorToDisplay(sprintf($format, $errorMsg));
         }
     }
 }

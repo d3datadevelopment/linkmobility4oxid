@@ -58,24 +58,25 @@ class AdminOrder extends AdminController
         try {
             return oxNew(OrderRecipients::class, $this->order)->getSmsRecipient();
         } catch (noRecipientFoundException $e) {
-            Registry::getUtilsView()->addErrorToDisplay(
-                Registry::getLang()->translateString($e->getMessage())
-            );
+            /** @var string $message */
+            $message = Registry::getLang()->translateString($e->getMessage());
+            Registry::getUtilsView()->addErrorToDisplay($message);
         }
         return false;
     }
 
     /**
+     * @return void
      * @throws Exception
      */
-    public function send()
+    public function send(): void
     {
         $messageBody = Registry::getRequest()->getRequestEscapedParameter('messagebody');
 
         if (false === is_string($messageBody) || strlen($messageBody) <= 1) {
-            Registry::getUtilsView()->addErrorToDisplay(
-                Registry::getLang()->translateString('D3LM_EXC_MESSAGE_NO_LENGTH')
-            );
+            /** @var string $message */
+            $message = Registry::getLang()->translateString('D3LM_EXC_MESSAGE_NO_LENGTH');
+            Registry::getUtilsView()->addErrorToDisplay($message);
             return;
         }
 
@@ -85,17 +86,15 @@ class AdminOrder extends AdminController
         try {
             $sms = oxNew(Sms::class, $messageBody);
             if ($sms->sendOrderMessage($order)) {
+                $smsCount = $sms->getResponse() ? $sms->getResponse()->getSmsCount() : 0;
                 Registry::getUtilsView()->addErrorToDisplay(
-                    oxNew(successfullySentException::class, $sms->getResponse()->getSmsCount())
+                    oxNew(successfullySentException::class, $smsCount)
                 );
             } else {
                 $errorMsg = $sms->getResponse() instanceof ResponseInterface ? $sms->getResponse()->getErrorMessage() : 'no response';
-                Registry::getUtilsView()->addErrorToDisplay(
-                    sprintf(
-                        Registry::getLang()->translateString('D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND'),
-                        $errorMsg
-                    )
-                );
+                /** @var string $format */
+                $format = Registry::getLang()->translateString('D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND');
+                Registry::getUtilsView()->addErrorToDisplay(sprintf($format, $errorMsg));
             }
         } catch (noRecipientFoundException $e) {
             Registry::getUtilsView()->addErrorToDisplay($e);

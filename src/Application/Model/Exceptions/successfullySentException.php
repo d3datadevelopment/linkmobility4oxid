@@ -16,19 +16,21 @@ declare(strict_types=1);
 namespace D3\Linkmobility4OXID\Application\Model\Exceptions;
 
 use Exception;
+use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Registry;
-use Throwable;
 
-class successfullySentException extends Exception
+class successfullySentException extends StandardException
 {
     /**
      * @param int            $messageCount
      * @param int            $code
-     * @param Throwable|null $previous
+     * @param Exception|null $previous
      */
-    public function __construct($messageCount = 1, $code = 0, Throwable $previous = null)
+    public function __construct($messageCount = 1, $code = 0, Exception $previous = null)
     {
-        $message = sprintf(Registry::getLang()->translateString('D3LM_EXC_SMS_SUCC_SENT'), $messageCount);
+        /** @var string $format */
+        $format = Registry::getLang()->translateString('D3LM_EXC_SMS_SUCC_SENT');
+        $message = sprintf($format, $messageCount);
 
         parent::__construct($message, $code, $previous);
     }

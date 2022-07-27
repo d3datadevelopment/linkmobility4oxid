@@ -42,12 +42,16 @@ class OrderRecipients
     public function getSmsRecipient(): Recipient
     {
         foreach ($this->getSmsRecipientFields() as $phoneFieldName => $countryIdFieldName) {
-            $content = trim((string) $this->order->getFieldData($phoneFieldName));
+            /** @var string $content */
+            $content = $this->order->getFieldData($phoneFieldName) ?: '';
+            $content = trim($content);
             $country = oxNew(Country::class);
 
             try {
                 if (strlen($content)) {
-                    $country->load($this->order->getFieldData($countryIdFieldName));
+                    /** @var string $countryId */
+                    $countryId = $this->order->getFieldData(trim($countryIdFieldName));
+                    $country->load($countryId);
                     return oxNew(Recipient::class, $content, $country->getFieldData('oxisoalpha2'));
                 }
             } catch (NumberParseException $e) {

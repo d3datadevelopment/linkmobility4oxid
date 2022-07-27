@@ -24,10 +24,11 @@ class MessageSender
 {
     /**
      * @param Order $order
-     * @param       $messageBody
+     * @param string $messageBody
+     * @return void
      * @throws Exception
      */
-    public function sendOrderFinishedMessage(Order $order, $messageBody)
+    public function sendOrderFinishedMessage(Order $order, string $messageBody): void
     {
         if ((oxNew(Configuration::class))->sendOrderFinishedMessage()) {
             $this->sendMessageByOrder($order, $messageBody);
@@ -36,10 +37,11 @@ class MessageSender
 
     /**
      * @param Order $order
-     * @param       $messageBody
+     * @param string $messageBody
+     * @return void
      * @throws Exception
      */
-    public function sendSendedNowMessage(Order $order, $messageBody)
+    public function sendSendedNowMessage(Order $order, string $messageBody): void
     {
         if ((oxNew(Configuration::class))->sendOrderSendedNowMessage()) {
             $this->sendMessageByOrder($order, $messageBody);
@@ -48,10 +50,11 @@ class MessageSender
 
     /**
      * @param Order $order
-     * @param       $messageBody
+     * @param string $messageBody
+     * @return void
      * @throws Exception
      */
-    public function sendCancelOrderMessage(Order $order, $messageBody)
+    public function sendCancelOrderMessage(Order $order, string $messageBody): void
     {
         if ((oxNew(Configuration::class))->sendOrderCanceledMessage()) {
             $this->sendMessageByOrder($order, $messageBody);
@@ -60,10 +63,11 @@ class MessageSender
 
     /**
      * @param Order $order
-     * @param       $messageBody
+     * @param string $messageBody
+     * @return void
      * @throws Exception
      */
-    public function sendMessageByOrder(Order $order, $messageBody)
+    public function sendMessageByOrder(Order $order, string $messageBody): void
     {
         if ((bool) strlen(trim($messageBody)) === false) {
             return;

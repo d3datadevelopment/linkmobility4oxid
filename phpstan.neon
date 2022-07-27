@@ -1,8 +1,10 @@
 parameters:
     scanFiles:
-      - src/IntelliSenseHelper.php
-      - ../../oxid-esales/oxideshop-ce/source/oxfunctions.php
+        - src/IntelliSenseHelper.php
+        - ../../oxid-esales/oxideshop-ce/source/oxfunctions.php
     paths:
         - src
-    level: 0
+    level: 9
     phpVersion: 70100
+    ignoreErrors:
+        - '#Psr\\Container\\ContainerExceptionInterface is not subtype of Throwable#'

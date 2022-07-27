@@ -43,7 +43,9 @@ class Configuration
      */
     public function getApiToken(): string
     {
-        $token = trim(Registry::getConfig()->getConfigParam(self::GENERAL_APITOKEN));
+        /** @var string $token */
+        $token = Registry::getConfig()->getConfigParam(self::GENERAL_APITOKEN);
+        $token = trim($token);
 
         Assert::that($token)->string()->notEmpty();
 
@@ -63,7 +65,9 @@ class Configuration
      */
     public function getSmsSenderNumber()
     {
-        $number = trim(Registry::getConfig()->getConfigParam(self::SMS_SENDERNR));
+        /** @var string $number */
+        $number = Registry::getConfig()->getConfigParam(self::SMS_SENDERNR);
+        $number = trim($number);
 
         return strlen($number) ? $number : null;
     }
@@ -71,9 +75,11 @@ class Configuration
     /**
      * @return string|null
      */
-    public function getSmsSenderCountry(): string
+    public function getSmsSenderCountry(): ?string
     {
-        $country = trim(Registry::getConfig()->getConfigParam(self::SMS_SENDERCOUNTRY));
+        /** @var string $country */
+        $country = Registry::getConfig()->getConfigParam(self::SMS_SENDERCOUNTRY);
+        $country = trim($country);
         $country = strlen($country) ? strtoupper($country) : null;
 
         Assert::that($country)->nullOr()->string()->length(2);
@@ -82,10 +88,11 @@ class Configuration
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getOrderRecipientFields(): array
     {
+        /** @var string[] $customFields */
         $customFields = Registry::getConfig()->getConfigParam(self::ORDER_RECFIELDS);
 
         array_walk(
@@ -101,10 +108,11 @@ class Configuration
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getUserRecipientFields(): array
     {
+        /** @var string[] $customFields */
         $customFields = Registry::getConfig()->getConfigParam(self::USER_RECFIELDS);
 
         array_walk(
@@ -120,12 +128,13 @@ class Configuration
     }
 
     /**
-     * @param $checkPhoneFieldName
-     * @param $checkCountryFieldName
-     * @param $args
+     * @template T
+     * @param string $checkPhoneFieldName
+     * @param string $checkCountryFieldName
+     * @param array{checkKeys: bool, checkClassName: class-string<T>} $args
      * @return void
      */
-    protected function checkFieldExists(&$checkPhoneFieldName, $checkCountryFieldName, $args)
+    protected function checkFieldExists(string &$checkPhoneFieldName, string $checkCountryFieldName, array $args): void
     {
         $checkCountryFieldName = $args[self::ARGS_CHECKKEYS] ? trim($checkCountryFieldName) : $checkCountryFieldName;
         $checkPhoneFieldName = trim($checkPhoneFieldName);
