@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://git.d3data.de/D3Private/linkmobility4oxid/compare/1.1.0.0...rel_1.x)
 
-## [1.1.0.0](https://git.d3data.de/D3Private/linkmobility4oxid/releases/tag/1.1.0.0) - 2022-07-28
+## [1.1.0.0](https://git.d3data.de/D3Private/linkmobility4oxid/compare/1.0.0.0...1.1.0.0) - 2022-07-28
 ### Added
 - phpstan code checks
 
