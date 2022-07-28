@@ -34,7 +34,7 @@ $aModule = [
         'de'    =>  'Anbindung der LINK Mobility API (Nachrichtenversand per SMS) an den Shop',
         'en'    =>  'Connection of the LINK Mobility API ( sending messages via SMS) to the shop',
     ],
-    'version'      => '1.0.0.0',
+    'version'      => '1.1.0.0',
     'thumbnail'    => 'picture.png',
     'author'       => 'D&sup3; Data Development (Inh.: Thomas Dartsch)',
     'email'        => 'support@shopmodule.com',
