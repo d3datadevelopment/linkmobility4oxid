@@ -27,6 +27,7 @@ Dieses Paket erfordert einen mit Composer installierten OXID eShop in einer der 
 - 6.2.4 oder höher
 - 6.3.x
 - 6.4.x
+- 6.5.x
 
 und dessen Anforderungen.
 
