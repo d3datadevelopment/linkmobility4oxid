@@ -54,6 +54,12 @@ If you have a suggestion that would make this better, please fork the repo and c
 - Push to the Branch (git push origin feature/AmazingFeature)
 - Open a Pull Request
 
+## Support
+
+If you have any questions about the *messaging service* and its *contracts*, please contact the [LINK Mobility Team](https://www.linkmobility.de/kontakt).
+
+For *technical inquiries* you will find the contact options in the [composer.json](composer.json).
+
 ## License
 (status: 2022-07-13)
 

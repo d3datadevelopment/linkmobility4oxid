@@ -54,6 +54,12 @@ Wenn Sie eine Verbesserungsvorschlag haben, legen Sie einen Fork des Repositorie
 - Übertragen Sie den Branch (git push origin feature/AmazingFeature)
 - Öffnen Sie einen Pull Request
 
+## Support
+
+Bei Fragen zum *Messaging Service* und dessen *Verträgen* kontaktieren Sie bitte das [LINK Mobility Team](https://www.linkmobility.de/kontakt).
+
+Zu *technischen Anfragen* finden Sie die Kontaktmöglichkeiten in der [composer.json](composer.json).
+
 ## Lizenz
 (Stand: 13.07.2022)
 
