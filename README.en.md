@@ -1,7 +1,7 @@
 [![deutsche Version](https://logos.oxidmodule.com/de2_xs.svg)](README.md)
 [![english version](https://logos.oxidmodule.com/en2_xs.svg)](README.en.md)
 
-# Integration of the LINK Mobility Austria service into the OXID eShop
+# Integration of the LINK Mobility service into the OXID eShop
 
 [LINK Mobility](https://www.linkmobility.de/) provides a service for sending mobile messages (SMS, Whatsapp, RCS, Chatbot, ...).
 
