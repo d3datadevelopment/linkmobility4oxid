@@ -93,7 +93,7 @@ class Configuration
     public function getOrderRecipientFields(): array
     {
         /** @var string[] $customFields */
-        $customFields = Registry::getConfig()->getConfigParam(self::ORDER_RECFIELDS);
+        $customFields = Registry::getConfig()->getConfigParam(self::ORDER_RECFIELDS) ?: [];
 
         array_walk(
             $customFields,
@@ -113,7 +113,7 @@ class Configuration
     public function getUserRecipientFields(): array
     {
         /** @var string[] $customFields */
-        $customFields = Registry::getConfig()->getConfigParam(self::USER_RECFIELDS);
+        $customFields = Registry::getConfig()->getConfigParam(self::USER_RECFIELDS) ?: [];
 
         array_walk(
             $customFields,
@@ -138,7 +138,7 @@ class Configuration
     {
         $checkCountryFieldName = $args[self::ARGS_CHECKKEYS] ? trim($checkCountryFieldName) : $checkCountryFieldName;
         $checkPhoneFieldName = trim($checkPhoneFieldName);
-        $allFieldNames = oxNew($args[self::ARGS_CHECKCLASS])->getFieldNames();
+        $allFieldNames = oxNew($args[self::ARGS_CHECKCLASS])->getFieldNames() ?: [];
 
         array_walk($allFieldNames, function (&$value) {
             $value = strtolower($value);
