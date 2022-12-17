@@ -25,7 +25,7 @@ Message dispatch (currently SMS) can be activated individually for the following
 This package requires an OXID eShop installed with Composer in one of the following versions:
 
 - 6.2.4 or above
-- 6.3.x
+- 6.3.1 or above
 - 6.4.x
 - 6.5.x
 
