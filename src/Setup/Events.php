@@ -38,6 +38,7 @@ class Events
         /** @var Actions $actions */
         $actions = oxNew(Actions::class);
         $actions->setupDatabase();
+        $actions->regenerateViews();
     }
 
     public static function onDeactivate()

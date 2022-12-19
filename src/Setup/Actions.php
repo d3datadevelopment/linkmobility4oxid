@@ -20,6 +20,7 @@ use Doctrine\DBAL\Driver\Exception as DoctrineDriverException;
 use Doctrine\DBAL\Exception as DoctrineException;
 use Doctrine\DBAL\Query\QueryBuilder;
 use OxidEsales\Eshop\Core\DatabaseProvider;
+use OxidEsales\Eshop\Core\DbMetaDataHandler;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
 use OxidEsales\Eshop\Core\Exception\DatabaseException;
@@ -46,6 +47,17 @@ class Actions
             Registry::getLogger()->error($e->getMessage());
             Registry::getUtilsView()->addErrorToDisplay($e);
         }
+    }
+
+
+
+    /**
+     * Regenerate views for changed tables
+     */
+    public function regenerateViews()
+    {
+        $oDbMetaDataHandler = oxNew(DbMetaDataHandler::class);
+        $oDbMetaDataHandler->updateViews();
     }
 
     /**
