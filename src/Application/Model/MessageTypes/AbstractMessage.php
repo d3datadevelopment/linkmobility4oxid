@@ -22,13 +22,18 @@ use OxidEsales\Eshop\Application\Model\Remark;
 
 abstract class AbstractMessage
 {
-    const REMARK_IDENT = 'LINKMOB';
+    public const REMARK_IDENT = 'LINKMOB';
 
+    /** @var string */
     protected $message;
+    /** @var bool */
     protected $removeLineBreaks = true;
+    /** @var bool */
     protected $removeMultipleSpaces = true;
 
+    /** @var ResponseInterface */
     protected $response;
+    /** @var Recipient[] */
     protected $recipients = [];
 
     /**
@@ -48,13 +53,14 @@ abstract class AbstractMessage
     }
 
     /**
-     * @param $userId
-     * @param $recipients
-     * @param $message
+     * @param string $userId
+     * @param string $recipients
+     * @param string $message
      *
+     * @return void
      * @throws Exception
      */
-    protected function setRemark($userId, $recipients, $message)
+    protected function setRemark(string $userId, string $recipients, string $message): void
     {
         $remark = oxNew(Remark::class);
         $remark->assign([
@@ -74,7 +80,7 @@ abstract class AbstractMessage
     }
 
     /**
-     * @param array $recipients
+     * @param array<Recipient> $recipients
      * @return void
      */
     protected function setRecipients(array $recipients)
@@ -97,17 +103,17 @@ abstract class AbstractMessage
     }
 
     /**
-     * @param $message
+     * @param string $message
      *
      * @return string
      */
-    protected function sanitizeMessage($message): string
+    protected function sanitizeMessage(string $message): string
     {
         $message = trim(strip_tags($message));
         $message = $this->removeLineBreaks ? str_replace(["\r", "\n"], ' ', $message) : $message;
         $regexp = '/\s{2,}/m';
-        return $this->removeMultipleSpaces ? preg_replace($regexp, ' ', $message) : $message;
+        return $this->removeMultipleSpaces ? (string) preg_replace($regexp, ' ', $message) : $message;
     }
 
-    abstract public function getTypeName() : string;
+    abstract public function getTypeName(): string;
 }

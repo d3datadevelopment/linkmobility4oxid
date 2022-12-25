@@ -21,18 +21,25 @@ use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererBridgeInterface;
 use OxidEsales\EshopCommunity\Internal\Framework\Templating\TemplateRendererInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class EmailCore extends EmailCore_parent
 {
+    /** @var string */
     protected $d3OrderCustSmsTemplate = 'd3sms_ordercust.tpl';
+    /** @var string */
     protected $d3OrderSendedNowSmsTemplate = 'd3sms_sendednow.tpl';
+    /** @var string */
     protected $d3OrderCanceledSmsTemplate = 'd3sms_ordercanceled.tpl';
 
     /**
      * @param Order $order
-     * @param null  $subject
+     * @param string $subject
      *
      * @return bool
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function sendOrderEmailToUser($order, $subject = null)
     {
@@ -45,9 +52,11 @@ class EmailCore extends EmailCore_parent
 
     /**
      * @param Order $order
-     * @param null  $subject
+     * @param string $subject
      *
      * @return bool
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function sendSendedNowMail($order, $subject = null)
     {
@@ -60,8 +69,13 @@ class EmailCore extends EmailCore_parent
 
     /**
      * @param Order $order
+     *
+     * @return void
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
-    public function d3SendOrderFinishedMessageToUser(Order $order)
+    public function d3SendOrderFinishedMessageToUser(Order $order): void
     {
         $messageSender = oxNew(MessageSender::class);
         $messageSender->sendOrderFinishedMessage($order, $this->d3GetOrderFinishedSmsMessageBody($order));
@@ -71,6 +85,8 @@ class EmailCore extends EmailCore_parent
      * @param Order $order
      *
      * @return string
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     protected function d3GetOrderFinishedSmsMessageBody(Order $order): string
     {
@@ -83,9 +99,12 @@ class EmailCore extends EmailCore_parent
     /**
      * @param Order $order
      *
+     * @return void
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      * @throws Exception
      */
-    public function d3SendedNowMessage(Order $order)
+    public function d3SendedNowMessage(Order $order): void
     {
         $messageSender = oxNew(MessageSender::class);
         $messageSender->sendSendedNowMessage($order, $this->d3GetSendedNowSmsMessageBody($order));
@@ -95,6 +114,8 @@ class EmailCore extends EmailCore_parent
      * @param Order $order
      *
      * @return string
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     protected function d3GetSendedNowSmsMessageBody(Order $order): string
     {
@@ -104,7 +125,15 @@ class EmailCore extends EmailCore_parent
         return $renderer->renderTemplate($this->d3OrderSendedNowSmsTemplate, $this->getViewData());
     }
 
-    public function d3SendCancelMessage($order)
+    /**
+     * @param Order $order
+     *
+     * @return void
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws Exception
+     */
+    public function d3SendCancelMessage(Order $order): void
     {
         $messageSender = oxNew(MessageSender::class);
         $messageSender->sendCancelOrderMessage($order, $this->d3GetCancelOrderSmsMessageBody($order));
@@ -114,6 +143,8 @@ class EmailCore extends EmailCore_parent
      * @param Order $order
      *
      * @return string
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     protected function d3GetCancelOrderSmsMessageBody(Order $order): string
     {
@@ -127,9 +158,12 @@ class EmailCore extends EmailCore_parent
      * Templating instance getter
      *
      * @return TemplateRendererInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     protected function d3GetTplRenderer(): TemplateRendererInterface
     {
+        /** @var TemplateRendererBridgeInterface $bridge */
         $bridge = ContainerFactory::getInstance()->getContainer()
             ->get(TemplateRendererBridgeInterface::class);
         $bridge->setEngine($this->_getSmarty());

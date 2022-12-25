@@ -17,6 +17,7 @@ use D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
 use D3\Linkmobility4OXID\Modules\Application\Model\OrderModel;
 use D3\Linkmobility4OXID\Modules\Core\EmailCore;
+use D3\Linkmobility4OXID\Setup\Events;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Core\Email;
 
@@ -34,7 +35,7 @@ $aModule = [
         'de'    =>  'Anbindung der LINK Mobility API (Nachrichtenversand per SMS) an den Shop',
         'en'    =>  'Connection of the LINK Mobility API ( sending messages via SMS) to the shop',
     ],
-    'version'      => '1.0.0.0',
+    'version'      => '1.1.0.0',
     'thumbnail'    => 'picture.png',
     'author'       => 'D&sup3; Data Development (Inh.: Thomas Dartsch)',
     'email'        => 'support@shopmodule.com',
@@ -54,7 +55,10 @@ $aModule = [
         'd3sms_sendednow.tpl'       => 'd3/linkmobility/Application/views/tpl/SMS/sendednow.tpl',
         'd3sms_ordercanceled.tpl'   => 'd3/linkmobility/Application/views/tpl/SMS/ordercanceled.tpl',
     ],
-    'events'       => [],
+    'events'      => [
+        'onActivate'    => Events::class.'::onActivate',
+        'onDeactivate'  => Events::class.'::onDeactivate',
+    ],
     'blocks'        => [
         [
             'template'  => 'order_remark.tpl',

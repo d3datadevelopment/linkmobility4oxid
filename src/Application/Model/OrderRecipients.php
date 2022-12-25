@@ -16,10 +16,12 @@ declare(strict_types=1);
 namespace D3\Linkmobility4OXID\Application\Model;
 
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
+use D3\LinkmobilityClient\Exceptions\RecipientException;
+use D3\LinkmobilityClient\LoggerHandler;
 use D3\LinkmobilityClient\ValueObject\Recipient;
+use libphonenumber\NumberParseException;
 use OxidEsales\Eshop\Application\Model\Country;
 use OxidEsales\Eshop\Application\Model\Order;
-use OxidEsales\Eshop\Core\Registry;
 
 class OrderRecipients
 {
@@ -40,17 +42,28 @@ class OrderRecipients
     public function getSmsRecipient(): Recipient
     {
         foreach ($this->getSmsRecipientFields() as $phoneFieldName => $countryIdFieldName) {
-            $content = trim((string) $this->order->getFieldData($phoneFieldName));
+            /** @var string $content */
+            $content = $this->order->getFieldData($phoneFieldName) ?: '';
+            $content = trim($content);
+            $country = oxNew(Country::class);
 
-            if (strlen($content)) {
-                $country = oxNew(Country::class);
-                $country->load($this->order->getFieldData($countryIdFieldName));
-
-                return oxNew(Recipient::class, $content, $country->getFieldData('oxisoalpha2'));
+            try {
+                if (strlen($content)) {
+                    /** @var string $countryId */
+                    $countryId = $this->order->getFieldData(trim($countryIdFieldName));
+                    $country->load($countryId);
+                    return oxNew(Recipient::class, $content, $country->getFieldData('oxisoalpha2'));
+                }
+            } catch (NumberParseException $e) {
+                LoggerHandler::getInstance()->getLogger()->info($e->getMessage(), [$content, $country->getFieldData('oxisoalpha2')]);
+            } catch (RecipientException $e) {
+                LoggerHandler::getInstance()->getLogger()->info($e->getMessage(), [$content, $country->getFieldData('oxisoalpha2')]);
             }
         }
 
-        throw oxNew(noRecipientFoundException::class);
+        /** @var noRecipientFoundException $exc */
+        $exc = oxNew(noRecipientFoundException::class);
+        throw $exc;
     }
 
     /**
@@ -58,7 +71,7 @@ class OrderRecipients
      */
     public function getSmsRecipientFields(): array
     {
-        $customFields = $this->getSanitizedCustomFields();
+        $customFields = (oxNew(Configuration::class))->getOrderRecipientFields();
 
         return count($customFields) ?
             $customFields :
@@ -66,29 +79,5 @@ class OrderRecipients
                 'oxdelfon'  => 'oxdelcountryid',
                 'oxbillfon' => 'oxbillcountryid'
             ];
-    }
-
-    /**
-     * @return array
-     */
-    public function getSanitizedCustomFields(): array
-    {
-        $customFields = (array) Registry::getConfig()->getConfigParam('d3linkmobility_smsOrderRecipientsFields');
-        array_walk($customFields, [$this, 'checkFieldExists']);
-        return array_filter($customFields);
-    }
-
-    public function checkFieldExists(&$checkPhoneFieldName, $checkCountryFieldName)
-    {
-        $checkCountryFieldName = trim($checkCountryFieldName);
-        $checkPhoneFieldName = trim($checkPhoneFieldName);
-        $allFieldNames = oxNew(Order::class)->getFieldNames();
-
-        array_walk($allFieldNames, function (&$value) {
-            $value = strtolower($value);
-        });
-
-        $checkPhoneFieldName = in_array(strtolower($checkPhoneFieldName), $allFieldNames) &&
-               in_array(strtolower($checkCountryFieldName), $allFieldNames) ? $checkPhoneFieldName : null;
     }
 }

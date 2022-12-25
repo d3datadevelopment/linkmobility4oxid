@@ -1,7 +1,7 @@
 [![deutsche Version](https://logos.oxidmodule.com/de2_xs.svg)](README.md)
 [![english version](https://logos.oxidmodule.com/en2_xs.svg)](README.en.md)
 
-# Integration des LINK Mobility Austria Dienstes in den OXID eShop
+# Integration des LINK Mobility Dienstes in den OXID eShop
 
 [LINK Mobility](https://www.linkmobility.de/) stellt einen Service zum Versenden von mobilen Nachrichten (SMS, Whatsapp, RCS, Chatbot, ...) zur Verfügung.
 
@@ -25,8 +25,9 @@ Bei folgenden Aktionen kann der Nachrichtenversand (derzeit SMS) einzeln aktivie
 Dieses Paket erfordert einen mit Composer installierten OXID eShop in einer der folgenden Versionen:
 
 - 6.2.4 oder höher
-- 6.3.x
+- 6.3.1 oder höher
 - 6.4.x
+- 6.5.x
 
 und dessen Anforderungen.
 
@@ -53,6 +54,12 @@ Wenn Sie eine Verbesserungsvorschlag haben, legen Sie einen Fork des Repositorie
 - Fügen Sie Ihre Änderungen hinzu (git commit -m 'Add some AmazingFeature')
 - Übertragen Sie den Branch (git push origin feature/AmazingFeature)
 - Öffnen Sie einen Pull Request
+
+## Support
+
+Bei Fragen zum *Messaging Service* und dessen *Verträgen* kontaktieren Sie bitte das [LINK Mobility Team](https://www.linkmobility.de/kontakt).
+
+Zu *technischen Anfragen* finden Sie die Kontaktmöglichkeiten in der [composer.json](composer.json).
 
 ## Lizenz
 (Stand: 13.07.2022)

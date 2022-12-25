@@ -19,51 +19,57 @@ use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use Exception;
 use OxidEsales\Eshop\Application\Model\Order;
-use OxidEsales\Eshop\Core\Registry;
 
 class MessageSender
 {
     /**
      * @param Order $order
-     * @param       $messageBody
+     * @param string $messageBody
+     * @return void
      * @throws Exception
      */
-    public function sendOrderFinishedMessage(Order $order, $messageBody)
+    public function sendOrderFinishedMessage(Order $order, string $messageBody): void
     {
-        $this->sendMessageByOrder('d3linkmobility_orderActive', $order, $messageBody);
+        if ((oxNew(Configuration::class))->sendOrderFinishedMessage()) {
+            $this->sendMessageByOrder($order, $messageBody);
+        }
     }
 
     /**
      * @param Order $order
-     * @param       $messageBody
+     * @param string $messageBody
+     * @return void
      * @throws Exception
      */
-    public function sendSendedNowMessage(Order $order, $messageBody)
+    public function sendSendedNowMessage(Order $order, string $messageBody): void
     {
-        $this->sendMessageByOrder('d3linkmobility_sendedNowActive', $order, $messageBody);
+        if ((oxNew(Configuration::class))->sendOrderSendedNowMessage()) {
+            $this->sendMessageByOrder($order, $messageBody);
+        }
     }
 
     /**
      * @param Order $order
-     * @param       $messageBody
+     * @param string $messageBody
+     * @return void
      * @throws Exception
      */
-    public function sendCancelOrderMessage(Order $order, $messageBody)
+    public function sendCancelOrderMessage(Order $order, string $messageBody): void
     {
-        $this->sendMessageByOrder('d3linkmobility_cancelOrderActive', $order, $messageBody);
+        if ((oxNew(Configuration::class))->sendOrderCanceledMessage()) {
+            $this->sendMessageByOrder($order, $messageBody);
+        }
     }
 
     /**
-     * @param       $configParam
      * @param Order $order
-     * @param       $messageBody
+     * @param string $messageBody
+     * @return void
      * @throws Exception
      */
-    public function sendMessageByOrder($configParam, Order $order, $messageBody)
+    public function sendMessageByOrder(Order $order, string $messageBody): void
     {
-        if (false === (bool) Registry::getConfig()->getConfigParam($configParam)
-            || (bool) strlen(trim($messageBody)) === false
-        ) {
+        if ((bool) strlen(trim($messageBody)) === false) {
             return;
         }
 

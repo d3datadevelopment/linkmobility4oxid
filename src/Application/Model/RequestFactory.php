@@ -25,6 +25,7 @@ class RequestFactory extends \D3\LinkmobilityClient\SMS\RequestFactory
     {
         $configuration = oxNew(Configuration::class);
 
+        /** @var SmsRequestInterface $request */
         $request = parent::getSmsRequest();
         $request->setTestMode($configuration->getTestMode())
             ->setSenderAddress(

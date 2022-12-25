@@ -15,6 +15,6 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\Application\Model\Exceptions;
 
-interface abortSendingExceptionInterface
+interface abortSendingExceptionInterface extends \Throwable
 {
 }

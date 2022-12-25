@@ -98,7 +98,7 @@ class Sms extends AbstractMessage
     }
 
     /**
-     * @param array $recipientsArray
+     * @param array<Recipient> $recipientsArray
      *
      * @return bool
      */
@@ -137,16 +137,17 @@ class Sms extends AbstractMessage
             return $response->isSuccessful();
         } catch (abortSendingExceptionInterface $e) {
             Registry::getLogger()->warning($e->getMessage());
-            Registry::getUtilsView()->addErrorToDisplay($e);
+            // Oxid does not accept throwable interface only exceptions according by definition
+            Registry::getUtilsView()->addErrorToDisplay($e->getMessage());
         } catch (GuzzleException $e) {
             Registry::getLogger()->warning($e->getMessage());
-            Registry::getUtilsView()->addErrorToDisplay($e);
+            Registry::getUtilsView()->addErrorToDisplay($e->getMessage());
         } catch (ApiException $e) {
             Registry::getLogger()->warning($e->getMessage());
-            Registry::getUtilsView()->addErrorToDisplay($e);
+            Registry::getUtilsView()->addErrorToDisplay($e->getMessage());
         } catch (InvalidArgumentException $e) {
             Registry::getLogger()->warning($e->getMessage());
-            Registry::getUtilsView()->addErrorToDisplay($e);
+            Registry::getUtilsView()->addErrorToDisplay($e->getMessage());
         }
 
         return false;

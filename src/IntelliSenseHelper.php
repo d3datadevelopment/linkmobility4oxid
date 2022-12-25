@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace D3\Linkmobility4OXID\Modules\Aplication\Model {
+namespace D3\Linkmobility4OXID\Modules\Application\Model {
 
     use OxidEsales\Eshop\Application\Model\Order;
 

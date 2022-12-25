@@ -15,15 +15,24 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\Modules\Application\Model;
 
+use D3\Linkmobility4OXID\Modules\Core\EmailCore;
 use OxidEsales\Eshop\Core\Email;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class OrderModel extends OrderModel_parent
 {
-    public function cancelOrder()
+    /**
+     * @return void
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function cancelOrder(): void
     {
         parent::cancelOrder();
 
-        if ($this->getFieldData('oxstorno') === 1) {
+        if ((bool) $this->getFieldData('oxstorno') === true) {
+            /** @var EmailCore $Email */
             $Email = oxNew(Email::class);
             $Email->d3SendCancelMessage($this);
         }
