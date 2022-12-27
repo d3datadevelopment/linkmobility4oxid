@@ -52,6 +52,7 @@ class OrderRecipients
                     /** @var string $countryId */
                     $countryId = $this->order->getFieldData(trim($countryIdFieldName));
                     $country->load($countryId);
+                    /** @var Recipient $recipient */
                     return oxNew(Recipient::class, $content, $country->getFieldData('oxisoalpha2'));
                 }
             } catch (NumberParseException $e) {

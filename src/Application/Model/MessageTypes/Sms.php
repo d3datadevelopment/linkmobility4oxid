@@ -137,7 +137,7 @@ class Sms extends AbstractMessage
             return $response->isSuccessful();
         } catch (abortSendingExceptionInterface $e) {
             Registry::getLogger()->warning($e->getMessage());
-            // Oxid does not accept throwable interface only exceptions according by definition
+            // Oxid does not accept throwable interface only exceptions according to definition
             Registry::getUtilsView()->addErrorToDisplay($e->getMessage());
         } catch (GuzzleException $e) {
             Registry::getLogger()->warning($e->getMessage());

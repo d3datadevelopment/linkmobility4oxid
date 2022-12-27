@@ -63,7 +63,7 @@ class Configuration
     /**
      * @return string|null
      */
-    public function getSmsSenderNumber()
+    public function getSmsSenderNumber(): ?string
     {
         /** @var string $number */
         $number = Registry::getConfig()->getConfigParam(self::SMS_SENDERNR);

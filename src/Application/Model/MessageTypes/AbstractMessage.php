@@ -74,7 +74,7 @@ abstract class AbstractMessage
     /**
      * @return ResponseInterface|null
      */
-    public function getResponse()
+    public function getResponse(): ?ResponseInterface
     {
         return $this->response;
     }
@@ -94,7 +94,6 @@ abstract class AbstractMessage
     public function getRecipientsList(): string
     {
         $list = [];
-        /** @var Recipient $recipient */
         foreach ($this->recipients as $recipient) {
             $list[] = $recipient->get();
         }
