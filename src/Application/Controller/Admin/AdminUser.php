@@ -18,14 +18,10 @@ namespace D3\Linkmobility4OXID\Application\Controller\Admin;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\Linkmobility4OXID\Application\Model\UserRecipients;
-use D3\LinkmobilityClient\Response\ResponseInterface;
-use D3\LinkmobilityClient\ValueObject\Recipient;
-use Exception;
-use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
+use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
-use OxidEsales\Eshop\Core\Registry;
 
-class AdminUser extends AdminController
+class AdminUser extends AdminSendController
 {
     protected $_sThisTemplate = 'd3adminuser.tpl';
 
@@ -34,66 +30,29 @@ class AdminUser extends AdminController
      */
     protected $sms;
 
-    /**
-     * @var User
-     */
-    protected $user;
+    /** @var User */
+    protected $item;
+
+    /** @var UserRecipients */
+    protected $itemRecipients;
 
     public function __construct()
     {
-        $this->user = $user = oxNew(User::class);
-        $user->load($this->getEditObjectId());
-
-        $this->addTplParam('recipient', $this->getRecipientFromCurrentUser());
-
+        $this->item = $this->d3GetMockableOxNewObject(User::class);
+        $this->itemRecipients = $this->d3GetMockableOxNewObject(UserRecipients::class, $this->item);
         parent::__construct();
     }
 
     /**
-     * @return Recipient|false
+     * @return string
+     * @throws noRecipientFoundException
      */
-    public function getRecipientFromCurrentUser()
+    protected function sendMessage(): string
     {
-        try {
-            return oxNew(UserRecipients::class, $this->user)->getSmsRecipient();
-        } catch (noRecipientFoundException $e) {
-            /** @var string $message */
-            $message = Registry::getLang()->translateString($e->getMessage());
-            Registry::getUtilsView()->addErrorToDisplay($message);
-        }
-        return false;
-    }
-
-    /**
-     * @return void
-     * @throws Exception
-     */
-    public function send(): void
-    {
-        /** @var string $messageBody */
-        $messageBody = Registry::getRequest()->getRequestEscapedParameter('messagebody');
-
-        if (strlen($messageBody) <= 1) {
-            /** @var string $message */
-            $message = Registry::getLang()->translateString('D3LM_EXC_MESSAGE_NO_LENGTH');
-            Registry::getUtilsView()->addErrorToDisplay($message);
-            return;
-        }
-
-        $user = oxNew(User::class);
-        $user->load($this->getEditObjectId());
-
-        $sms = oxNew(Sms::class, $messageBody);
-        if ($sms->sendUserAccountMessage($user)) {
-            /** @var string $format */
-            $format = Registry::getLang()->translateString('D3LM_EXC_SMS_SUCC_SENT');
-            $smsCount = $sms->getResponse() ? $sms->getResponse()->getSmsCount() : 0;
-            Registry::getUtilsView()->addErrorToDisplay(sprintf($format, $smsCount));
-        } else {
-            $errorMsg = $sms->getResponse() instanceof ResponseInterface ? $sms->getResponse()->getErrorMessage() : 'no response';
-            /** @var string $format */
-            $format = Registry::getLang()->translateString('D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND');
-            Registry::getUtilsView()->addErrorToDisplay(sprintf($format, $errorMsg));
-        }
+        /** @var Sms $sms */
+        $sms = $this->d3GetMockableOxNewObject(Sms::class, $this->getMessageBody());
+        return $sms->sendUserAccountMessage($this->item) ?
+            (string) $this->getSuccessSentMessage($sms) :
+            $this->getUnsuccessfullySentMessage($sms);
     }
 }

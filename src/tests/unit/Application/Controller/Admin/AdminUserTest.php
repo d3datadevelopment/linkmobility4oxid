@@ -15,23 +15,22 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\tests\unit\Application\Controller\Admin;
 
-use D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder;
+use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
-use D3\Linkmobility4OXID\Application\Model\OrderRecipients;
-use D3\LinkmobilityClient\ValueObject\Recipient;
+use D3\Linkmobility4OXID\Application\Model\UserRecipients;
 use D3\TestingTools\Development\CanAccessRestricted;
-use OxidEsales\Eshop\Application\Model\Order;
+use OxidEsales\Eshop\Application\Model\User;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
 
-class AdminOrderTest extends AdminSend
+class AdminUserTest extends AdminSend
 {
     use CanAccessRestricted;
 
-    protected $subjectUnderTestClass = AdminOrder::class;
-    protected $itemClass = Order::class;
-    protected $itemRecipientClass = OrderRecipients::class;
+    protected $subjectUnderTestClass = AdminUser::class;
+    protected $itemClass = User::class;
+    protected $itemRecipientClass = UserRecipients::class;
 
     /**
      * @test
@@ -46,12 +45,12 @@ class AdminOrderTest extends AdminSend
         /** @var Sms|MockObject $smsMock */
         $smsMock = $this->getMockBuilder(Sms::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['sendOrderMessage'])
+            ->onlyMethods(['sendUserAccountMessage'])
             ->getMock();
-        $smsMock->expects($this->once())->method('sendOrderMessage')->willReturn($canSendItemMessage);
+        $smsMock->expects($this->once())->method('sendUserAccountMessage')->willReturn($canSendItemMessage);
 
-        /** @var AdminOrder|MockObject $sut */
-        $sut = $this->getMockBuilder(AdminOrder::class)
+        /** @var AdminUser|MockObject $sut */
+        $sut = $this->getMockBuilder(AdminUser::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['d3GetMockableOxNewObject', 'getMessageBody', 'getSuccessSentMessage', 'getUnsuccessfullySentMessage'])
             ->getMock();
