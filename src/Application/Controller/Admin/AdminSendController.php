@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\Application\Controller\Admin;
 
+use D3\DIContainerHandler\d3DicHandler;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
@@ -61,9 +62,12 @@ abstract class AdminSendController extends AdminController
         try {
             return $this->itemRecipients->getSmsRecipient();
         } catch (noRecipientFoundException $e) {
-            /** @var string $message */
-            $message = $this->d3GetMockableRegistryObject(Language::class)->translateString($e->getMessage());
-            $this->d3GetMockableRegistryObject(UtilsView::class)->addErrorToDisplay($message);
+            /** @var Language $lang */
+            $lang = d3DicHandler::getInstance()->get('d3ox.linkmobility.'.Language::class);
+            $message = $lang->translateString($e->getMessage());
+            /** @var UtilsView $utilsView */
+            $utilsView = d3DicHandler::getInstance()->get('d3ox.linkmobility.'.UtilsView::class);
+            $utilsView->addErrorToDisplay($message);
         }
 
         return false;
@@ -74,7 +78,8 @@ abstract class AdminSendController extends AdminController
      */
     public function send(): void
     {
-        $utilsView = $this->d3GetMockableRegistryObject(UtilsView::class);
+        /** @var UtilsView $utilsView */
+        $utilsView = d3DicHandler::getInstance()->get('d3ox.linkmobility.'.UtilsView::class);
 
         try {
             $utilsView->addErrorToDisplay($this->sendMessage());
@@ -89,14 +94,18 @@ abstract class AdminSendController extends AdminController
      */
     protected function getMessageBody(): string
     {
-        $messageBody = $this->d3GetMockableRegistryObject(Request::class)
-            ->getRequestEscapedParameter('messagebody');
+        /** @var Request $request */
+        $request = d3DicHandler::getInstance()->get('d3ox.linkmobility.'.Request::class);
+        $messageBody = $request->getRequestEscapedParameter('messagebody');
 
         if (false === is_string($messageBody) || strlen(trim($messageBody)) <= 1) {
-            throw $this->d3GetMockableOxNewObject(
-                InvalidArgumentException::class,
+            d3DicHandler::getInstance()->setParameter(
+                'd3ox.linkmobility.'.InvalidArgumentException::class.'.args.message',
                 Registry::getLang()->translateString('D3LM_EXC_MESSAGE_NO_LENGTH')
             );
+            /** @var InvalidArgumentException $exc */
+            $exc = d3DicHandler::getInstance()->get('d3ox.linkmobility.'.InvalidArgumentException::class);
+            throw $exc;
         }
 
         return $messageBody;
@@ -115,7 +124,10 @@ abstract class AdminSendController extends AdminController
     protected function getSuccessSentMessage(Sms $sms): successfullySentException
     {
         $smsCount = $sms->getResponse() ? $sms->getResponse()->getSmsCount() : 0;
-        return $this->d3GetMockableOxNewObject(successfullySentException::class, $smsCount);
+        d3DicHandler::getInstance()->setParameter(successfullySentException::class.'.args.smscount', $smsCount);
+        /** @var successfullySentException $exc */
+        $exc = d3DicHandler::getInstance()->get(successfullySentException::class);
+        return $exc;
     }
 
     /**

@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\tests\unit\Application\Controller\Admin;
 
+use D3\DIContainerHandler\d3DicHandler;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
@@ -34,10 +35,36 @@ class AdminUserTest extends AdminSend
 
     /**
      * @test
+     * @return void
+     * @throws ReflectionException
+     * @covers \D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser::__construct
+     */
+    public function canConstruct()
+    {
+        /** @var User|MockObject $itemMock */
+        $itemMock = $this->getMockBuilder($this->itemClass)
+            ->onlyMethods(['load'])
+            ->getMock();
+        $itemMock->method('load')->willReturn(true);
+        d3DicHandler::getInstance()->set('d3ox.linkmobility.'.User::class, $itemMock);
+
+        $sut = parent::canConstruct();
+
+        $this->assertSame(
+            $itemMock,
+            $this->getValue(
+                $sut,
+                'item'
+            )
+        );
+    }
+
+    /**
+     * @test
      * @param $canSendItemMessage
      * @return void
      * @throws ReflectionException
-     * @covers \D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder::sendMessage
+     * @covers \D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser::sendMessage
      * @dataProvider canSendMessageDataProvider
      */
     public function canSendMessage($canSendItemMessage)
@@ -48,23 +75,13 @@ class AdminUserTest extends AdminSend
             ->onlyMethods(['sendUserAccountMessage'])
             ->getMock();
         $smsMock->expects($this->once())->method('sendUserAccountMessage')->willReturn($canSendItemMessage);
+        d3DicHandler::getInstance()->set(Sms::class, $smsMock);
 
         /** @var AdminUser|MockObject $sut */
         $sut = $this->getMockBuilder(AdminUser::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['d3GetMockableOxNewObject', 'getMessageBody', 'getSuccessSentMessage', 'getUnsuccessfullySentMessage'])
+            ->onlyMethods(['getMessageBody', 'getSuccessSentMessage', 'getUnsuccessfullySentMessage'])
             ->getMock();
-        $sut->method('d3GetMockableOxNewObject')->willReturnCallback(
-            function () use ($smsMock) {
-                $args = func_get_args();
-                switch ($args[0]) {
-                    case Sms::class:
-                        return $smsMock;
-                    default:
-                        return call_user_func_array("oxNew", $args);
-                }
-            }
-        );
         $sut->method('getMessageBody')->willReturn('messageBodyFixture');
         $sut->expects($this->exactly((int) $canSendItemMessage))->method('getSuccessSentMessage')
             ->willReturn(oxNew(successfullySentException::class, 'expectedReturn'));

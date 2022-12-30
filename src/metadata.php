@@ -13,10 +13,12 @@
 
 declare(strict_types=1);
 
+use D3\DIContainerHandler\definitionFileContainer;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
 use D3\Linkmobility4OXID\Modules\Application\Model\OrderModel;
 use D3\Linkmobility4OXID\Modules\Core\EmailCore;
+use D3\Linkmobility4OXID\Modules\LinkmobilityServices;
 use D3\Linkmobility4OXID\Setup\Events;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Core\Email;
@@ -41,8 +43,9 @@ $aModule = [
     'email'        => 'support@shopmodule.com',
     'url'          => 'https://www.oxidmodule.com/',
     'extend'       => [
-        Email::class => EmailCore::class,
-        Order::class => OrderModel::class
+        Email::class                    => EmailCore::class,
+        Order::class                    => OrderModel::class,
+        definitionFileContainer::class  => LinkmobilityServices::class
     ],
     'controllers'  => [
         'd3linkmobility_user'   => AdminUser::class,

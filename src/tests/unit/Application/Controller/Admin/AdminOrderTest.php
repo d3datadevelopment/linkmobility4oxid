@@ -15,11 +15,11 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\tests\unit\Application\Controller\Admin;
 
+use D3\DIContainerHandler\d3DicHandler;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\Linkmobility4OXID\Application\Model\OrderRecipients;
-use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\TestingTools\Development\CanAccessRestricted;
 use OxidEsales\Eshop\Application\Model\Order;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -32,6 +32,33 @@ class AdminOrderTest extends AdminSend
     protected $subjectUnderTestClass = AdminOrder::class;
     protected $itemClass = Order::class;
     protected $itemRecipientClass = OrderRecipients::class;
+
+    /**
+     * @test
+     * @return void
+     * @throws ReflectionException
+     * @covers \D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder::__construct
+     * @covers \D3\Linkmobility4OXID\Application\Controller\Admin\AdminSendController::__construct
+     */
+    public function canConstruct()
+    {
+        /** @var Order|MockObject $itemMock */
+        $itemMock = $this->getMockBuilder($this->itemClass)
+            ->onlyMethods(['load'])
+            ->getMock();
+        $itemMock->method('load')->willReturn(true);
+        d3DicHandler::getInstance()->set('d3ox.linkmobility.'.Order::class, $itemMock);
+
+        $sut = parent::canConstruct();
+
+        $this->assertSame(
+            $itemMock,
+            $this->getValue(
+                $sut,
+                'item'
+            )
+        );
+    }
 
     /**
      * @test
@@ -49,23 +76,13 @@ class AdminOrderTest extends AdminSend
             ->onlyMethods(['sendOrderMessage'])
             ->getMock();
         $smsMock->expects($this->once())->method('sendOrderMessage')->willReturn($canSendItemMessage);
+        d3DicHandler::getInstance()->set(Sms::class, $smsMock);
 
         /** @var AdminOrder|MockObject $sut */
         $sut = $this->getMockBuilder(AdminOrder::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['d3GetMockableOxNewObject', 'getMessageBody', 'getSuccessSentMessage', 'getUnsuccessfullySentMessage'])
+            ->onlyMethods(['getMessageBody', 'getSuccessSentMessage', 'getUnsuccessfullySentMessage'])
             ->getMock();
-        $sut->method('d3GetMockableOxNewObject')->willReturnCallback(
-            function () use ($smsMock) {
-                $args = func_get_args();
-                switch ($args[0]) {
-                    case Sms::class:
-                        return $smsMock;
-                    default:
-                        return call_user_func_array("oxNew", $args);
-                }
-            }
-        );
         $sut->method('getMessageBody')->willReturn('messageBodyFixture');
         $sut->expects($this->exactly((int) $canSendItemMessage))->method('getSuccessSentMessage')
             ->willReturn(oxNew(successfullySentException::class, 'expectedReturn'));

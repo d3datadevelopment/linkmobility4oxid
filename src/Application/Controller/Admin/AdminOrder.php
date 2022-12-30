@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\Application\Controller\Admin;
 
+use D3\DIContainerHandler\d3DicHandler;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\Linkmobility4OXID\Application\Model\OrderRecipients;
@@ -35,8 +36,9 @@ class AdminOrder extends AdminSendController
 
     public function __construct()
     {
-        $this->item = $this->d3GetMockableOxNewObject(Order::class);
-        $this->itemRecipients = $this->d3GetMockableOxNewObject(OrderRecipients::class, $this->item);
+        $this->item = d3DicHandler::getInstance()->get('d3ox.linkmobility.'.Order::class);
+        d3DicHandler::getInstance()->set(OrderRecipients::class.'.args.order', $this->item);
+        $this->itemRecipients = d3DicHandler::getInstance()->get(OrderRecipients::class);
         parent::__construct();
     }
 
@@ -46,7 +48,9 @@ class AdminOrder extends AdminSendController
      */
     protected function sendMessage(): string
     {
-        $sms = $this->d3GetMockableOxNewObject(Sms::class, $this->getMessageBody());
+        d3DicHandler::getInstance()->setParameter(Sms::class.'.args.message', $this->getMessageBody());
+        /** @var Sms $sms */
+        $sms = d3DicHandler::getInstance()->get(Sms::class);
         return $sms->sendOrderMessage($this->item) ?
             (string) $this->getSuccessSentMessage($sms) :
             $this->getUnsuccessfullySentMessage($sms);

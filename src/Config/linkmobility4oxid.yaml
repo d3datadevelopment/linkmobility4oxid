@@ -1,0 +1,55 @@
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+#
+# https://www.d3data.de
+#
+# @copyright (C) D3 Data Development (Inh. Thomas Dartsch)
+# @author    D3 Data Development - Daniel Seifert <support@shopmodule.com>
+# @link      https://www.oxidmodule.com
+
+parameters:
+  D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms.args.message:
+  D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException.args.smscount:
+
+services:
+  _defaults:
+    autowire: false
+    public: true
+
+  D3\Linkmobility4OXID\Application\Model\OrderRecipients:
+    class: D3\Linkmobility4OXID\Application\Model\OrderRecipients
+    factory: 'oxNew'
+    shared: false
+    arguments:
+      - D3\Linkmobility4OXID\Application\Model\OrderRecipients
+      - '@D3\Linkmobility4OXID\Application\Model\OrderRecipients.args.order'
+  D3\Linkmobility4OXID\Application\Model\OrderRecipients.args.order:
+    synthetic: true
+    shared: false
+
+  D3\Linkmobility4OXID\Application\Model\UserRecipients:
+    class: D3\Linkmobility4OXID\Application\Model\UserRecipients
+    factory: 'oxNew'
+    shared: false
+    arguments:
+      - D3\Linkmobility4OXID\Application\Model\UserRecipients
+      - '@D3\Linkmobility4OXID\Application\Model\UserRecipients.args.user'
+  D3\Linkmobility4OXID\Application\Model\UserRecipients.args.user:
+    synthetic: true
+    shared: false
+
+  D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms:
+    class: D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms
+    factory: 'oxNew'
+    shared: false
+    arguments:
+      - D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms
+      - '%D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms.args.message%'
+
+  D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException:
+    class: D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException
+    factory: 'oxNew'
+    shared: false
+    arguments:
+      - D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException
+      - '%D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException.args.smscount%'

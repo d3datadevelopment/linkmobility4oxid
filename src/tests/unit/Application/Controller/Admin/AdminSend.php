@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\tests\unit\Application\Controller\Admin;
 
+use D3\DIContainerHandler\d3DicHandler;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
@@ -22,20 +23,18 @@ use D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\Linkmobility4OXID\Application\Model\OrderRecipients;
 use D3\Linkmobility4OXID\Application\Model\UserRecipients;
+use D3\Linkmobility4OXID\tests\unit\LMUnitTestCase;
 use D3\LinkmobilityClient\SMS\Response;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\TestingTools\Development\CanAccessRestricted;
 use InvalidArgumentException;
-use OxidEsales\Eshop\Application\Model\Order;
-use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\Eshop\Core\Request;
 use OxidEsales\Eshop\Core\UtilsView;
-use OxidEsales\TestingLibrary\UnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
 
-class AdminSend extends UnitTestCase
+class AdminSend extends LMUnitTestCase
 {
     use CanAccessRestricted;
 
@@ -44,20 +43,11 @@ class AdminSend extends UnitTestCase
     protected $itemRecipientClass;
 
     /**
-     * @test
-     * @return void
+     * @return AdminOrder|MockObject
      * @throws ReflectionException
-     * @covers \D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder::__construct
-     * @covers \D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser::__construct
      */
     public function canConstruct()
     {
-        /** @var Order|MockObject $itemMock */
-        $itemMock = $this->getMockBuilder($this->itemClass)
-            ->onlyMethods(['load'])
-            ->getMock();
-        $itemMock->method('load')->willReturn(true);
-
         /** @var Recipient|MockObject $recipientMock */
         $recipientMock = $this->getMockBuilder(Recipient::class)
             ->disableOriginalConstructor()
@@ -66,33 +56,14 @@ class AdminSend extends UnitTestCase
         /** @var AdminOrder|MockObject $sut */
         $sut = $this->getMockBuilder($this->subjectUnderTestClass)
             ->disableOriginalConstructor()
-            ->onlyMethods(['d3GetMockableOxNewObject', 'getEditObjectId', 'getRecipientFromCurrentItem'])
+            ->onlyMethods(['getEditObjectId', 'getRecipientFromCurrentItem'])
             ->getMock();
-        $sut->method('d3GetMockableOxNewObject')->willReturnCallback(
-            function () use ($itemMock) {
-                $args = func_get_args();
-                switch ($args[0]) {
-                    case Order::class:
-                        return $itemMock;
-                    default:
-                        return call_user_func_array("oxNew", $args);
-                }
-            }
-        );
         $sut->method('getEditObjectId')->willReturn('editObjId');
         $sut->method('getRecipientFromCurrentItem')->willReturn($recipientMock);
 
         $this->callMethod(
             $sut,
             '__construct'
-        );
-
-        $this->assertSame(
-            $itemMock,
-            $this->getValue(
-                $sut,
-                'item'
-            )
         );
 
         $this->assertInstanceOf(
@@ -111,6 +82,8 @@ class AdminSend extends UnitTestCase
                 ['recipient']
             )
         );
+
+        return $sut;
     }
 
     /**
@@ -175,6 +148,8 @@ class AdminSend extends UnitTestCase
             ->onlyMethods(['addErrorToDisplay'])
             ->getMock();
         $utilsViewMock->expects($this->once())->method('addErrorToDisplay');
+        d3DicHandler::getInstance()->set('d3ox.linkmobility.'.UtilsView::class, $utilsViewMock);
+
         /** @var OrderRecipients|MockObject $itemRecipientsMock */
         $itemRecipientsMock = $this->getMockBuilder($this->itemRecipientClass)
             ->disableOriginalConstructor()
@@ -183,35 +158,14 @@ class AdminSend extends UnitTestCase
         $itemRecipientsMock->method('getSmsRecipient')->willThrowException(
             oxNew(noRecipientFoundException::class)
         );
+        d3DicHandler::getInstance()->set(OrderRecipients::class, $itemRecipientsMock);
+        d3DicHandler::getInstance()->set(UserRecipients::class, $itemRecipientsMock);
 
         /** @var AdminOrder|AdminUser|MockObject $sut */
         $sut = $this->getMockBuilder($this->subjectUnderTestClass)
-            ->onlyMethods(['d3GetMockableOxNewObject', 'd3GetMockableRegistryObject'])
+            ->onlyMethods(['__construct'])
             ->disableOriginalConstructor()
             ->getMock();
-        $sut->method('d3GetMockableOxNewObject')->willReturnCallback(
-            function () use ($itemRecipientsMock) {
-                $args = func_get_args();
-                switch ($args[0]) {
-                    case OrderRecipients::class:
-                    case UserRecipients::class:
-                        return $itemRecipientsMock;
-                    default:
-                        return call_user_func_array("oxNew", $args);
-                }
-            }
-        );
-        $sut->method('d3GetMockableRegistryObject')->willReturnCallback(
-            function () use ($utilsViewMock) {
-                $args = func_get_args();
-                switch ($args[0]) {
-                    case UtilsView::class:
-                        return $utilsViewMock;
-                    default:
-                        return Registry::get($args[0]);
-                }
-            }
-        );
         $this->setValue(
             $sut,
             'item',
@@ -247,23 +201,13 @@ class AdminSend extends UnitTestCase
             ->onlyMethods(['addErrorToDisplay'])
             ->getMock();
         $utilsViewMock->expects($this->once())->method('addErrorToDisplay');
+        d3DicHandler::getInstance()->set('d3ox.linkmobility.'.UtilsView::class, $utilsViewMock);
 
         /** @var AdminOrder|AdminUser|MockObject $sut */
         $sut = $this->getMockBuilder($this->subjectUnderTestClass)
-            ->onlyMethods(['d3GetMockableRegistryObject', 'sendMessage'])
+            ->onlyMethods(['sendMessage'])
             ->disableOriginalConstructor()
             ->getMock();
-        $sut->method('d3GetMockableRegistryObject')->willReturnCallback(
-            function () use ($utilsViewMock) {
-                $args = func_get_args();
-                switch ($args[0]) {
-                    case UtilsView::class:
-                        return $utilsViewMock;
-                    default:
-                        return Registry::get($args[0]);
-                }
-            }
-        );
         $sut->method('sendMessage')->will(
             $throwsException ?
                 $this->throwException(oxNew(noRecipientFoundException::class)) :
@@ -305,23 +249,13 @@ class AdminSend extends UnitTestCase
             ->onlyMethods(['getRequestEscapedParameter'])
             ->getMock();
         $requestMock->method('getRequestEscapedParameter')->willReturn($message);
+        d3DicHandler::getInstance()->set('d3ox.linkmobility.'.Request::class, $requestMock);
 
         /** @var AdminOrder|AdminUser|MockObject $sut */
         $sut = $this->getMockBuilder($this->subjectUnderTestClass)
-            ->onlyMethods(['d3GetMockableRegistryObject'])
+            ->onlyMethods(['__construct'])
             ->disableOriginalConstructor()
             ->getMock();
-        $sut->method('d3GetMockableRegistryObject')->willReturnCallback(
-            function () use ($requestMock) {
-                $args = func_get_args();
-                switch ($args[0]) {
-                    case Request::class:
-                        return $requestMock;
-                    default:
-                        return Registry::get($args[0]);
-                }
-            }
-        );
 
         if ($expectException) {
             $this->expectException(InvalidArgumentException::class);
@@ -375,6 +309,7 @@ class AdminSend extends UnitTestCase
         $successfullySendExceptionMock = $this->getMockBuilder(successfullySentException::class)
             ->disableOriginalConstructor()
             ->getMock();
+        d3DicHandler::getInstance()->set(successfullySentException::class, $successfullySendExceptionMock);
 
         /** @var Response|MockObject $resonseMock */
         $resonseMock = $this->getMockBuilder(Response::class)
@@ -394,19 +329,8 @@ class AdminSend extends UnitTestCase
         /** @var AdminOrder|AdminUser|MockObject $sut */
         $sut = $this->getMockBuilder($this->subjectUnderTestClass)
             ->disableOriginalConstructor()
-            ->onlyMethods(['d3GetMockableOxNewObject'])
+            ->onlyMethods(['__construct'])
             ->getMock();
-        $sut->method('d3GetMockableOxNewObject')->willReturnCallback(
-            function () use ($successfullySendExceptionMock) {
-                $args = func_get_args();
-                switch ($args[0]) {
-                    case successfullySentException::class:
-                        return $successfullySendExceptionMock;
-                    default:
-                        return call_user_func_array("oxNew", $args);
-                }
-            }
-        );
 
         $this->assertSame(
             $successfullySendExceptionMock,

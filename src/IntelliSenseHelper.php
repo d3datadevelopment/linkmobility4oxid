@@ -13,6 +13,13 @@
 
 declare(strict_types=1);
 
+namespace D3\Linkmobility4OXID\Modules {
+
+    use D3\DIContainerHandler\definitionFileContainer;
+
+    class LinkmobilityServices_parent extends definitionFileContainer {}
+}
+
 namespace D3\Linkmobility4OXID\Modules\Application\Model {
 
     use OxidEsales\Eshop\Application\Model\Order;

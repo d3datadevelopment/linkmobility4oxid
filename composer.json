@@ -23,15 +23,13 @@
     "require": {
         "php": "^7.1 || ^8.0",
         "oxid-esales/oxideshop-ce": "6.7 - 6.13",
-        "d3/linkmobility-php-client": "^1.2.0 || ^2.0.0"
+        "d3/linkmobility-php-client": "^1.2.0 || ^2.0.0",
+	"d3/oxid-dic-handler": "*"
     },
     "require-dev": {
       "oxid-esales/oxideshop-ce": "~6.10.0",
       "friendsofphp/php-cs-fixer": "^2.19",
       "phpstan/phpstan": "^1.8"
-    },
-    "require-dev": {
-        "d3/modcfg": "^5.3.7.0 || ^6.0"
     },
     "extra": {
       "oxideshop": {
