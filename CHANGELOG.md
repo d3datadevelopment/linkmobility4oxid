@@ -4,7 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://git.d3data.de/D3Private/linkmobility4oxid/compare/1.1.0.1...rel_1.x)
+## [Unreleased](https://git.d3data.de/D3Private/linkmobility4oxid/compare/1.1.1.0...rel_1.x)
+
+## [1.1.1.0](https://git.d3data.de/D3Private/linkmobility4oxid/compare/1.1.0.1...1.1.1.0) - 2023-01-01
+### Added
+- make installable in OXID 6.5.1 (CE 6.13)
+- add linkmobility to remark types in installation triggers
+- regenerate database views in installation process
+
+### Changed
+- adjust requirements
+
+### Fixed
+- fix error if configuration is missing
 
 ## [1.1.0.1](https://git.d3data.de/D3Private/linkmobility4oxid/compare/1.1.0.0...1.1.0.1) - 2022-09-29
 ### Changed
