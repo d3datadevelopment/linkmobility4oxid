@@ -63,10 +63,10 @@ abstract class AdminSendController extends AdminController
             return $this->itemRecipients->getSmsRecipient();
         } catch (noRecipientFoundException $e) {
             /** @var Language $lang */
-            $lang = d3DicHandler::getInstance()->get('d3ox.linkmobility.'.Language::class);
+            $lang = d3GetOxidDIC()->get('d3ox.linkmobility.'.Language::class);
             $message = $lang->translateString($e->getMessage());
             /** @var UtilsView $utilsView */
-            $utilsView = d3DicHandler::getInstance()->get('d3ox.linkmobility.'.UtilsView::class);
+            $utilsView = d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class);
             $utilsView->addErrorToDisplay($message);
         }
 
@@ -79,7 +79,7 @@ abstract class AdminSendController extends AdminController
     public function send(): void
     {
         /** @var UtilsView $utilsView */
-        $utilsView = d3DicHandler::getInstance()->get('d3ox.linkmobility.'.UtilsView::class);
+        $utilsView = d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class);
 
         try {
             $utilsView->addErrorToDisplay($this->sendMessage());
@@ -95,16 +95,16 @@ abstract class AdminSendController extends AdminController
     protected function getMessageBody(): string
     {
         /** @var Request $request */
-        $request = d3DicHandler::getInstance()->get('d3ox.linkmobility.'.Request::class);
+        $request = d3GetOxidDIC()->get('d3ox.linkmobility.'.Request::class);
         $messageBody = $request->getRequestEscapedParameter('messagebody');
 
         if (false === is_string($messageBody) || strlen(trim($messageBody)) <= 1) {
-            d3DicHandler::getInstance()->setParameter(
+            d3GetOxidDIC()->setParameter(
                 'd3ox.linkmobility.'.InvalidArgumentException::class.'.args.message',
                 Registry::getLang()->translateString('D3LM_EXC_MESSAGE_NO_LENGTH')
             );
             /** @var InvalidArgumentException $exc */
-            $exc = d3DicHandler::getInstance()->get('d3ox.linkmobility.'.InvalidArgumentException::class);
+            $exc = d3GetOxidDIC()->get('d3ox.linkmobility.'.InvalidArgumentException::class);
             throw $exc;
         }
 
@@ -124,9 +124,9 @@ abstract class AdminSendController extends AdminController
     protected function getSuccessSentMessage(Sms $sms): successfullySentException
     {
         $smsCount = $sms->getResponse() ? $sms->getResponse()->getSmsCount() : 0;
-        d3DicHandler::getInstance()->setParameter(successfullySentException::class.'.args.smscount', $smsCount);
+        d3GetOxidDIC()->setParameter(successfullySentException::class.'.args.smscount', $smsCount);
         /** @var successfullySentException $exc */
-        $exc = d3DicHandler::getInstance()->get(successfullySentException::class);
+        $exc = d3GetOxidDIC()->get(successfullySentException::class);
         return $exc;
     }
 

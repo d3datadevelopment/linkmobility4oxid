@@ -36,9 +36,9 @@ class AdminOrder extends AdminSendController
 
     public function __construct()
     {
-        $this->item = d3DicHandler::getInstance()->get('d3ox.linkmobility.'.Order::class);
-        d3DicHandler::getInstance()->set(OrderRecipients::class.'.args.order', $this->item);
-        $this->itemRecipients = d3DicHandler::getInstance()->get(OrderRecipients::class);
+        $this->item = d3GetOxidDIC()->get('d3ox.linkmobility.'.Order::class);
+        d3GetOxidDIC()->set(OrderRecipients::class.'.args.order', $this->item);
+        $this->itemRecipients = d3GetOxidDIC()->get(OrderRecipients::class);
         parent::__construct();
     }
 
@@ -48,9 +48,9 @@ class AdminOrder extends AdminSendController
      */
     protected function sendMessage(): string
     {
-        d3DicHandler::getInstance()->setParameter(Sms::class.'.args.message', $this->getMessageBody());
+        d3GetOxidDIC()->setParameter(Sms::class.'.args.message', $this->getMessageBody());
         /** @var Sms $sms */
-        $sms = d3DicHandler::getInstance()->get(Sms::class);
+        $sms = d3GetOxidDIC()->get(Sms::class);
         return $sms->sendOrderMessage($this->item) ?
             (string) $this->getSuccessSentMessage($sms) :
             $this->getUnsuccessfullySentMessage($sms);

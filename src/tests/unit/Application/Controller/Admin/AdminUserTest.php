@@ -46,7 +46,7 @@ class AdminUserTest extends AdminSend
             ->onlyMethods(['load'])
             ->getMock();
         $itemMock->method('load')->willReturn(true);
-        d3DicHandler::getInstance()->set('d3ox.linkmobility.'.User::class, $itemMock);
+        d3GetOxidDIC()->set('d3ox.linkmobility.'.User::class, $itemMock);
 
         $sut = parent::canConstruct();
 
@@ -75,7 +75,7 @@ class AdminUserTest extends AdminSend
             ->onlyMethods(['sendUserAccountMessage'])
             ->getMock();
         $smsMock->expects($this->once())->method('sendUserAccountMessage')->willReturn($canSendItemMessage);
-        d3DicHandler::getInstance()->set(Sms::class, $smsMock);
+        d3GetOxidDIC()->set(Sms::class, $smsMock);
 
         /** @var AdminUser|MockObject $sut */
         $sut = $this->getMockBuilder(AdminUser::class)

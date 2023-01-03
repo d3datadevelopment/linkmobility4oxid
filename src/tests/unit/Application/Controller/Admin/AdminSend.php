@@ -148,7 +148,7 @@ class AdminSend extends LMUnitTestCase
             ->onlyMethods(['addErrorToDisplay'])
             ->getMock();
         $utilsViewMock->expects($this->once())->method('addErrorToDisplay');
-        d3DicHandler::getInstance()->set('d3ox.linkmobility.'.UtilsView::class, $utilsViewMock);
+        d3GetOxidDIC()->set('d3ox.linkmobility.'.UtilsView::class, $utilsViewMock);
 
         /** @var OrderRecipients|MockObject $itemRecipientsMock */
         $itemRecipientsMock = $this->getMockBuilder($this->itemRecipientClass)
@@ -158,8 +158,8 @@ class AdminSend extends LMUnitTestCase
         $itemRecipientsMock->method('getSmsRecipient')->willThrowException(
             oxNew(noRecipientFoundException::class)
         );
-        d3DicHandler::getInstance()->set(OrderRecipients::class, $itemRecipientsMock);
-        d3DicHandler::getInstance()->set(UserRecipients::class, $itemRecipientsMock);
+        d3GetOxidDIC()->set(OrderRecipients::class, $itemRecipientsMock);
+        d3GetOxidDIC()->set(UserRecipients::class, $itemRecipientsMock);
 
         /** @var AdminOrder|AdminUser|MockObject $sut */
         $sut = $this->getMockBuilder($this->subjectUnderTestClass)
@@ -201,7 +201,7 @@ class AdminSend extends LMUnitTestCase
             ->onlyMethods(['addErrorToDisplay'])
             ->getMock();
         $utilsViewMock->expects($this->once())->method('addErrorToDisplay');
-        d3DicHandler::getInstance()->set('d3ox.linkmobility.'.UtilsView::class, $utilsViewMock);
+        d3GetOxidDIC()->set('d3ox.linkmobility.'.UtilsView::class, $utilsViewMock);
 
         /** @var AdminOrder|AdminUser|MockObject $sut */
         $sut = $this->getMockBuilder($this->subjectUnderTestClass)
@@ -249,7 +249,7 @@ class AdminSend extends LMUnitTestCase
             ->onlyMethods(['getRequestEscapedParameter'])
             ->getMock();
         $requestMock->method('getRequestEscapedParameter')->willReturn($message);
-        d3DicHandler::getInstance()->set('d3ox.linkmobility.'.Request::class, $requestMock);
+        d3GetOxidDIC()->set('d3ox.linkmobility.'.Request::class, $requestMock);
 
         /** @var AdminOrder|AdminUser|MockObject $sut */
         $sut = $this->getMockBuilder($this->subjectUnderTestClass)
@@ -309,7 +309,7 @@ class AdminSend extends LMUnitTestCase
         $successfullySendExceptionMock = $this->getMockBuilder(successfullySentException::class)
             ->disableOriginalConstructor()
             ->getMock();
-        d3DicHandler::getInstance()->set(successfullySentException::class, $successfullySendExceptionMock);
+        d3GetOxidDIC()->set(successfullySentException::class, $successfullySendExceptionMock);
 
         /** @var Response|MockObject $resonseMock */
         $resonseMock = $this->getMockBuilder(Response::class)
