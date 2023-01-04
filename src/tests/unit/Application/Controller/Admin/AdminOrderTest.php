@@ -38,7 +38,6 @@ class AdminOrderTest extends AdminSend
      * @return void
      * @throws ReflectionException
      * @covers \D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder::__construct
-     * @covers \D3\Linkmobility4OXID\Application\Controller\Admin\AdminSendController::__construct
      */
     public function canConstruct()
     {
