@@ -1,0 +1,28 @@
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+#
+# https://www.d3data.de
+#
+# @copyright (C) D3 Data Development (Inh. Thomas Dartsch)
+# @author    D3 Data Development - Daniel Seifert <support@shopmodule.com>
+# @link      https://www.oxidmodule.com
+
+parameters:
+  libphonenumber\NumberParseException.args.errorType:
+  libphonenumber\NumberParseException.args.message:
+  libphonenumber\NumberParseException.args.previous:
+
+services:
+  _defaults:
+    autowire: false
+    public: true
+
+  libphonenumber\NumberParseException:
+    class: libphonenumber\NumberParseException
+    factory: 'oxNew'
+    shared: false
+    arguments:
+      - libphonenumber\NumberParseException
+      - '%libphonenumber\NumberParseException.args.errorType%'
+      - '%libphonenumber\NumberParseException.args.message%'
+      - '%libphonenumber\NumberParseException.args.previous%'

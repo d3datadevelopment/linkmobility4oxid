@@ -15,11 +15,15 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\Modules;
 
+use D3\TestingTools\Production\IsMockable;
+
 class LinkmobilityServices extends LinkmobilityServices_parent
 {
+    use IsMockable;
+
     public function __construct()
     {
-        parent::__construct();
+        $this->d3CallMockableFunction([LinkmobilityServices_parent::class, '__construct']);
         $this->addYamlDefinitions('d3/linkmobility/Config/services.yaml');
     }
 }

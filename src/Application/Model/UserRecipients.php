@@ -28,7 +28,7 @@ class UserRecipients
     /**
      * @var User
      */
-    private $user;
+    protected $user;
 
     public function __construct(User $user)
     {
@@ -42,28 +42,46 @@ class UserRecipients
     public function getSmsRecipient(): Recipient
     {
         foreach ($this->getSmsRecipientFields() as $fieldName) {
-            /** @var string $content */
-            $content = $this->user->getFieldData($fieldName) ?: '';
-            $content = trim($content);
-            $country = oxNew(Country::class);
-
-            try {
-                if (strlen($content)) {
-                    /** @var string $countryId */
-                    $countryId = $this->user->getFieldData('oxcountryid');
-                    $country->load($countryId);
-                    return oxNew(Recipient::class, $content, $country->getFieldData('oxisoalpha2'));
-                }
-            } catch (NumberParseException $e) {
-                LoggerHandler::getInstance()->getLogger()->info($e->getMessage(), [$content, $country->getFieldData('oxisoalpha2')]);
-            } catch (RecipientException $e) {
-                LoggerHandler::getInstance()->getLogger()->info($e->getMessage(), [$content, $country->getFieldData('oxisoalpha2')]);
+            if ($recipient = $this->getSmsRecipientByField($fieldName)) {
+                return $recipient;
             }
         }
 
         /** @var noRecipientFoundException $exc */
-        $exc = oxNew(noRecipientFoundException::class);
+        $exc = d3GetOxidDIC()->get(noRecipientFoundException::class);
         throw $exc;
+    }
+
+    /**
+     * @param $fieldName
+     * @return Recipient|null
+     */
+    protected function getSmsRecipientByField($fieldName): ?Recipient
+    {
+        try {
+            /** @var string $content */
+            $content = $this->user->getFieldData($fieldName) ?: '';
+            $content = trim($content);
+
+            if (strlen($content)) {
+                $country = d3GetOxidDIC()->get('d3ox.linkmobility.'.Country::class);
+                /** @var string $countryId */
+                $countryId = $this->user->getFieldData('oxcountryid');
+                $country->load($countryId);
+                d3GetOxidDIC()->setParameter(Recipient::class.'.args.number', $content);
+                d3GetOxidDIC()->setParameter(Recipient::class.'.args.iso2countrycode', $country->getFieldData('oxisoalpha2'));
+                /** @var Recipient $recipient */
+                $recipient = d3GetOxidDIC()->get(Recipient::class);
+                return $recipient;
+            }
+        } catch (NumberParseException|RecipientException $e) {
+            d3GetOxidDIC()->get(LoggerHandler::class)->getLogger()->info(
+                $e->getMessage(),
+                [$content, $country->getFieldData('oxisoalpha2')]
+            );
+        }
+
+        return null;
     }
 
     /**
@@ -71,7 +89,9 @@ class UserRecipients
      */
     public function getSmsRecipientFields(): array
     {
-        $customFields = (oxNew(Configuration::class))->getUserRecipientFields();
+        /** @var Configuration $configuration */
+        $configuration = d3GetOxidDIC()->get(Configuration::class);
+        $customFields = $configuration->getUserRecipientFields();
 
         return count($customFields) ?
             $customFields :

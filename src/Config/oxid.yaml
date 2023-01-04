@@ -49,3 +49,11 @@ services:
     arguments:
       - 'OxidEsales\Eshop\Application\Model\User'
     shared:     false
+
+  # Country
+  d3ox.linkmobility.OxidEsales\Eshop\Application\Model\Country:
+    class:      'OxidEsales\Eshop\Application\Model\Country'
+    factory:    'oxNew'
+    arguments:
+      - 'OxidEsales\Eshop\Application\Model\Country'
+    shared:     false

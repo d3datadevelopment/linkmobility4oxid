@@ -9,7 +9,9 @@
 
 imports:
   - { resource: php.yaml }
+  - { resource: packages.yaml }
   - { resource: oxid.yaml }
+  - { resource: linkmobilityphpclient.yaml }
   - { resource: linkmobility4oxid.yaml }
 
 

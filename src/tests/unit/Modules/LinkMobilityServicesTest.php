@@ -36,11 +36,12 @@ class LinkMobilityServicesTest extends LMUnitTestCase
         /** @var LinkmobilityServices|MockObject $sut */
         $sut = $this->getMockBuilder(LinkmobilityServices::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['addYamlDefinitions'])
+            ->onlyMethods(['addYamlDefinitions', 'd3CallMockableFunction'])
             ->getMock();
         $sut->expects($this->atLeastOnce())->method('addYamlDefinitions')->with(
             $this->identicalTo('d3/linkmobility/Config/services.yaml')
         );
+        $sut->method('d3CallMockableFunction')->willReturn(true);
 
         $this->callMethod(
             $sut,

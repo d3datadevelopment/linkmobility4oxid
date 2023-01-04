@@ -38,6 +38,13 @@ services:
     synthetic: true
     shared: false
 
+  D3\Linkmobility4OXID\Application\Model\Configuration:
+    class: D3\Linkmobility4OXID\Application\Model\Configuration
+    factory: 'oxNew'
+    shared: true
+    arguments:
+      - D3\Linkmobility4OXID\Application\Model\Configuration
+
   D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms:
     class: D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms
     factory: 'oxNew'
@@ -53,3 +60,10 @@ services:
     arguments:
       - D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException
       - '%D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException.args.smscount%'
+
+  D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException:
+    class: D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException
+    factory: 'oxNew'
+    shared: false
+    arguments:
+      - D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException
