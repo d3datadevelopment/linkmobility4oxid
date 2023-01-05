@@ -30,7 +30,7 @@ class MessageSender
      */
     public function sendOrderFinishedMessage(Order $order, string $messageBody): void
     {
-        if ((oxNew(Configuration::class))->sendOrderFinishedMessage()) {
+        if ($this->getConfiguration()->sendOrderFinishedMessage()) {
             $this->sendMessageByOrder($order, $messageBody);
         }
     }
@@ -43,7 +43,7 @@ class MessageSender
      */
     public function sendSendedNowMessage(Order $order, string $messageBody): void
     {
-        if ((oxNew(Configuration::class))->sendOrderSendedNowMessage()) {
+        if ($this->getConfiguration()->sendOrderSendedNowMessage()) {
             $this->sendMessageByOrder($order, $messageBody);
         }
     }
@@ -56,7 +56,7 @@ class MessageSender
      */
     public function sendCancelOrderMessage(Order $order, string $messageBody): void
     {
-        if ((oxNew(Configuration::class))->sendOrderCanceledMessage()) {
+        if ($this->getConfiguration()->sendOrderCanceledMessage()) {
             $this->sendMessageByOrder($order, $messageBody);
         }
     }
@@ -69,14 +69,25 @@ class MessageSender
      */
     public function sendMessageByOrder(Order $order, string $messageBody): void
     {
-        if ((bool) strlen(trim($messageBody)) === false) {
+        if ((bool) strlen(trim($messageBody)) === false)
             return;
-        }
 
         try {
-            $sms = oxNew(Sms::class, $messageBody);
+            d3GetOxidDIC()->setParameter(Sms::class.'.args.message', $messageBody);
+            /** @var Sms $sms */
+            $sms = d3GetOxidDIC()->get(Sms::class);
             $sms->sendOrderMessage($order);
         } catch (noRecipientFoundException $e) {
         }
+    }
+
+    /**
+     * @return Configuration
+     */
+    protected function getConfiguration(): Configuration
+    {
+        /** @var Configuration $configuration */
+        $configuration = d3GetOxidDIC()->get(Configuration::class);
+        return $configuration;
     }
 }
