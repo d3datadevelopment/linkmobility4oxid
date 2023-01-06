@@ -8,6 +8,7 @@
 # @link      https://www.oxidmodule.com
 
 parameters:
+  D3\LinkmobilityClient\Client.args.accesstoken:
   D3\LinkmobilityClient\ValueObject\Recipient.args.number:
   D3\LinkmobilityClient\ValueObject\Recipient.args.iso2countrycode:
   D3\LinkmobilityClient\ValueObject\Sender.args.number:
@@ -24,6 +25,14 @@ services:
       - 'D3\LinkmobilityClient\LoggerHandler'
       - 'getInstance'
     shared: true
+
+  D3\LinkmobilityClient\Client:
+    class: D3\LinkmobilityClient\Client
+    factory: 'oxNew'
+    shared: false
+    arguments:
+      - D3\LinkmobilityClient\Client
+      - '%D3\LinkmobilityClient\Client.args.accesstoken%'
 
   D3\LinkmobilityClient\ValueObject\Recipient:
     class: D3\LinkmobilityClient\ValueObject\Recipient

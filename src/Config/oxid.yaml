@@ -16,6 +16,14 @@ services:
     autowire: false
     public: true
 
+  # config
+  d3ox.linkmobility.OxidEsales\Eshop\Core\Config:
+    class:      'OxidEsales\Eshop\Core\Config'
+    factory:
+      - 'OxidEsales\Eshop\Core\Registry'
+      - 'getConfig'
+    shared:     true
+
   # lang
   d3ox.linkmobility.OxidEsales\Eshop\Core\Language:
     class:      'OxidEsales\Eshop\Core\Session'
@@ -57,3 +65,10 @@ services:
     arguments:
       - 'OxidEsales\Eshop\Application\Model\Country'
     shared:     false
+
+  d3ox.linkmobility.Psr\Log\LoggerInterface:
+    class: Psr\Log\LoggerInterface
+    factory:
+      - 'OxidEsales\Eshop\Core\Registry'
+      - 'getLogger'
+    shared: true

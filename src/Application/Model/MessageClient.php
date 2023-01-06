@@ -17,7 +17,7 @@ namespace D3\Linkmobility4OXID\Application\Model;
 
 use D3\LinkmobilityClient\Client;
 use D3\LinkmobilityClient\LoggerHandler;
-use OxidEsales\Eshop\Core\Registry;
+use Psr\Log\LoggerInterface;
 
 class MessageClient
 {
@@ -26,8 +26,18 @@ class MessageClient
      */
     public function getClient(): Client
     {
-        $client = oxNew(Client::class, oxNew(Configuration::class)->getApiToken());
-        LoggerHandler::getInstance()->setLogger(Registry::getLogger());
+        /** @var Configuration $configuration */
+        $configuration = d3GetOxidDIC()->get(Configuration::class);
+
+        d3GetOxidDIC()->setParameter(Client::class.'.args.accesstoken', $configuration->getApiToken());
+        /** @var Client $client */
+        $client = d3GetOxidDIC()->get(Client::class);
+
+        /** @var LoggerHandler $loggerHandler */
+        $loggerHandler = d3GetOxidDIC()->get(LoggerHandler::class);
+        /** @var LoggerInterface $logger */
+        $logger = d3GetOxidDIC()->get('d3ox.linkmobility.'.LoggerInterface::class);
+        $loggerHandler->setLogger($logger);
 
         return $client;
     }
