@@ -18,6 +18,7 @@ namespace D3\Linkmobility4OXID\Application\Model;
 use Assert\Assert;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
+use OxidEsales\Eshop\Core\Config;
 use OxidEsales\Eshop\Core\Registry;
 
 class Configuration
@@ -44,10 +45,10 @@ class Configuration
     public function getApiToken(): string
     {
         /** @var string $token */
-        $token = Registry::getConfig()->getConfigParam(self::GENERAL_APITOKEN);
+        $token = $this->getConfig()->getConfigParam(self::GENERAL_APITOKEN);
+        Assert::that($token)->string();
         $token = trim($token);
-
-        Assert::that($token)->string()->notEmpty();
+        Assert::that($token)->notEmpty();
 
         return $token;
     }
@@ -57,7 +58,7 @@ class Configuration
      */
     public function getTestMode(): bool
     {
-        return (bool) Registry::getConfig()->getConfigParam(self::GENERAL_DEBUG);
+        return (bool) $this->getConfig()->getConfigParam(self::GENERAL_DEBUG);
     }
 
     /**
@@ -66,7 +67,8 @@ class Configuration
     public function getSmsSenderNumber(): ?string
     {
         /** @var string $number */
-        $number = Registry::getConfig()->getConfigParam(self::SMS_SENDERNR);
+        $number = $this->getConfig()->getConfigParam(self::SMS_SENDERNR);
+        Assert::that($number)->string();
         $number = trim($number);
 
         return strlen($number) ? $number : null;
@@ -78,7 +80,10 @@ class Configuration
     public function getSmsSenderCountry(): ?string
     {
         /** @var string $country */
-        $country = Registry::getConfig()->getConfigParam(self::SMS_SENDERCOUNTRY);
+        $country = $this->getConfig()->getConfigParam(self::SMS_SENDERCOUNTRY);
+
+        Assert::that($country)->string();
+
         $country = trim($country);
         $country = strlen($country) ? strtoupper($country) : null;
 
@@ -93,18 +98,18 @@ class Configuration
     public function getOrderRecipientFields(): array
     {
         /** @var string[] $customFields */
-        $customFields = Registry::getConfig()->getConfigParam(self::ORDER_RECFIELDS) ?: [];
+        $customFields = $this->getConfig()->getConfigParam(self::ORDER_RECFIELDS) ?: [];
+
+        Assert::that($customFields)->isArray();
 
         array_walk(
             $customFields,
             [$this, 'checkFieldExists'],
             [self::ARGS_CHECKKEYS => true, self::ARGS_CHECKCLASS => Order::class]
         );
-        $customFields = array_filter($customFields);
 
-        Assert::that($customFields)->isArray();
-
-        return $customFields;
+        // remove all false values and trim keys
+        return array_filter($this->sanitizeKeys($customFields));
     }
 
     /**
@@ -113,17 +118,33 @@ class Configuration
     public function getUserRecipientFields(): array
     {
         /** @var string[] $customFields */
-        $customFields = Registry::getConfig()->getConfigParam(self::USER_RECFIELDS) ?: [];
+        $customFields = $this->getConfig()->getConfigParam(self::USER_RECFIELDS) ?: [];
+
+        Assert::that($customFields)->isArray();
 
         array_walk(
             $customFields,
             [$this, 'checkFieldExists'],
             [self::ARGS_CHECKKEYS => false, self::ARGS_CHECKCLASS => User::class]
         );
-        $customFields = array_filter($customFields);
 
-        Assert::that($customFields)->isArray();
+        // remove all false values
+        return array_filter($customFields);
+    }
 
+    /**
+     * @param array $customFields
+     * @return array
+     */
+    public function sanitizeKeys(array $customFields): array
+    {
+        foreach ($customFields as $key => $value) {
+            $sanitizedKey = trim($key);
+            if ($key !== $sanitizedKey) {
+                $customFields[$sanitizedKey] = $value;
+                unset($customFields[$key]);
+            }
+        }
         return $customFields;
     }
 
@@ -138,6 +159,7 @@ class Configuration
     {
         $checkCountryFieldName = $args[self::ARGS_CHECKKEYS] ? trim($checkCountryFieldName) : $checkCountryFieldName;
         $checkPhoneFieldName = trim($checkPhoneFieldName);
+
         $allFieldNames = oxNew($args[self::ARGS_CHECKCLASS])->getFieldNames() ?: [];
 
         array_walk($allFieldNames, function (&$value) {
@@ -155,7 +177,7 @@ class Configuration
      */
     public function sendOrderFinishedMessage(): bool
     {
-        return (bool) Registry::getConfig()->getConfigParam(self::SENDBY_ORDERED);
+        return (bool) $this->getConfig()->getConfigParam(self::SENDBY_ORDERED);
     }
 
     /**
@@ -163,7 +185,7 @@ class Configuration
      */
     public function sendOrderSendedNowMessage(): bool
     {
-        return (bool) Registry::getConfig()->getConfigParam(self::SENDBY_SENDEDNOW);
+        return (bool) $this->getConfig()->getConfigParam(self::SENDBY_SENDEDNOW);
     }
 
     /**
@@ -171,6 +193,16 @@ class Configuration
      */
     public function sendOrderCanceledMessage(): bool
     {
-        return (bool) Registry::getConfig()->getConfigParam(self::SENDBY_CANCELED);
+        return (bool) $this->getConfig()->getConfigParam(self::SENDBY_CANCELED);
+    }
+
+    /**
+     * @return Config
+     */
+    protected function getConfig(): Config
+    {
+        /** @var Config $config */
+        $config = d3GetOxidDIC()->get('d3ox.linkmobility.'.Config::class);
+        return $config;
     }
 }
