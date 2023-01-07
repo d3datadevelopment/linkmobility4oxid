@@ -17,6 +17,7 @@ namespace D3\Linkmobility4OXID\Application\Model\MessageTypes;
 
 use D3\LinkmobilityClient\RecipientsList\RecipientsList;
 use D3\LinkmobilityClient\Response\ResponseInterface;
+use D3\LinkmobilityClient\ValueObject\Recipient;
 use Exception;
 use OxidEsales\Eshop\Application\Model\Remark;
 
@@ -65,7 +66,7 @@ abstract class AbstractMessage
      */
     protected function setRemark(string $userId, string $recipients, string $message): void
     {
-        $remark = oxNew(Remark::class);
+        $remark = d3GetOxidDIC()->get('d3ox.linkmobility.'.Remark::class);
         $remark->assign([
             'oxtype'     => self::REMARK_IDENT,
             'oxparentid' => $userId,
@@ -97,6 +98,7 @@ abstract class AbstractMessage
     public function getRecipientsList(): string
     {
         $list = [];
+        /** @var Recipient $recipient */
         foreach ($this->recipients->getRecipientsList() as $recipient) {
             $list[] = $recipient->get();
         }
@@ -113,7 +115,7 @@ abstract class AbstractMessage
     {
         $message = trim(strip_tags($message));
         $message = $this->removeLineBreaks ? str_replace(["\r", "\n"], ' ', $message) : $message;
-        $regexp = '/\s{2,}/m';
+        $regexp = '/[^\S\r\n]{2,}/m';
         return $this->removeMultipleSpaces ? (string) preg_replace($regexp, ' ', $message) : $message;
     }
 

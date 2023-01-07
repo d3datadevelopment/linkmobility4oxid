@@ -37,9 +37,7 @@ services:
     class:      'OxidEsales\Eshop\Core\UtilsView'
     factory:
       - 'OxidEsales\Eshop\Core\Registry'
-      - 'get'
-    arguments:
-      - 'OxidEsales\Eshop\Core\UtilsView'
+      - 'getUtilsView'
     shared:     true
 
   # Order
@@ -64,6 +62,14 @@ services:
     factory:    'oxNew'
     arguments:
       - 'OxidEsales\Eshop\Application\Model\Country'
+    shared:     false
+
+  # Remark
+  d3ox.linkmobility.OxidEsales\Eshop\Application\Model\Remark:
+    class:      'OxidEsales\Eshop\Application\Model\Remark'
+    factory:    'oxNew'
+    arguments:
+      - 'OxidEsales\Eshop\Application\Model\Remark'
     shared:     false
 
   d3ox.linkmobility.Psr\Log\LoggerInterface:

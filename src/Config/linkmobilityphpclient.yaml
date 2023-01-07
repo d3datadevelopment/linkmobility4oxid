@@ -43,6 +43,17 @@ services:
       - '%D3\LinkmobilityClient\ValueObject\Recipient.args.number%'
       - '%D3\LinkmobilityClient\ValueObject\Recipient.args.iso2countrycode%'
 
+  D3\LinkmobilityClient\RecipientsList\RecipientsList:
+    class: D3\LinkmobilityClient\RecipientsList\RecipientsList
+    factory: 'oxNew'
+    shared: false
+    arguments:
+      - D3\LinkmobilityClient\RecipientsList\RecipientsList
+      - '@D3\LinkmobilityClient\RecipientsList\RecipientsList.args.client'
+  D3\LinkmobilityClient\RecipientsList\RecipientsList.args.client:
+    synthetic: true
+    shared: false
+
   D3\LinkmobilityClient\ValueObject\Sender:
     class: D3\LinkmobilityClient\ValueObject\Sender
     factory: 'oxNew'

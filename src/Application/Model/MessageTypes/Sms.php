@@ -22,9 +22,12 @@ use D3\Linkmobility4OXID\Application\Model\MessageClient;
 use D3\Linkmobility4OXID\Application\Model\OrderRecipients;
 use D3\Linkmobility4OXID\Application\Model\RequestFactory;
 use D3\Linkmobility4OXID\Application\Model\UserRecipients;
+use D3\LinkmobilityClient\Client;
 use D3\LinkmobilityClient\Exceptions\ApiException;
 use D3\LinkmobilityClient\RecipientsList\RecipientsList;
+use D3\LinkmobilityClient\RecipientsList\RecipientsListInterface;
 use D3\LinkmobilityClient\Request\RequestInterface;
+use D3\LinkmobilityClient\Response\ResponseInterface;
 use D3\LinkmobilityClient\SMS\SmsRequestInterface;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\LinkmobilityClient\ValueObject\Sender;
@@ -34,6 +37,8 @@ use InvalidArgumentException;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\Eshop\Core\UtilsView;
+use Psr\Log\LoggerInterface;
 
 class Sms extends AbstractMessage
 {
@@ -46,22 +51,41 @@ class Sms extends AbstractMessage
     public function sendUserAccountMessage(User $user): bool
     {
         try {
-            Registry::getLogger()->debug('startRequest', ['userId' => $user->getId()]);
-            $return = $this->sendCustomRecipientMessage(
-                oxNew(RecipientsList::class, oxNew(MessageClient::class)->getClient())
-                    ->add(oxNew(UserRecipients::class, $user)->getSmsRecipient())
-            );
+            $this->getLogger()->debug('startRequest', ['userId' => $user->getId()]);
+            $return = $this->sendCustomRecipientMessage($this->getUserRecipientsList($user));
             if ($return) {
                 $this->setRemark($user->getId(), $this->getRecipientsList(), $this->getMessage());
             }
-            Registry::getLogger()->debug('finishRequest', ['userId' => $user->getId()]);
+            $this->getLogger()->debug('finishRequest', ['userId' => $user->getId()]);
             return $return;
         } catch (noRecipientFoundException $e) {
-            Registry::getLogger()->warning($e->getMessage());
-            Registry::getUtilsView()->addErrorToDisplay($e);
+            $this->getLogger()->warning($e->getMessage());
+            d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class)->addErrorToDisplay($e);
         }
 
         return false;
+    }
+
+    /**
+     * @param User $user
+     * @return RecipientsListInterface
+     * @throws noRecipientFoundException
+     */
+    protected function getUserRecipientsList(User $user): RecipientsListInterface
+    {
+        /** @var MessageClient $messageClient */
+        $messageClient = d3GetOxidDIC()->get(MessageClient::class);
+
+        d3GetOxidDIC()->set(RecipientsList::class.'.args.client', $messageClient->getClient());
+        /** @var RecipientsList $recipientsList */
+        $recipientsList = d3GetOxidDIC()->get(RecipientsList::class);
+
+        d3GetOxidDIC()->set(UserRecipients::class.'.args.user', $user);
+        /** @var UserRecipients $userRecipients */
+        $userRecipients = d3GetOxidDIC()->get(UserRecipients::class);
+        return $recipientsList->add(
+            $userRecipients->getSmsRecipient()
+        );
     }
 
     /**
@@ -74,20 +98,38 @@ class Sms extends AbstractMessage
     public function sendOrderMessage(Order $order): bool
     {
         try {
-            Registry::getLogger()->debug('startRequest', ['orderId' => $order->getId()]);
-            $return = $this->sendCustomRecipientMessage(
-                oxNew(RecipientsList::class, oxNew(MessageClient::class)->getClient())
-                    ->add($this->getOrderRecipient($order))
-            );
+            $this->getLogger()->debug('startRequest', ['orderId' => $order->getId()]);
+            $return = $this->sendCustomRecipientMessage($this->getOrderRecipientsList($order));
             if ($return) {
                 $this->setRemark($order->getOrderUser()->getId(), $this->getRecipientsList(), $this->getMessage());
             }
-            Registry::getLogger()->debug('finishRequest', ['orderId' => $order->getId()]);
+            $this->getLogger()->debug('finishRequest', ['orderId' => $order->getId()]);
             return $return;
         } catch (noRecipientFoundException $e) {
-            Registry::getLogger()->warning($e->getMessage());
-            throw $e;
+            $this->getLogger()->warning($e->getMessage());
+            d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class)->addErrorToDisplay($e);
         }
+
+        return false;
+    }
+
+    /**
+     * @param Order $order
+     * @return RecipientsListInterface
+     * @throws noRecipientFoundException
+     */
+    protected function getOrderRecipientsList(Order $order): RecipientsListInterface
+    {
+        /** @var MessageClient $messageClient */
+        $messageClient = d3GetOxidDIC()->get(MessageClient::class);
+
+        d3GetOxidDIC()->set(RecipientsList::class.'.args.client', $messageClient->getClient());
+        /** @var RecipientsList $recipientsList */
+        $recipientsList = d3GetOxidDIC()->get(RecipientsList::class);
+
+        return $recipientsList->add(
+            $this->getOrderRecipient(($order))
+        );
     }
 
     /**
@@ -97,7 +139,10 @@ class Sms extends AbstractMessage
      */
     protected function getOrderRecipient(Order $order): Recipient
     {
-        return oxNew(OrderRecipients::class, $order)->getSmsRecipient();
+        d3GetOxidDIC()->set(OrderRecipients::class.'.args.order', $order);
+        /** @var OrderRecipients $orderRecipients */
+        $orderRecipients = d3GetOxidDIC()->get(OrderRecipients::class);
+        return $orderRecipients->getSmsRecipient();
     }
 
     /**
@@ -108,52 +153,72 @@ class Sms extends AbstractMessage
     public function sendCustomRecipientMessage(RecipientsList $recipientsList): bool
     {
         try {
-            $this->setRecipients($recipientsList);
-            $configuration = oxNew(Configuration::class);
-            $client        = oxNew(MessageClient::class)->getClient();
-
-            /** @var SmsRequestInterface $request */
-            $request = oxNew(RequestFactory::class, $this->getMessage(), $client)->getSmsRequest();
-            $request->setTestMode($configuration->getTestMode())->setMethod(RequestInterface::METHOD_POST)
-                ->setSenderAddress(
-                    oxNew(
-                        Sender::class,
-                        $configuration->getSmsSenderNumber(),
-                        $configuration->getSmsSenderCountry()
-                    )
-                )
-                ->setSenderAddressType(RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL);
-
-            $requestRecipientsList = $request->getRecipientsList();
-            foreach ($recipientsList as $recipient) {
-                $requestRecipientsList->add($recipient);
-            }
-
-            $response = $client->request($request);
-
-            $this->response = $response;
-
-            if (false === $response->isSuccessful()) {
-                Registry::getLogger()->warning($response->getErrorMessage(), [$request->getBody()]);
-            }
+            $this->response = $response = $this->submitMessage($recipientsList);
 
             return $response->isSuccessful();
-        } catch (abortSendingExceptionInterface $e) {
-            Registry::getLogger()->warning($e->getMessage());
+        } catch (abortSendingExceptionInterface|GuzzleException|ApiException|InvalidArgumentException $e) {
+            $this->getLogger()->warning($e->getMessage());
             // Oxid does not accept throwable interface only exceptions according to definition
-            Registry::getUtilsView()->addErrorToDisplay($e->getMessage());
-        } catch (GuzzleException $e) {
-            Registry::getLogger()->warning($e->getMessage());
-            Registry::getUtilsView()->addErrorToDisplay($e->getMessage());
-        } catch (ApiException $e) {
-            Registry::getLogger()->warning($e->getMessage());
-            Registry::getUtilsView()->addErrorToDisplay($e->getMessage());
-        } catch (InvalidArgumentException $e) {
-            Registry::getLogger()->warning($e->getMessage());
-            Registry::getUtilsView()->addErrorToDisplay($e->getMessage());
+            d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class)->addErrorToDisplay($e->getMessage());
         }
 
         return false;
+    }
+
+    /**
+     * @param Configuration $configuration
+     * @param Client $client
+     * @return SmsRequestInterface
+     */
+    protected function getRequest(Configuration $configuration, Client $client): SmsRequestInterface
+    {
+        d3GetOxidDIC()->setParameter(RequestFactory::class.'.args.message', $this->getMessage());
+        d3GetOxidDIC()->set(RequestFactory::class.'.args.client', $client);
+        /** @var RequestFactory $requestFactory */
+        $requestFactory = d3GetOxidDIC()->get(RequestFactory::class);
+
+        d3GetOxidDIC()->setParameter(Sender::class.'.args.number', $configuration->getSmsSenderNumber());
+        d3GetOxidDIC()->setParameter(Sender::class.'.args.iso2countrycode', $configuration->getSmsSenderCountry());
+        /** @var Sender $sender */
+        $sender = d3GetOxidDIC()->get(Sender::class);
+
+        /** @var SmsRequestInterface $request */
+        $request = $requestFactory->getSmsRequest();
+        $request->setTestMode($configuration->getTestMode())->setMethod(RequestInterface::METHOD_POST)
+            ->setSenderAddress($sender)
+            ->setSenderAddressType(RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL);
+
+        return $request;
+    }
+
+    /**
+     * @param RecipientsList $recipientsList
+     * @return ResponseInterface
+     * @throws ApiException
+     * @throws GuzzleException
+     */
+    protected function submitMessage(RecipientsList $recipientsList): ResponseInterface
+    {
+        $this->setRecipients($recipientsList);
+        /** @var Configuration $configuration */
+        $configuration = d3GetOxidDIC()->get(Configuration::class);
+        /** @var MessageClient $messageClient */
+        $messageClient = d3GetOxidDIC()->get(MessageClient::class);
+        $client        = $messageClient->getClient();
+
+        $request = $this->getRequest($configuration, $client);
+        $requestRecipientsList = $request->getRecipientsList();
+        foreach ($recipientsList->getRecipients() as $recipient) {
+            $requestRecipientsList->add($recipient);
+        }
+
+        $response = $client->request($request);
+
+        if (false === $response->isSuccessful()) {
+            $this->getLogger()->warning($response->getErrorMessage(), [$request->getBody()]);
+        }
+
+        return $response;
     }
 
     /**
@@ -162,5 +227,13 @@ class Sms extends AbstractMessage
     public function getTypeName(): string
     {
         return 'SMS';
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    public function getLogger()
+    {
+        return Registry::getLogger();
     }
 }

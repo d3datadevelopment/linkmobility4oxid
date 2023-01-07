@@ -8,6 +8,7 @@
 # @link      https://www.oxidmodule.com
 
 parameters:
+  D3\Linkmobility4OXID\Application\Model\RequestFactory.args.message:
   D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms.args.message:
   D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException.args.smscount:
 
@@ -44,6 +45,25 @@ services:
     shared: true
     arguments:
       - D3\Linkmobility4OXID\Application\Model\Configuration
+
+  D3\Linkmobility4OXID\Application\Model\MessageClient:
+    class: D3\Linkmobility4OXID\Application\Model\MessageClient
+    factory: 'oxNew'
+    shared: true
+    arguments:
+      - D3\Linkmobility4OXID\Application\Model\MessageClient
+
+  D3\Linkmobility4OXID\Application\Model\RequestFactory:
+    class: D3\Linkmobility4OXID\Application\Model\RequestFactory
+    factory: 'oxNew'
+    shared: true
+    arguments:
+      - D3\Linkmobility4OXID\Application\Model\RequestFactory
+      - '%D3\Linkmobility4OXID\Application\Model\RequestFactory.args.message%'
+      - '@D3\Linkmobility4OXID\Application\Model\RequestFactory.args.client'
+  D3\Linkmobility4OXID\Application\Model\RequestFactory.args.client:
+    synthetic: true
+    shared: false
 
   D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms:
     class: D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms
