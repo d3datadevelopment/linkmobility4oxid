@@ -15,8 +15,8 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\Application\Model\MessageTypes;
 
+use D3\LinkmobilityClient\RecipientsList\RecipientsList;
 use D3\LinkmobilityClient\Response\ResponseInterface;
-use D3\LinkmobilityClient\ValueObject\Recipient;
 use Exception;
 use OxidEsales\Eshop\Application\Model\Remark;
 
@@ -26,15 +26,18 @@ abstract class AbstractMessage
 
     /** @var string */
     protected $message;
+
     /** @var bool */
     protected $removeLineBreaks = true;
+
     /** @var bool */
     protected $removeMultipleSpaces = true;
 
     /** @var ResponseInterface */
     protected $response;
-    /** @var Recipient[] */
-    protected $recipients = [];
+
+    /** @var RecipientsList */
+    protected $recipients;
 
     /**
      * @param string $message
@@ -80,10 +83,10 @@ abstract class AbstractMessage
     }
 
     /**
-     * @param array<Recipient> $recipients
+     * @param RecipientsList $recipients
      * @return void
      */
-    protected function setRecipients(array $recipients)
+    protected function setRecipients(RecipientsList $recipients)
     {
         $this->recipients = $recipients;
     }
@@ -94,7 +97,7 @@ abstract class AbstractMessage
     public function getRecipientsList(): string
     {
         $list = [];
-        foreach ($this->recipients as $recipient) {
+        foreach ($this->recipients->getRecipientsList() as $recipient) {
             $list[] = $recipient->get();
         }
 

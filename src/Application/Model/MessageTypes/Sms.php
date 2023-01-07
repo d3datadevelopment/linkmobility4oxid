@@ -23,6 +23,7 @@ use D3\Linkmobility4OXID\Application\Model\OrderRecipients;
 use D3\Linkmobility4OXID\Application\Model\RequestFactory;
 use D3\Linkmobility4OXID\Application\Model\UserRecipients;
 use D3\LinkmobilityClient\Exceptions\ApiException;
+use D3\LinkmobilityClient\RecipientsList\RecipientsList;
 use D3\LinkmobilityClient\Request\RequestInterface;
 use D3\LinkmobilityClient\SMS\SmsRequestInterface;
 use D3\LinkmobilityClient\ValueObject\Recipient;
@@ -47,7 +48,8 @@ class Sms extends AbstractMessage
         try {
             Registry::getLogger()->debug('startRequest', ['userId' => $user->getId()]);
             $return = $this->sendCustomRecipientMessage(
-                [ oxNew(UserRecipients::class, $user)->getSmsRecipient() ]
+                oxNew(RecipientsList::class, oxNew(MessageClient::class)->getClient())
+                    ->add(oxNew(UserRecipients::class, $user)->getSmsRecipient())
             );
             if ($return) {
                 $this->setRemark($user->getId(), $this->getRecipientsList(), $this->getMessage());
@@ -74,7 +76,8 @@ class Sms extends AbstractMessage
         try {
             Registry::getLogger()->debug('startRequest', ['orderId' => $order->getId()]);
             $return = $this->sendCustomRecipientMessage(
-                [ $this->getOrderRecipient($order) ]
+                oxNew(RecipientsList::class, oxNew(MessageClient::class)->getClient())
+                    ->add($this->getOrderRecipient($order))
             );
             if ($return) {
                 $this->setRemark($order->getOrderUser()->getId(), $this->getRecipientsList(), $this->getMessage());
@@ -98,14 +101,14 @@ class Sms extends AbstractMessage
     }
 
     /**
-     * @param array<Recipient> $recipientsArray
+     * @param RecipientsList $recipientsList
      *
      * @return bool
      */
-    public function sendCustomRecipientMessage(array $recipientsArray): bool
+    public function sendCustomRecipientMessage(RecipientsList $recipientsList): bool
     {
         try {
-            $this->setRecipients($recipientsArray);
+            $this->setRecipients($recipientsList);
             $configuration = oxNew(Configuration::class);
             $client        = oxNew(MessageClient::class)->getClient();
 
@@ -121,9 +124,9 @@ class Sms extends AbstractMessage
                 )
                 ->setSenderAddressType(RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL);
 
-            $recipientsList = $request->getRecipientsList();
-            foreach ($recipientsArray as $recipient) {
-                $recipientsList->add($recipient);
+            $requestRecipientsList = $request->getRecipientsList();
+            foreach ($recipientsList as $recipient) {
+                $requestRecipientsList->add($recipient);
             }
 
             $response = $client->request($request);
