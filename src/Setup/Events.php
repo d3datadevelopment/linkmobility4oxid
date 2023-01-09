@@ -36,7 +36,7 @@ class Events
     public static function onActivate()
     {
         /** @var Actions $actions */
-        $actions = oxNew(Actions::class);
+        $actions = d3GetOxidDIC()->get(Actions::class);
         $actions->setupDatabase();
         $actions->regenerateViews();
     }

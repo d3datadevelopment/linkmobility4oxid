@@ -19,16 +19,22 @@ use D3\Linkmobility4OXID\Application\Model\MessageTypes\AbstractMessage;
 use Doctrine\DBAL\Driver\Exception as DoctrineDriverException;
 use Doctrine\DBAL\Exception as DoctrineException;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Monolog\Logger;
+use OxidEsales\Eshop\Core\Database\Adapter\DatabaseInterface;
+use OxidEsales\Eshop\Core\Database\Adapter\Doctrine\Database;
 use OxidEsales\Eshop\Core\DatabaseProvider;
 use OxidEsales\Eshop\Core\DbMetaDataHandler;
 use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
-use OxidEsales\Eshop\Core\Exception\DatabaseException;
+use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Registry;
+use OxidEsales\Eshop\Core\UtilsView;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Psr\Log\LoggerInterface;
 
 class Actions
 {
@@ -43,9 +49,13 @@ class Actions
             if (!$this->hasRemarkTypeEnumValue()) {
                 $this->addRemarkTypeEnumValue();
             }
-        } catch (DatabaseException|DoctrineDriverException|DoctrineException $e) {
-            Registry::getLogger()->error($e->getMessage());
-            Registry::getUtilsView()->addErrorToDisplay($e);
+        } catch (StandardException|DoctrineDriverException|DoctrineException $e) {
+            /** @var Logger $logger */
+            $logger = d3GetOxidDIC()->get('d3ox.linkmobility.'.LoggerInterface::class);
+            $logger->error($e->getMessage());
+            /** @var UtilsView $utilsView */
+            $utilsView = d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class);
+            $utilsView->addErrorToDisplay($e);
         }
     }
 
@@ -56,7 +66,8 @@ class Actions
      */
     public function regenerateViews()
     {
-        $oDbMetaDataHandler = oxNew(DbMetaDataHandler::class);
+        /** @var DbMetaDataHandler $oDbMetaDataHandler */
+        $oDbMetaDataHandler = d3GetOxidDIC()->get('d3ox.linkmobility.'.DbMetaDataHandler::class);
         $oDbMetaDataHandler->updateViews();
     }
 
@@ -73,7 +84,7 @@ class Actions
 
         $patternEnumCheck = '/^\b(enum)\b/mi';
         if (!preg_match($patternEnumCheck, $fieldType)) {
-            throw oxNew(DatabaseException::class, 'remark type field has not the expected enum type');
+            throw oxNew(StandardException::class, 'remark type field has not the expected enum type');
         }
 
         $patternValueCheck = '/\b('.preg_quote(AbstractMessage::REMARK_IDENT).')\b/mi';
@@ -91,7 +102,7 @@ class Actions
     protected function getRemarkTypeFieldType(): string
     {
         /** @var QueryBuilder $qb */
-        $qb = ContainerFactory::getInstance()->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
+        $qb = $this->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
         $qb->select('column_type')
             ->from('INFORMATION_SCHEMA.COLUMNS')
             ->where(
@@ -125,17 +136,10 @@ class Actions
      */
     protected function addRemarkTypeEnumValue()
     {
-        $valuePattern = '/(?<=enum\().*(?=\))/i';
-        preg_match($valuePattern, $this->getRemarkTypeFieldType(), $matches);
+        $items = $this->getUniqueFieldTypes();
 
-        $items = array_unique(
-            array_merge(
-                str_getcsv($matches[0], ',', "'"),
-                [AbstractMessage::REMARK_IDENT]
-            )
-        );
-
-        $db = DatabaseProvider::getDb();
+        /** @var Database $db */
+        $db = d3GetOxidDIC()->get('d3ox.linkmobility.'.DatabaseInterface::class.'.assoc');
 
         $query = 'ALTER TABLE '.$db->quoteIdentifier('oxremark').
             ' CHANGE '.$db->quoteIdentifier('OXTYPE'). ' '.$db->quoteIdentifier('OXTYPE') .
@@ -143,5 +147,31 @@ class Actions
             ' COLLATE '.$db->quote('utf8_general_ci').' NOT NULL DEFAULT '.$db->quote('r');
 
         $db->execute($query);
+    }
+
+    /**
+     * @return array
+     * @throws DoctrineDriverException
+     * @throws DoctrineException
+     */
+    protected function getUniqueFieldTypes(): array
+    {
+        $valuePattern = '/(?<=enum\().*(?=\))/i';
+        preg_match($valuePattern, $this->getRemarkTypeFieldType(), $matches);
+
+        return array_unique(
+            array_merge(
+                str_getcsv($matches[0], ',', "'"),
+                [AbstractMessage::REMARK_IDENT]
+            )
+        );
+    }
+
+    /**
+     * @return ContainerInterface
+     */
+    public function getContainer(): ContainerInterface
+    {
+        return ContainerFactory::getInstance()->getContainer();
     }
 }

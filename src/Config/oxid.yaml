@@ -41,6 +41,14 @@ services:
     shared:     true
 
   # Email
+  d3ox.linkmobility.OxidEsales\Eshop\Core\DbMetaDataHandler:
+    class: 'OxidEsales\Eshop\Core\DbMetaDataHandler'
+    factory: 'oxNew'
+    arguments:
+      - 'OxidEsales\Eshop\Core\DbMetaDataHandler'
+    shared: false
+
+  # Email
   d3ox.linkmobility.OxidEsales\Eshop\Core\Email:
     class: 'OxidEsales\Eshop\Core\Email'
     factory: 'oxNew'
@@ -85,4 +93,14 @@ services:
     factory:
       - 'OxidEsales\Eshop\Core\Registry'
       - 'getLogger'
+    shared: true
+
+  # DB_assoc
+  d3ox.linkmobility.OxidEsales\Eshop\Core\Database\Adapter\DatabaseInterface.assoc:
+    class: 'OxidEsales\Eshop\Core\Database\Adapter\DatabaseInterface'
+    factory:
+      - 'OxidEsales\Eshop\Core\DatabaseProvider'
+      - 'getDb'
+    arguments:
+      - 2
     shared: true

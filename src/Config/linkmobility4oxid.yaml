@@ -94,3 +94,10 @@ services:
     shared: false
     arguments:
       - D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException
+
+  D3\Linkmobility4OXID\Setup\Actions:
+    class: D3\Linkmobility4OXID\Setup\Actions
+    factory: 'oxNew'
+    shared: false
+    arguments:
+      - D3\Linkmobility4OXID\Setup\Actions
