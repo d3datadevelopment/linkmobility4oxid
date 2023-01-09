@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace D3\Linkmobility4OXID\Modules\Core;
 
 use D3\Linkmobility4OXID\Application\Model\MessageSender;
+use D3\TestingTools\Production\IsMockable;
 use Exception;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
@@ -26,6 +27,8 @@ use Psr\Container\NotFoundExceptionInterface;
 
 class EmailCore extends EmailCore_parent
 {
+    use IsMockable;
+
     /** @var string */
     protected $d3OrderCustSmsTemplate = 'd3sms_ordercust.tpl';
     /** @var string */
@@ -43,7 +46,8 @@ class EmailCore extends EmailCore_parent
      */
     public function sendOrderEmailToUser($order, $subject = null)
     {
-        $ret = parent::sendOrderEmailToUser($order, $subject);
+        // $ret = parent::sendOrderEmailToUser($order, $subject);
+        $ret = $this->d3CallMockableFunction([EmailCore_parent::class, 'sendOrderEmailToUser'], [$order, $subject]);
 
         $this->d3SendOrderFinishedMessageToUser($order);
 
@@ -60,7 +64,8 @@ class EmailCore extends EmailCore_parent
      */
     public function sendSendedNowMail($order, $subject = null)
     {
-        $ret = parent::sendSendedNowMail($order, $subject);
+        // $ret = parent::sendSendedNowMail($order, $subject);
+        $ret = $this->d3CallMockableFunction([EmailCore_parent::class, 'sendSendedNowMail'], [$order, $subject]);
 
         $this->d3SendedNowMessage($order);
 
@@ -77,7 +82,7 @@ class EmailCore extends EmailCore_parent
      */
     public function d3SendOrderFinishedMessageToUser(Order $order): void
     {
-        $messageSender = oxNew(MessageSender::class);
+        $messageSender = d3GetOxidDIC()->get(MessageSender::class);
         $messageSender->sendOrderFinishedMessage($order, $this->d3GetOrderFinishedSmsMessageBody($order));
     }
 
@@ -106,7 +111,7 @@ class EmailCore extends EmailCore_parent
      */
     public function d3SendedNowMessage(Order $order): void
     {
-        $messageSender = oxNew(MessageSender::class);
+        $messageSender = d3GetOxidDIC()->get(MessageSender::class);
         $messageSender->sendSendedNowMessage($order, $this->d3GetSendedNowSmsMessageBody($order));
     }
 
@@ -135,7 +140,7 @@ class EmailCore extends EmailCore_parent
      */
     public function d3SendCancelMessage(Order $order): void
     {
-        $messageSender = oxNew(MessageSender::class);
+        $messageSender = d3GetOxidDIC()->get(MessageSender::class);
         $messageSender->sendCancelOrderMessage($order, $this->d3GetCancelOrderSmsMessageBody($order));
     }
 

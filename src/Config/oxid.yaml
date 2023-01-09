@@ -40,6 +40,14 @@ services:
       - 'getUtilsView'
     shared:     true
 
+  # Email
+  d3ox.linkmobility.OxidEsales\Eshop\Core\Email:
+    class: 'OxidEsales\Eshop\Core\Email'
+    factory: 'oxNew'
+    arguments:
+      - 'OxidEsales\Eshop\Core\Email'
+    shared: false
+
   # Order
   d3ox.linkmobility.OxidEsales\Eshop\Application\Model\Order:
     class:      'OxidEsales\Eshop\Application\Model\Order'

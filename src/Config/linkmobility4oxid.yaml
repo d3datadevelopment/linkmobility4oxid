@@ -53,6 +53,13 @@ services:
     arguments:
       - D3\Linkmobility4OXID\Application\Model\MessageClient
 
+  D3\Linkmobility4OXID\Application\Model\MessageSender:
+    class: D3\Linkmobility4OXID\Application\Model\MessageSender
+    factory: 'oxNew'
+    shared: true
+    arguments:
+      - D3\Linkmobility4OXID\Application\Model\MessageSender
+
   D3\Linkmobility4OXID\Application\Model\RequestFactory:
     class: D3\Linkmobility4OXID\Application\Model\RequestFactory
     factory: 'oxNew'
