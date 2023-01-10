@@ -69,8 +69,9 @@ class MessageSender
      */
     public function sendMessageByOrder(Order $order, string $messageBody): void
     {
-        if ((bool) strlen(trim($messageBody)) === false)
+        if ((bool) strlen(trim($messageBody)) === false) {
             return;
+        }
 
         try {
             d3GetOxidDIC()->setParameter(Sms::class.'.args.message', $messageBody);

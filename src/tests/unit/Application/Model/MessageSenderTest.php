@@ -167,7 +167,7 @@ class MessageSenderTest extends LMUnitTestCase
             ->getMock();
         $smsMock->expects($invocationCount)->method('sendOrderMessage')->will(
             $throwException ?
-                $this->throwException(d3GetOxidDIC()->get(noRecipientFoundException::class)):
+                $this->throwException(d3GetOxidDIC()->get(noRecipientFoundException::class)) :
                 $this->returnValue(true)
         );
         d3GetOxidDIC()->set(Sms::class, $smsMock);

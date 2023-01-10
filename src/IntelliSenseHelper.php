@@ -17,7 +17,9 @@ namespace D3\Linkmobility4OXID\Modules {
 
     use D3\DIContainerHandler\definitionFileContainer;
 
-    class LinkmobilityServices_parent extends definitionFileContainer {}
+    class LinkmobilityServices_parent extends definitionFileContainer
+    {
+    }
 }
 
 namespace D3\Linkmobility4OXID\Modules\Application\Model {
