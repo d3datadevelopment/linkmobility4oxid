@@ -44,11 +44,14 @@ class AdminOrder extends AdminController
 
     public function __construct()
     {
-        $this->item = d3GetOxidDIC()->get('d3ox.linkmobility.'.Order::class);
-        d3GetOxidDIC()->set(OrderRecipients::class.'.args.order', $this->item);
-        $this->itemRecipients = d3GetOxidDIC()->get(OrderRecipients::class);
-
-        $this->item->load($this->getEditObjectId());
+        /** @var Order $item */
+        $item = d3GetOxidDIC()->get('d3ox.linkmobility.'.Order::class);
+        $this->item = $item;
+        d3GetOxidDIC()->set(OrderRecipients::class.'.args.order', $item);
+        /** @var OrderRecipients $itemRecipients */
+        $itemRecipients = d3GetOxidDIC()->get(OrderRecipients::class);
+        $this->itemRecipients = $itemRecipients;
+        $item->load($this->getEditObjectId());
 
         $this->addTplParam('recipient', $this->getRecipientFromCurrentItem());
 
@@ -81,6 +84,7 @@ class AdminOrder extends AdminController
         } catch (noRecipientFoundException $e) {
             /** @var Language $lang */
             $lang = d3GetOxidDIC()->get('d3ox.linkmobility.'.Language::class);
+            /** @var string $message */
             $message = $lang->translateString($e->getMessage());
             /** @var UtilsView $utilsView */
             $utilsView = d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class);
@@ -101,7 +105,7 @@ class AdminOrder extends AdminController
         try {
             $utilsView->addErrorToDisplay($this->sendMessage());
         } catch (noRecipientFoundException|InvalidArgumentException $e) {
-            $utilsView->addErrorToDisplay($e);
+            $utilsView->addErrorToDisplay($e->getMessage());
         }
     }
 

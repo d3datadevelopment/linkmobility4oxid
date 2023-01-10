@@ -29,8 +29,10 @@ class successfullySentException extends StandardException
      */
     public function __construct($messageCount = 1, $code = 0, Exception $previous = null)
     {
+        /** @var Language $language */
+        $language = d3GetOxidDIC()->get('d3ox.linkmobility.'.Language::class);
         /** @var string $format */
-        $format = d3GetOxidDIC()->get('d3ox.linkmobility.'.Language::class)->translateString('D3LM_EXC_SMS_SUCC_SENT');
+        $format = $language->translateString('D3LM_EXC_SMS_SUCC_SENT');
         $message = sprintf($format, $messageCount);
 
         parent::__construct($message, $code, $previous);

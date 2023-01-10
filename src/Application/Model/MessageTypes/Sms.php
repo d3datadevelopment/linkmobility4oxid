@@ -60,7 +60,9 @@ class Sms extends AbstractMessage
             return $return;
         } catch (noRecipientFoundException $e) {
             $this->getLogger()->warning($e->getMessage());
-            d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class)->addErrorToDisplay($e);
+            /** @var UtilsView $utilsView */
+            $utilsView = d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class);
+            $utilsView->addErrorToDisplay($e);
         }
 
         return false;
@@ -107,7 +109,9 @@ class Sms extends AbstractMessage
             return $return;
         } catch (noRecipientFoundException $e) {
             $this->getLogger()->warning($e->getMessage());
-            d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class)->addErrorToDisplay($e);
+            /** @var UtilsView $utilsView */
+            $utilsView = d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class);
+            $utilsView->addErrorToDisplay($e);
         }
 
         return false;
@@ -146,11 +150,11 @@ class Sms extends AbstractMessage
     }
 
     /**
-     * @param RecipientsList $recipientsList
+     * @param RecipientsListInterface $recipientsList
      *
      * @return bool
      */
-    public function sendCustomRecipientMessage(RecipientsList $recipientsList): bool
+    public function sendCustomRecipientMessage(RecipientsListInterface $recipientsList): bool
     {
         try {
             $this->response = $response = $this->submitMessage($recipientsList);
@@ -159,7 +163,9 @@ class Sms extends AbstractMessage
         } catch (abortSendingExceptionInterface|GuzzleException|ApiException|InvalidArgumentException $e) {
             $this->getLogger()->warning($e->getMessage());
             // Oxid does not accept throwable interface only exceptions according to definition
-            d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class)->addErrorToDisplay($e->getMessage());
+            /** @var UtilsView $utilsView */
+            $utilsView = d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class);
+            $utilsView->addErrorToDisplay($e->getMessage());
         }
 
         return false;
@@ -192,12 +198,12 @@ class Sms extends AbstractMessage
     }
 
     /**
-     * @param RecipientsList $recipientsList
+     * @param RecipientsListInterface $recipientsList
      * @return ResponseInterface
      * @throws ApiException
      * @throws GuzzleException
      */
-    protected function submitMessage(RecipientsList $recipientsList): ResponseInterface
+    protected function submitMessage(RecipientsListInterface $recipientsList): ResponseInterface
     {
         $this->setRecipients($recipientsList);
         /** @var Configuration $configuration */

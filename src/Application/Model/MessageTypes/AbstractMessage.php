@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace D3\Linkmobility4OXID\Application\Model\MessageTypes;
 
 use D3\LinkmobilityClient\RecipientsList\RecipientsList;
+use D3\LinkmobilityClient\RecipientsList\RecipientsListInterface;
 use D3\LinkmobilityClient\Response\ResponseInterface;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use Exception;
@@ -37,7 +38,7 @@ abstract class AbstractMessage
     /** @var ResponseInterface */
     protected $response;
 
-    /** @var RecipientsList */
+    /** @var RecipientsListInterface */
     protected $recipients;
 
     /**
@@ -66,6 +67,7 @@ abstract class AbstractMessage
      */
     protected function setRemark(string $userId, string $recipients, string $message): void
     {
+        /** @var Remark $remark */
         $remark = d3GetOxidDIC()->get('d3ox.linkmobility.'.Remark::class);
         $remark->assign([
             'oxtype'     => self::REMARK_IDENT,
@@ -84,10 +86,10 @@ abstract class AbstractMessage
     }
 
     /**
-     * @param RecipientsList $recipients
+     * @param RecipientsListInterface $recipients
      * @return void
      */
-    protected function setRecipients(RecipientsList $recipients)
+    protected function setRecipients(RecipientsListInterface $recipients)
     {
         $this->recipients = $recipients;
     }

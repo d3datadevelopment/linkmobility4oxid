@@ -30,14 +30,15 @@ class RequestFactory extends \D3\LinkmobilityClient\SMS\RequestFactory
         $configuration = d3GetOxidDIC()->get(Configuration::class);
 
         /** parent call */
+        /** @var SmsRequestInterface $request */
         $request = $this->d3CallMockableFunction([\D3\LinkmobilityClient\SMS\RequestFactory::class, 'getSmsRequest']);
 
         d3GetOxidDIC()->setParameter(Sender::class.'.args.number', $configuration->getSmsSenderNumber());
         d3GetOxidDIC()->setParameter(Sender::class.'.args.iso2countrycode', $configuration->getSmsSenderCountry());
+        /** @var Sender $sender */
+        $sender = d3GetOxidDIC()->get(Sender::class);
         $request->setTestMode($configuration->getTestMode())
-            ->setSenderAddress(
-                d3GetOxidDIC()->get(Sender::class)
-            )
+            ->setSenderAddress($sender)
             ->setSenderAddressType(RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL);
 
         return $request;

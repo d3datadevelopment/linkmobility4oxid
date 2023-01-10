@@ -46,10 +46,14 @@ class AdminUser extends AdminController
 
     public function __construct()
     {
-        $this->item = d3GetOxidDIC()->get('d3ox.linkmobility.'.User::class);
-        d3GetOxidDIC()->set(UserRecipients::class.".args.user", $this->item);
-        $this->itemRecipients = d3GetOxidDIC()->get(UserRecipients::class);
-        $this->item->load($this->getEditObjectId());
+        /** @var User $item */
+        $item = d3GetOxidDIC()->get('d3ox.linkmobility.'.User::class);
+        $this->item = $item;
+        d3GetOxidDIC()->set(UserRecipients::class.".args.user", $item);
+        /** @var UserRecipients $itemRecipients */
+        $itemRecipients = d3GetOxidDIC()->get(UserRecipients::class);
+        $this->itemRecipients = $itemRecipients;
+        $item->load($this->getEditObjectId());
 
         $this->addTplParam('recipient', $this->getRecipientFromCurrentItem());
 
@@ -82,6 +86,7 @@ class AdminUser extends AdminController
         } catch (noRecipientFoundException $e) {
             /** @var Language $lang */
             $lang = d3GetOxidDIC()->get('d3ox.linkmobility.'.Language::class);
+            /** @var string $message */
             $message = $lang->translateString($e->getMessage());
             /** @var UtilsView $utilsView */
             $utilsView = d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class);
@@ -102,7 +107,7 @@ class AdminUser extends AdminController
         try {
             $utilsView->addErrorToDisplay($this->sendMessage());
         } catch (noRecipientFoundException|InvalidArgumentException $e) {
-            $utilsView->addErrorToDisplay($e);
+            $utilsView->addErrorToDisplay($e->getMessage());
         }
     }
 

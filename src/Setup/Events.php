@@ -33,7 +33,7 @@ class Events
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public static function onActivate()
+    public static function onActivate(): void
     {
         /** @var Actions $actions */
         $actions = d3GetOxidDIC()->get(Actions::class);
@@ -41,7 +41,7 @@ class Events
         $actions->regenerateViews();
     }
 
-    public static function onDeactivate()
+    public static function onDeactivate(): void
     {
     }
 }

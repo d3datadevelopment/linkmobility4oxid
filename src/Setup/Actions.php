@@ -17,8 +17,10 @@ namespace D3\Linkmobility4OXID\Setup;
 
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\AbstractMessage;
 use Doctrine\DBAL\Driver\Exception as DoctrineDriverException;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Exception as DoctrineException;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\DBAL\Statement;
 use Monolog\Logger;
 use OxidEsales\Eshop\Core\Database\Adapter\DatabaseInterface;
 use OxidEsales\Eshop\Core\Database\Adapter\Doctrine\Database;
@@ -30,6 +32,7 @@ use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\Eshop\Core\UtilsView;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
+use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -55,7 +58,7 @@ class Actions
             $logger->error($e->getMessage());
             /** @var UtilsView $utilsView */
             $utilsView = d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class);
-            $utilsView->addErrorToDisplay($e);
+            $utilsView->addErrorToDisplay($e->getMessage());
         }
     }
 
@@ -64,7 +67,7 @@ class Actions
     /**
      * Regenerate views for changed tables
      */
-    public function regenerateViews()
+    public function regenerateViews(): void
     {
         /** @var DbMetaDataHandler $oDbMetaDataHandler */
         $oDbMetaDataHandler = d3GetOxidDIC()->get('d3ox.linkmobility.'.DbMetaDataHandler::class);
@@ -101,8 +104,10 @@ class Actions
      */
     protected function getRemarkTypeFieldType(): string
     {
+        /** @var QueryBuilderFactory $queryBuilderFactory */
+        $queryBuilderFactory = $this->getContainer()->get(QueryBuilderFactoryInterface::class);
         /** @var QueryBuilder $qb */
-        $qb = $this->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
+        $qb = $queryBuilderFactory->create();
         $qb->select('column_type')
             ->from('INFORMATION_SCHEMA.COLUMNS')
             ->where(
@@ -122,7 +127,10 @@ class Actions
                 )
             );
 
-        return (string) $qb->execute()->fetchOne();
+        /** @var Statement $statement */
+        $statement = $qb->execute();
+
+        return (string) $statement->fetchOne();
     }
 
     /**
@@ -150,7 +158,7 @@ class Actions
     }
 
     /**
-     * @return array
+     * @return string[]
      * @throws DoctrineDriverException
      * @throws DoctrineException
      */

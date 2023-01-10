@@ -47,6 +47,7 @@ class EmailCore extends EmailCore_parent
     public function sendOrderEmailToUser($order, $subject = null)
     {
         // $ret = parent::sendOrderEmailToUser($order, $subject);
+        /** @var bool $ret */
         $ret = $this->d3CallMockableFunction([EmailCore_parent::class, 'sendOrderEmailToUser'], [$order, $subject]);
 
         $this->d3SendOrderFinishedMessageToUser($order);
@@ -65,6 +66,7 @@ class EmailCore extends EmailCore_parent
     public function sendSendedNowMail($order, $subject = null)
     {
         // $ret = parent::sendSendedNowMail($order, $subject);
+        /** @var bool $ret */
         $ret = $this->d3CallMockableFunction([EmailCore_parent::class, 'sendSendedNowMail'], [$order, $subject]);
 
         $this->d3SendedNowMessage($order);
@@ -82,6 +84,7 @@ class EmailCore extends EmailCore_parent
      */
     public function d3SendOrderFinishedMessageToUser(Order $order): void
     {
+        /** @var MessageSender $messageSender */
         $messageSender = d3GetOxidDIC()->get(MessageSender::class);
         $messageSender->sendOrderFinishedMessage($order, $this->d3GetOrderFinishedSmsMessageBody($order));
     }
@@ -111,6 +114,7 @@ class EmailCore extends EmailCore_parent
      */
     public function d3SendedNowMessage(Order $order): void
     {
+        /** @var MessageSender $messageSender */
         $messageSender = d3GetOxidDIC()->get(MessageSender::class);
         $messageSender->sendSendedNowMessage($order, $this->d3GetSendedNowSmsMessageBody($order));
     }
@@ -140,6 +144,7 @@ class EmailCore extends EmailCore_parent
      */
     public function d3SendCancelMessage(Order $order): void
     {
+        /** @var MessageSender $messageSender */
         $messageSender = d3GetOxidDIC()->get(MessageSender::class);
         $messageSender->sendCancelOrderMessage($order, $this->d3GetCancelOrderSmsMessageBody($order));
     }

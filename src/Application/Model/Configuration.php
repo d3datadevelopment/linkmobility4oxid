@@ -133,8 +133,8 @@ class Configuration
     }
 
     /**
-     * @param array $customFields
-     * @return array
+     * @param string[] $customFields
+     * @return string[]
      */
     public function sanitizeKeys(array $customFields): array
     {
