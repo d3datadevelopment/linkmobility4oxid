@@ -24,6 +24,14 @@ services:
       - 'getConfig'
     shared:     true
 
+  # config
+  d3ox.linkmobility.OxidEsales\Eshop\Core\Request:
+    class:      'OxidEsales\Eshop\Core\Request'
+    factory:
+      - 'OxidEsales\Eshop\Core\Registry'
+      - 'getRequest'
+    shared:     true
+
   # lang
   d3ox.linkmobility.OxidEsales\Eshop\Core\Language:
     class:      'OxidEsales\Eshop\Core\Session'

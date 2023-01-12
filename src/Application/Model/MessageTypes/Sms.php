@@ -233,7 +233,7 @@ class Sms extends AbstractMessage
 
         $request = $this->getRequest($configuration, $client);
         $requestRecipientsList = $request->getRecipientsList();
-        foreach ($recipientsList->getRecipients() as $recipient) {
+        foreach ($recipientsList->getRecipientsList() as $recipient) {
             $requestRecipientsList->add($recipient);
         }
 
