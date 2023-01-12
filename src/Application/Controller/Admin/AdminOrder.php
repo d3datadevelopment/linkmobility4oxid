@@ -66,7 +66,7 @@ class AdminOrder extends AdminController
     {
         $sms = $this->getSms($this->getMessageBody());
         return $sms->sendOrderMessage($this->item) ?
-            (string) $this->getSuccessSentMessage($sms) :
+            $this->getSuccessSentMessage($sms)->getMessage() :
             $this->getUnsuccessfullySentMessage($sms);
     }
 
