@@ -754,10 +754,10 @@ class SmsTest extends LMUnitTestCase
 
         /** @var RecipientsList|MockObject $recipientListMock */
         $recipientListMock = $this->getMockBuilder(RecipientsList::class)
-            ->onlyMethods(['getRecipients'])
+            ->onlyMethods(['getRecipientsList'])
             ->disableOriginalConstructor()
             ->getMock();
-        $recipientListMock->method('getRecipients')->willReturn([$recipientMock]);
+        $recipientListMock->method('getRecipientsList')->willReturn([$recipientMock]);
 
         /** @var RecipientsList|MockObject $requestRecipientListMock */
         $requestRecipientListMock = $this->getMockBuilder(RecipientsList::class)
