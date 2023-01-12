@@ -305,12 +305,6 @@ class AdminSend extends LMUnitTestCase
      */
     public function canGetSuccessSentMessage($hasResponse)
     {
-        /** @var successfullySentException|MockObject $successfullySendExceptionMock */
-        $successfullySendExceptionMock = $this->getMockBuilder(successfullySentException::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        d3GetOxidDIC()->set(successfullySentException::class, $successfullySendExceptionMock);
-
         /** @var Response|MockObject $resonseMock */
         $resonseMock = $this->getMockBuilder(Response::class)
             ->onlyMethods(['getSmsCount'])
@@ -332,8 +326,8 @@ class AdminSend extends LMUnitTestCase
             ->onlyMethods(['__construct'])
             ->getMock();
 
-        $this->assertSame(
-            $successfullySendExceptionMock,
+        $this->assertInstanceOf(
+            successfullySentException::class,
             $this->callMethod(
                 $sut,
                 'getSuccessSentMessage',

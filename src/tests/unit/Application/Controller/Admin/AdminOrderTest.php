@@ -75,18 +75,18 @@ class AdminOrderTest extends AdminSend
             ->onlyMethods(['sendOrderMessage'])
             ->getMock();
         $smsMock->expects($this->once())->method('sendOrderMessage')->willReturn($canSendItemMessage);
-        d3GetOxidDIC()->set(Sms::class, $smsMock);
 
         /** @var AdminOrder|MockObject $sut */
         $sut = $this->getMockBuilder(AdminOrder::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getMessageBody', 'getSuccessSentMessage', 'getUnsuccessfullySentMessage'])
+            ->onlyMethods(['getMessageBody', 'getSuccessSentMessage', 'getUnsuccessfullySentMessage', 'getSms'])
             ->getMock();
         $sut->method('getMessageBody')->willReturn('messageBodyFixture');
         $sut->expects($this->exactly((int) $canSendItemMessage))->method('getSuccessSentMessage')
             ->willReturn(oxNew(successfullySentException::class, 'expectedReturn'));
         $sut->expects($this->exactly((int) !$canSendItemMessage))->method('getUnsuccessfullySentMessage')
             ->willReturn('expectedReturn');
+        $sut->method('getSms')->willReturn($smsMock);
 
         $this->setValue(
             $sut,
@@ -98,6 +98,29 @@ class AdminOrderTest extends AdminSend
             $this->callMethod(
                 $sut,
                 'sendMessage'
+            )
+        );
+    }
+
+    /**
+     * @test
+     * @return void
+     * @throws ReflectionException
+     * @covers \D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder::getSms
+     */
+    public function canGetSms()
+    {
+        /** @var AdminOrder|MockObject $sut */
+        $sut = $this->getMockBuilder(AdminOrder::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->assertInstanceOf(
+            Sms::class,
+            $this->callMethod(
+                $sut,
+                'getSms',
+                ['messageFixture']
             )
         );
     }

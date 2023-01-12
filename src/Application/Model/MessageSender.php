@@ -74,12 +74,19 @@ class MessageSender
         }
 
         try {
-            d3GetOxidDIC()->setParameter(Sms::class.'.args.message', $messageBody);
-            /** @var Sms $sms */
-            $sms = d3GetOxidDIC()->get(Sms::class);
+            $sms = $this->getSms($messageBody);
             $sms->sendOrderMessage($order);
         } catch (noRecipientFoundException $e) {
         }
+    }
+
+    /**
+     * @param string $message
+     * @return Sms
+     */
+    protected function getSms(string $message): Sms
+    {
+        return oxNew(Sms::class, $message);
     }
 
     /**

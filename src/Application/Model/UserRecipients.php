@@ -70,11 +70,7 @@ class UserRecipients
                 /** @var string $countryId */
                 $countryId = $this->user->getFieldData('oxcountryid');
                 $country->load($countryId);
-                d3GetOxidDIC()->setParameter(Recipient::class.'.args.number', $content);
-                d3GetOxidDIC()->setParameter(Recipient::class.'.args.iso2countrycode', $country->getFieldData('oxisoalpha2'));
-                /** @var Recipient $recipient */
-                $recipient = d3GetOxidDIC()->get(Recipient::class);
-                return $recipient;
+                return $this->getRecipient($content, $country->getFieldData('oxisoalpha2'));
             }
         } catch (NumberParseException|RecipientException $e) {
             /** @var LoggerHandler $loggerHandler */
@@ -86,6 +82,18 @@ class UserRecipients
         }
 
         return null;
+    }
+
+    /**
+     * @param string $content
+     * @param string $countryCode
+     * @throws NumberParseException
+     * @throws RecipientException
+     * @return Recipient
+     */
+    protected function getRecipient(string $content, string $countryCode): Recipient
+    {
+        return oxNew(Recipient::class, $content, $countryCode);
     }
 
     /**

@@ -29,6 +29,7 @@ use D3\LinkmobilityClient\RecipientsList\RecipientsList;
 use D3\LinkmobilityClient\SMS\BinaryRequest;
 use D3\LinkmobilityClient\SMS\Response;
 use D3\LinkmobilityClient\ValueObject\Recipient;
+use D3\LinkmobilityClient\ValueObject\Sender;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Monolog\Logger;
 use OxidEsales\Eshop\Application\Model\Order;
@@ -637,6 +638,10 @@ class SmsTest extends LMUnitTestCase
      */
     public function canGetRequest()
     {
+        /** @var Sender|MockObject $senderMock */
+        $senderMock = $this->getMockBuilder(Sender::class)
+            ->getMock();
+
         /** @var Client|MockObject $clientMock */
         $clientMock = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
@@ -644,7 +649,11 @@ class SmsTest extends LMUnitTestCase
 
         /** @var Configuration|MockObject $configurationMock */
         $configurationMock = $this->getMockBuilder(Configuration::class)
+            ->onlyMethods(['getSmsSenderNumber', 'getSmsSenderCountry'])
             ->getMock();
+        $configurationMock->method('getSmsSenderNumber')->willReturn('01512 3456789');
+        $configurationMock->method('getSmsSenderCountry')->willReturn('DE');
+
 
         /** @var BinaryRequest|MockObject $binaryRequestMock */
         $binaryRequestMock = $this->getMockBuilder(BinaryRequest::class)
@@ -657,12 +666,15 @@ class SmsTest extends LMUnitTestCase
             ->onlyMethods(['getSmsRequest'])
             ->getMock();
         $requestFactoryMock->method('getSmsRequest')->willReturn($binaryRequestMock);
-        d3GetOxidDIC()->set(RequestFactory::class, $requestFactoryMock);
 
         /** @var Sms|MockObject $sut */
         $sut = $this->getMockBuilder(Sms::class)
+            ->onlyMethods(['getRequestFactory', 'getSender', 'getMessage'])
             ->disableOriginalConstructor()
             ->getMock();
+        $sut->method('getRequestFactory')->willReturn($requestFactoryMock);
+        $sut->method('getSender')->willReturn($senderMock);
+        $sut->method('getMessage')->willReturn('messageFixture');
 
         $this->assertSame(
             $binaryRequestMock,
@@ -670,6 +682,57 @@ class SmsTest extends LMUnitTestCase
                 $sut,
                 'getRequest',
                 [$configurationMock, $clientMock]
+            )
+        );
+    }
+
+    /**
+     * @test
+     * @return void
+     * @throws ReflectionException
+     * @covers \D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms::getRequestFactory
+     */
+    public function canGetRequestFactory()
+    {
+        /** @var Client|MockObject $clientMock */
+        $clientMock = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        /** @var Sms|MockObject $sut */
+        $sut = $this->getMockBuilder(Sms::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->assertInstanceOf(
+            RequestFactory::class,
+            $this->callMethod(
+                $sut,
+                'getRequestFactory',
+                ['messageFixture', $clientMock]
+            )
+        );
+    }
+
+    /**
+     * @test
+     * @return void
+     * @throws ReflectionException
+     * @covers \D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms::getSender
+     */
+    public function canGetSender()
+    {
+        /** @var Sms|MockObject $sut */
+        $sut = $this->getMockBuilder(Sms::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->assertInstanceOf(
+            Sender::class,
+            $this->callMethod(
+                $sut,
+                'getSender',
+                ['01512 3456789', 'DE']
             )
         );
     }

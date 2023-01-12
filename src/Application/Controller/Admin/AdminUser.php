@@ -66,12 +66,19 @@ class AdminUser extends AdminController
      */
     protected function sendMessage(): string
     {
-        d3GetOxidDIC()->setParameter(Sms::class.'.args.message', $this->getMessageBody());
-        /** @var Sms $sms */
-        $sms = d3GetOxidDIC()->get(Sms::class);
+        $sms = $this->getSms($this->getMessageBody());
         return $sms->sendUserAccountMessage($this->item) ?
             (string) $this->getSuccessSentMessage($sms) :
             $this->getUnsuccessfullySentMessage($sms);
+    }
+
+    /**
+     * @param string $message
+     * @return Sms
+     */
+    protected function getSms(string $message): Sms
+    {
+        return oxNew(Sms::class, $message);
     }
 
     /*** duplicated code but errors while phpunit coverage run if code is in shared abstract class or trait ***/
@@ -122,12 +129,11 @@ class AdminUser extends AdminController
         $messageBody = $request->getRequestEscapedParameter('messagebody');
 
         if (false === is_string($messageBody) || strlen(trim($messageBody)) <= 1) {
-            d3GetOxidDIC()->setParameter(
-                'd3ox.linkmobility.'.InvalidArgumentException::class.'.args.message',
+            /** @var InvalidArgumentException $exc */
+            $exc = oxNew(
+                InvalidArgumentException::class,
                 Registry::getLang()->translateString('D3LM_EXC_MESSAGE_NO_LENGTH')
             );
-            /** @var InvalidArgumentException $exc */
-            $exc = d3GetOxidDIC()->get('d3ox.linkmobility.'.InvalidArgumentException::class);
             throw $exc;
         }
 
@@ -141,9 +147,8 @@ class AdminUser extends AdminController
     protected function getSuccessSentMessage(Sms $sms): successfullySentException
     {
         $smsCount = $sms->getResponse() ? $sms->getResponse()->getSmsCount() : 0;
-        d3GetOxidDIC()->setParameter(successfullySentException::class.'.args.smscount', $smsCount);
         /** @var successfullySentException $exc */
-        $exc = d3GetOxidDIC()->get(successfullySentException::class);
+        $exc = oxNew(successfullySentException::class, $smsCount);
         return $exc;
     }
 

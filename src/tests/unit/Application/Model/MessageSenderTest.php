@@ -21,6 +21,7 @@ use D3\Linkmobility4OXID\Application\Model\MessageSender;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\Linkmobility4OXID\tests\unit\LMUnitTestCase;
 use D3\TestingTools\Development\CanAccessRestricted;
+use Hoa\Iterator\Mock;
 use OxidEsales\Eshop\Application\Model\Order;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
@@ -170,7 +171,6 @@ class MessageSenderTest extends LMUnitTestCase
                 $this->throwException(d3GetOxidDIC()->get(noRecipientFoundException::class)) :
                 $this->returnValue(true)
         );
-        d3GetOxidDIC()->set(Sms::class, $smsMock);
 
         /** @var Order|MockObject $orderMock */
         $orderMock = $this->getMockBuilder(Order::class)
@@ -179,8 +179,9 @@ class MessageSenderTest extends LMUnitTestCase
 
         /** @var MessageSender|MockObject $sut */
         $sut = $this->getMockBuilder(MessageSender::class)
-            ->onlyMethods(['getConfiguration'])
+            ->onlyMethods(['getSms', 'getConfiguration'])
             ->getMock();
+        $sut->method('getSms')->willReturn($smsMock);
 
         $this->callMethod(
             $sut,
@@ -200,6 +201,28 @@ class MessageSenderTest extends LMUnitTestCase
             'spaced message body'   => ['    ', $this->never(), false],
             'empty message body'    => ['', $this->never(), false],
         ];
+    }
+
+    /**
+     * @test
+     * @return void
+     * @throws ReflectionException
+     * @covers \D3\Linkmobility4OXID\Application\Model\MessageSender::getSms
+     */
+    public function canGetSms()
+    {
+        /** @var MessageSender|MockObject $sut */
+        $sut = $this->getMockBuilder(MessageSender::class)
+            ->getMock();
+
+        $this->assertInstanceOf(
+            Sms::class,
+            $this->callMethod(
+                $sut,
+                'getSms',
+                ['messageFixture']
+            )
+        );
     }
 
     /**

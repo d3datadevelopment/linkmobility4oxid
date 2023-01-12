@@ -24,6 +24,7 @@ use D3\Linkmobility4OXID\Application\Model\RequestFactory;
 use D3\Linkmobility4OXID\Application\Model\UserRecipients;
 use D3\LinkmobilityClient\Client;
 use D3\LinkmobilityClient\Exceptions\ApiException;
+use D3\LinkmobilityClient\Exceptions\RecipientException;
 use D3\LinkmobilityClient\RecipientsList\RecipientsList;
 use D3\LinkmobilityClient\RecipientsList\RecipientsListInterface;
 use D3\LinkmobilityClient\Request\RequestInterface;
@@ -34,6 +35,7 @@ use D3\LinkmobilityClient\ValueObject\Sender;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
+use libphonenumber\NumberParseException;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Registry;
@@ -175,18 +177,13 @@ class Sms extends AbstractMessage
      * @param Configuration $configuration
      * @param Client $client
      * @return SmsRequestInterface
+     * @throws NumberParseException
+     * @throws RecipientException
      */
     protected function getRequest(Configuration $configuration, Client $client): SmsRequestInterface
     {
-        d3GetOxidDIC()->setParameter(RequestFactory::class.'.args.message', $this->getMessage());
-        d3GetOxidDIC()->set(RequestFactory::class.'.args.client', $client);
-        /** @var RequestFactory $requestFactory */
-        $requestFactory = d3GetOxidDIC()->get(RequestFactory::class);
-
-        d3GetOxidDIC()->setParameter(Sender::class.'.args.number', $configuration->getSmsSenderNumber());
-        d3GetOxidDIC()->setParameter(Sender::class.'.args.iso2countrycode', $configuration->getSmsSenderCountry());
-        /** @var Sender $sender */
-        $sender = d3GetOxidDIC()->get(Sender::class);
+        $requestFactory = $this->getRequestFactory($this->getMessage(), $client);
+        $sender = $this->getSender($configuration->getSmsSenderNumber(), $configuration->getSmsSenderCountry());
 
         /** @var SmsRequestInterface $request */
         $request = $requestFactory->getSmsRequest();
@@ -195,6 +192,28 @@ class Sms extends AbstractMessage
             ->setSenderAddressType(RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL);
 
         return $request;
+    }
+
+    /**
+     * @param string $message
+     * @param Client $client
+     * @return RequestFactory
+     */
+    protected function getRequestFactory(string $message, Client $client): RequestFactory
+    {
+        return oxNew(RequestFactory::class, $message, $client);
+    }
+
+    /**
+     * @param string $number
+     * @param string $countryCode
+     * @throws NumberParseException
+     * @throws RecipientException
+     * @return Sender
+     */
+    protected function getSender(string $number, string $countryCode): Sender
+    {
+        return oxNew(Sender::class, $number, $countryCode);
     }
 
     /**

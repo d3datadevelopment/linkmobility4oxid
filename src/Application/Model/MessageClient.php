@@ -29,9 +29,8 @@ class MessageClient
         /** @var Configuration $configuration */
         $configuration = d3GetOxidDIC()->get(Configuration::class);
 
-        d3GetOxidDIC()->setParameter(Client::class.'.args.accesstoken', $configuration->getApiToken());
         /** @var Client $client */
-        $client = d3GetOxidDIC()->get(Client::class);
+        $client = oxNew(Client::class, $configuration->getApiToken());
 
         /** @var LoggerHandler $loggerHandler */
         $loggerHandler = d3GetOxidDIC()->get(LoggerHandler::class);

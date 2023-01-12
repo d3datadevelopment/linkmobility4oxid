@@ -130,7 +130,6 @@ class OrderRecipientsTest extends LMUnitTestCase
         $recipientMock = $this->getMockBuilder(Recipient::class)
             ->disableOriginalConstructor()
             ->getMock();
-        d3GetOxidDIC()->set(Recipient::class, $recipientMock);
 
         /** @var Country|MockObject $countryMock */
         $countryMock = $this->getMockBuilder(Country::class)
@@ -158,8 +157,10 @@ class OrderRecipientsTest extends LMUnitTestCase
 
         /** @var OrderRecipients|MockObject $sut */
         $sut = $this->getMockBuilder(OrderRecipients::class)
+            ->onlyMethods(['getRecipient'])
             ->disableOriginalConstructor()
             ->getMock();
+        $sut->method('getRecipient')->willReturn($recipientMock);
 
         $this->setValue(
             $sut,
@@ -189,6 +190,29 @@ class OrderRecipientsTest extends LMUnitTestCase
             'has order field value recexc'   => ['fieldContent', null, RecipientException::class],
             'has order field value nmbexc'   => ['fieldContent', null, NumberParseException::class],
         ];
+    }
+
+    /**
+     * @test
+     * @return void
+     * @throws ReflectionException
+     * @covers \D3\Linkmobility4OXID\Application\Model\OrderRecipients::getRecipient
+     */
+    public function canGetRecipient()
+    {
+        /** @var OrderRecipients|MockObject $sut */
+        $sut = $this->getMockBuilder(OrderRecipients::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->assertInstanceOf(
+            Recipient::class,
+            $this->callMethod(
+                $sut,
+                'getRecipient',
+                ['01512 3456789', 'DE']
+            )
+        );
     }
 
     /**

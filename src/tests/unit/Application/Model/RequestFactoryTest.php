@@ -50,7 +50,6 @@ class RequestFactoryTest extends LMUnitTestCase
         $senderMock = $this->getMockBuilder(Sender::class)
             ->disableOriginalConstructor()
             ->getMock();
-        d3GetOxidDIC()->set(Sender::class, $senderMock);
 
         /** @var TextRequest|MockObject $textRequestMock */
         $textRequestMock = $this->getMockBuilder(TextRequest::class)
@@ -60,15 +59,39 @@ class RequestFactoryTest extends LMUnitTestCase
         /** @var RequestFactory|MockObject $sut */
         $sut = $this->getMockBuilder(RequestFactory::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['d3CallMockableFunction'])
+            ->onlyMethods(['d3CallMockableFunction', 'getSender'])
             ->getMock();
         $sut->method('d3CallMockableFunction')->willReturn($textRequestMock);
+        $sut->method('getSender')->willReturn($senderMock);
 
         $this->assertInstanceOf(
             SmsRequestInterface::class,
             $this->callMethod(
                 $sut,
                 'getSmsRequest'
+            )
+        );
+    }
+
+    /**
+     * @test
+     * @return void
+     * @throws ReflectionException
+     * @covers \D3\Linkmobility4OXID\Application\Model\RequestFactory::getSender
+     */
+    public function canGetSender()
+    {
+        /** @var RequestFactory|MockObject $sut */
+        $sut = $this->getMockBuilder(RequestFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->assertInstanceOf(
+            Sender::class,
+            $this->callMethod(
+                $sut,
+                'getSender',
+                ['01512 3456789', 'DE']
             )
         );
     }
