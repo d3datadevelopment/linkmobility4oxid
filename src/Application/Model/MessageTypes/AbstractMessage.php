@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\Application\Model\MessageTypes;
 
-use D3\LinkmobilityClient\RecipientsList\RecipientsList;
 use D3\LinkmobilityClient\RecipientsList\RecipientsListInterface;
 use D3\LinkmobilityClient\Response\ResponseInterface;
 use D3\LinkmobilityClient\ValueObject\Recipient;
