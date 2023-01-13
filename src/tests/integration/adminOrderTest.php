@@ -17,6 +17,7 @@ namespace D3\Linkmobility4OXID\tests\integration;
 
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder;
 use D3\Linkmobility4OXID\Application\Model\Configuration;
+use Doctrine\DBAL\Exception as DoctrineException;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Exception;
 use GuzzleHttp\Exception\RequestException;
@@ -30,6 +31,8 @@ use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 
 class adminOrderTest extends LMIntegrationTestCase
@@ -45,12 +48,13 @@ class adminOrderTest extends LMIntegrationTestCase
 
         /** @var Configuration|MockObject $configuration */
         $configuration = $this->getMockBuilder(Configuration::class)
-            ->onlyMethods(['getTestMode'])
+            ->onlyMethods(['getTestMode', 'sendOrderFinishedMessage'])
             ->getMock();
         $configuration->method('getTestMode')->willReturn(true);
+        $configuration->method('sendOrderFinishedMessage')->willReturn(false);
         d3GetOxidDIC()->set(Configuration::class, $configuration);
 
-        /** @var User $order */
+        /** @var Order $order */
         $this->order = $order = oxNew( Order::class);
         $order->setId($this->orderId);
         $order->assign([
@@ -68,9 +72,9 @@ class adminOrderTest extends LMIntegrationTestCase
 
     /**
      * @test
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws DoctrineException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function succSending()
     {
@@ -127,18 +131,16 @@ class adminOrderTest extends LMIntegrationTestCase
                 )
             );
         $remarkIds = $queryBuilder->execute()->fetchAll();
-        $this->assertTrue(
-            count($remarkIds) > 0
-        );
+        $this->assertNotEmpty($remarkIds);
 
         $this->deleteAllRemarksFrom($this->userId);
     }
 
     /**
      * @test
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws DoctrineException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function apiError()
     {
@@ -196,18 +198,16 @@ class adminOrderTest extends LMIntegrationTestCase
                          )
                      );
         $remarkIds = $queryBuilder->execute()->fetchAll();
-        $this->assertTrue(
-            count($remarkIds) == 0
-        );
+        $this->assertEmpty($remarkIds);
 
         $this->deleteAllRemarksFrom($this->userId);
     }
 
     /**
      * @test
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws DoctrineException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function emptyMessage()
     {
@@ -260,18 +260,16 @@ class adminOrderTest extends LMIntegrationTestCase
                          )
                      );
         $remarkIds = $queryBuilder->execute()->fetchAll();
-        $this->assertTrue(
-            count($remarkIds) == 0
-        );
+        $this->assertEmpty($remarkIds);
 
         $this->deleteAllRemarksFrom($this->userId);
     }
 
     /**
      * @test
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws DoctrineException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function recipientError()
     {
@@ -330,18 +328,16 @@ class adminOrderTest extends LMIntegrationTestCase
                          )
                      );
         $remarkIds = $queryBuilder->execute()->fetchAll();
-        $this->assertTrue(
-            count($remarkIds) == 0
-        );
+        $this->assertEmpty($remarkIds);
 
         $this->deleteAllRemarksFrom($this->userId);
     }
 
     /**
      * @test
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws DoctrineException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function communicationError()
     {
@@ -398,9 +394,7 @@ class adminOrderTest extends LMIntegrationTestCase
                          )
                      );
         $remarkIds = $queryBuilder->execute()->fetchAll();
-        $this->assertTrue(
-            count($remarkIds) == 0
-        );
+        $this->assertEmpty($remarkIds);
 
         $this->deleteAllRemarksFrom($this->userId);
     }

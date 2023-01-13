@@ -16,7 +16,8 @@ declare(strict_types=1);
 namespace D3\Linkmobility4OXID\tests\integration;
 
 use D3\Linkmobility4OXID\Application\Model\Configuration;
-use \D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
+use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
+use Doctrine\DBAL\Exception as DoctrineException;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Exception;
 use GuzzleHttp\Exception\RequestException;
@@ -29,6 +30,8 @@ use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 
 class adminUserTest extends LMIntegrationTestCase
@@ -60,9 +63,9 @@ class adminUserTest extends LMIntegrationTestCase
 
     /**
      * @test
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws DoctrineException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function succSending()
     {
@@ -119,18 +122,16 @@ class adminUserTest extends LMIntegrationTestCase
                 )
             );
         $remarkIds = $queryBuilder->execute()->fetchAll();
-        $this->assertTrue(
-            count($remarkIds) > 0
-        );
+        $this->assertNotEmpty($remarkIds);
 
         $this->deleteAllRemarksFrom($this->userId);
     }
 
     /**
      * @test
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws DoctrineException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function apiError()
     {
@@ -188,18 +189,16 @@ class adminUserTest extends LMIntegrationTestCase
                          )
                      );
         $remarkIds = $queryBuilder->execute()->fetchAll();
-        $this->assertTrue(
-            count($remarkIds) == 0
-        );
+        $this->assertEmpty($remarkIds);
 
         $this->deleteAllRemarksFrom($this->userId);
     }
 
     /**
      * @test
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws DoctrineException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function emptyMessage()
     {
@@ -252,18 +251,16 @@ class adminUserTest extends LMIntegrationTestCase
                          )
                      );
         $remarkIds = $queryBuilder->execute()->fetchAll();
-        $this->assertTrue(
-            count($remarkIds) == 0
-        );
+        $this->assertEmpty($remarkIds);
 
         $this->deleteAllRemarksFrom($this->userId);
     }
 
     /**
      * @test
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws DoctrineException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function recipientError()
     {
@@ -322,18 +319,16 @@ class adminUserTest extends LMIntegrationTestCase
                          )
                      );
         $remarkIds = $queryBuilder->execute()->fetchAll();
-        $this->assertTrue(
-            count($remarkIds) == 0
-        );
+        $this->assertEmpty($remarkIds);
 
         $this->deleteAllRemarksFrom($this->userId);
     }
 
     /**
      * @test
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws DoctrineException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function communicationError()
     {
@@ -390,9 +385,7 @@ class adminUserTest extends LMIntegrationTestCase
                          )
                      );
         $remarkIds = $queryBuilder->execute()->fetchAll();
-        $this->assertTrue(
-            count($remarkIds) == 0
-        );
+        $this->assertEmpty($remarkIds);
 
         $this->deleteAllRemarksFrom($this->userId);
     }
