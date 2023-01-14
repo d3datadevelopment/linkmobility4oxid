@@ -38,6 +38,7 @@ class Events
         /** @var Actions $actions */
         $actions = d3GetOxidDIC()->get(Actions::class);
         $actions->setupDatabase();
+        $actions->checkCmsItems();
         $actions->regenerateViews();
     }
 

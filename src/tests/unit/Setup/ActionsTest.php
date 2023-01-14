@@ -18,12 +18,11 @@ namespace D3\Linkmobility4OXID\tests\unit\Setup;
 use D3\Linkmobility4OXID\Setup\Actions;
 use D3\Linkmobility4OXID\tests\unit\LMUnitTestCase;
 use D3\TestingTools\Development\CanAccessRestricted;
-use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Statement;
 use Monolog\Logger;
-use OxidEsales\Eshop\Application\Model\Article;
+use OxidEsales\Eshop\Core\Config;
 use OxidEsales\Eshop\Core\Database\Adapter\DatabaseInterface;
 use OxidEsales\Eshop\Core\Database\Adapter\Doctrine\Database;
 use OxidEsales\Eshop\Core\DbMetaDataHandler;
@@ -179,31 +178,7 @@ class ActionsTest extends LMUnitTestCase
             ->getMock();
         $resultStatementMock->method('fetchOne')->willReturn('returnFixture');
 
-        /** @var ExpressionBuilder|MockObject $expressionBuilderMock */
-        $expressionBuilderMock = $this->getMockBuilder(ExpressionBuilder::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        /** @var QueryBuilder|MockObject $queryBuilderMock */
-        $queryBuilderMock = $this->getMockBuilder(QueryBuilder::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['execute', 'expr'])
-            ->getMock();
-        $queryBuilderMock->method('execute')->willReturn($resultStatementMock);
-        $queryBuilderMock->method('expr')->willReturn($expressionBuilderMock);
-
-        /** @var QueryBuilderFactory|MockObject $queryBuilderFactoryMock */
-        $queryBuilderFactoryMock = $this->getMockBuilder(QueryBuilderFactory::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['create'])
-            ->getMock();
-        $queryBuilderFactoryMock->method('create')->willReturn($queryBuilderMock);
-
-        /** @var Container|MockObject $containerMock */
-        $containerMock = $this->getMockBuilder(Container::class)
-            ->onlyMethods(['get'])
-            ->getMock();
-        $containerMock->method('get')->willReturn($queryBuilderFactoryMock);
+        $containerMock = $this->getQueryBuilderResultMock($resultStatementMock);
 
         /** @var Actions|MockObject $sut */
         $sut = $this->getMockBuilder(Actions::class)
@@ -236,13 +211,13 @@ class ActionsTest extends LMUnitTestCase
         $databaseMock->method('quoteIdentifier')->willReturn('foo');
         $databaseMock->method('quoteArray')->willReturn('foo');
         $databaseMock->method('quote')->willReturn('foo');
-        d3GetOxidDIC()->set('d3ox.linkmobility.'.DatabaseInterface::class.'.assoc', $databaseMock);
 
         /** @var Actions|MockObject $sut */
         $sut = $this->getMockBuilder(Actions::class)
-            ->onlyMethods(['getUniqueFieldTypes'])
+            ->onlyMethods(['getUniqueFieldTypes', 'getDb'])
             ->getMock();
         $sut->method('getUniqueFieldTypes')->willReturn(['foobar', 'LINKMOB', 'barfoo']);
+        $sut->method('getDb')->willReturn($databaseMock);
 
         $this->callMethod(
             $sut,
@@ -279,6 +254,143 @@ class ActionsTest extends LMUnitTestCase
 
     /**
      * @test
+     * @param $missing
+     * @return void
+     * @throws ReflectionException
+     * @dataProvider canCheckCmsItemsDataProvider
+     * @covers \D3\Linkmobility4OXID\Setup\Actions::checkCmsItems
+     */
+    public function canCheckCmsItems($missing)
+    {
+        /** @var Actions|MockObject $sut */
+        $sut = $this->getMockBuilder(Actions::class)
+            ->onlyMethods(['cmsMissing', 'addCms1Item', 'addCms2Item', 'addCms3Item'])
+            ->getMock();
+        $sut->expects($this->exactly(3))->method('cmsMissing')->willReturn($missing);
+        $sut->expects($this->exactly((int) $missing))->method('addCms1Item');
+        $sut->expects($this->exactly((int) $missing))->method('addCms2Item');
+        $sut->expects($this->exactly((int) $missing))->method('addCms3Item');
+
+        $this->callMethod(
+            $sut,
+            'checkCmsItems'
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function canCheckCmsItemsDataProvider(): array
+    {
+        return [
+            'CMS missing'   => [true],
+            'CMS exists'    => [false],
+        ];
+    }
+
+    /**
+     * @test
+     * @return void
+     * @throws ReflectionException
+     * @dataProvider canCmsMissingDataProvider
+     * @covers \D3\Linkmobility4OXID\Setup\Actions::cmsMissing
+     */
+    public function canCmsMissing($itemCount, $expected)
+    {
+        /** @var Statement|MockObject $resultStatementMock */
+        $resultStatementMock = $this->getMockBuilder(Statement::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['fetchOne'])
+            ->getMock();
+        $resultStatementMock->expects($this->once())->method('fetchOne')->willReturn($itemCount);
+
+        $containerMock = $this->getQueryBuilderResultMock($resultStatementMock);
+
+        /** @var Actions|MockObject $sut */
+        $sut = $this->getMockBuilder(Actions::class)
+            ->onlyMethods(['getContainer'])
+            ->getMock();
+        $sut->method('getContainer')->willReturn($containerMock);
+
+        $this->assertSame(
+            $expected,
+            $this->callMethod(
+                $sut,
+                'cmsMissing',
+                ['checkIdent']
+            )
+        );
+    }
+
+    /**
+     * @return array[]
+     */
+    public function canCmsMissingDataProvider(): array
+    {
+        return [
+            'found one'     => [1, false],
+            'found none'    => [0, true]
+        ];
+    }
+
+    /**
+     * @test
+     * @param $method
+     * @return void
+     * @throws ReflectionException
+     * @dataProvider canAddCmsItemDataProvider
+     * @covers \D3\Linkmobility4OXID\Setup\Actions::addCms1Item
+     * @covers \D3\Linkmobility4OXID\Setup\Actions::addCms2Item
+     * @covers \D3\Linkmobility4OXID\Setup\Actions::addCms3Item
+     */
+    public function canAddCmsItem($method)
+    {
+        /** @var QueryBuilder|MockObject $queryBuilderMock */
+        $queryBuilderMock = $this->getMockBuilder(QueryBuilder::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['execute', 'expr'])
+            ->getMock();
+        $queryBuilderMock->expects($this->once())->method('execute');
+
+        /** @var QueryBuilderFactory|MockObject $queryBuilderFactoryMock */
+        $queryBuilderFactoryMock = $this->getMockBuilder(QueryBuilderFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['create'])
+            ->getMock();
+        $queryBuilderFactoryMock->method('create')->willReturn($queryBuilderMock);
+
+        /** @var Container|MockObject $containerMock */
+        $containerMock = $this->getMockBuilder(Container::class)
+            ->onlyMethods(['get'])
+            ->getMock();
+        $containerMock->method('get')->willReturn($queryBuilderFactoryMock);
+
+        /** @var Actions|MockObject $sut */
+        $sut = $this->getMockBuilder(Actions::class)
+            ->onlyMethods(['getContainer'])
+            ->getMock();
+        $sut->method('getContainer')->willReturn($containerMock);
+
+        $this->callMethod(
+            $sut,
+            $method
+        );
+    }
+
+    /**
+     * @return string[]
+     */
+    public function canAddCmsItemDataProvider(): array
+    {
+        return [
+            ['addCms1Item'],
+            ['addCms2Item'],
+            ['addCms3Item'],
+        ];
+    }
+
+    /**
+     * @test
      * @return void
      * @throws ReflectionException
      * @covers \D3\Linkmobility4OXID\Setup\Actions::getContainer()
@@ -293,6 +405,81 @@ class ActionsTest extends LMUnitTestCase
             $this->callMethod(
                 $sut,
                 'getContainer'
+            )
+        );
+    }
+
+    /**
+     * @param MockObject $resultStatementMock
+     * @return MockObject|Container
+     */
+    protected function getQueryBuilderResultMock(MockObject $resultStatementMock)
+    {
+        /** @var ExpressionBuilder|MockObject $expressionBuilderMock */
+        $expressionBuilderMock = $this->getMockBuilder(ExpressionBuilder::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        /** @var QueryBuilder|MockObject $queryBuilderMock */
+        $queryBuilderMock = $this->getMockBuilder(QueryBuilder::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['execute', 'expr'])
+            ->getMock();
+        $queryBuilderMock->method('execute')->willReturn($resultStatementMock);
+        $queryBuilderMock->method('expr')->willReturn($expressionBuilderMock);
+
+        /** @var QueryBuilderFactory|MockObject $queryBuilderFactoryMock */
+        $queryBuilderFactoryMock = $this->getMockBuilder(QueryBuilderFactory::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['create'])
+            ->getMock();
+        $queryBuilderFactoryMock->method('create')->willReturn($queryBuilderMock);
+
+        /** @var Container|MockObject $containerMock */
+        $containerMock = $this->getMockBuilder(Container::class)
+            ->onlyMethods(['get'])
+            ->getMock();
+        $containerMock->method('get')->willReturn($queryBuilderFactoryMock);
+
+        return $containerMock;
+    }
+
+    /**
+     * @test
+     * @return void
+     * @throws ReflectionException
+     * @covers \D3\Linkmobility4OXID\Setup\Actions::getDb
+     */
+    public function canGetDb()
+    {
+        /** @var Actions $sut */
+        $sut = oxNew(Actions::class);
+
+        $this->assertInstanceOf(
+            DatabaseInterface::class,
+            $this->callMethod(
+                $sut,
+                'getDb'
+            )
+        );
+    }
+
+    /**
+     * @test
+     * @return void
+     * @throws ReflectionException
+     * @covers \D3\Linkmobility4OXID\Setup\Actions::getConfig
+     */
+    public function canGetConfig()
+    {
+        /** @var Actions $sut */
+        $sut = oxNew(Actions::class);
+
+        $this->assertInstanceOf(
+            Config::class,
+            $this->callMethod(
+                $sut,
+                'getConfig'
             )
         );
     }
