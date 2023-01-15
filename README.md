@@ -39,7 +39,7 @@ composer require d3/linkmobility4oxid
 
 Aktivieren Sie das Modul im Shopadmin unter "Erweiterungen -> Module".
 
-Die nötige Konfiguration finden Sie im selben Bereich im Tab "Einstell.".
+Die nötige Konfiguration finden Sie im selben Bereich im Tab "Einstell.". Die Texte für die Standardnachrichten können Sie unter "Kundeninformationen -> CMS-Seiten" mit dem Titel "Linkmobility" an Ihre Anforderungen anpassen.
 
 ## Changelog
 

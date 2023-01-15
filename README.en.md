@@ -39,7 +39,7 @@ composer require d3/linkmobility4oxid
 
 Activate the module in the admin area of the shop in "Extensions -> Modules".
 
-The necessary configuration can be found in the same area in the "Settings" tab.
+The necessary configuration can be found in the same area in the "Settings" tab. You can adapt the texts for the standard messages to your requirements under "Customer information -> CMS pages" with the title "Linkmobility".
 
 ## Changelog
 
