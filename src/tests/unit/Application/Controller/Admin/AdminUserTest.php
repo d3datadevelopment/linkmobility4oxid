@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\tests\unit\Application\Controller\Admin;
 
-use D3\DIContainerHandler\d3DicHandler;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;

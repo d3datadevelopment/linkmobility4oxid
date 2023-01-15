@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\tests\unit\Application\Controller\Admin;
 
-use D3\DIContainerHandler\d3DicHandler;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminOrder;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
@@ -28,7 +27,6 @@ use D3\LinkmobilityClient\SMS\Response;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\TestingTools\Development\CanAccessRestricted;
 use InvalidArgumentException;
-use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\Eshop\Core\Request;
 use OxidEsales\Eshop\Core\UtilsView;
 use PHPUnit\Framework\MockObject\MockObject;

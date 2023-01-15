@@ -21,6 +21,7 @@ use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\Linkmobility4OXID\Application\Model\UserRecipients;
 use D3\LinkmobilityClient\Response\ResponseInterface;
 use D3\LinkmobilityClient\ValueObject\Recipient;
+use Exception;
 use InvalidArgumentException;
 use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
 use OxidEsales\Eshop\Application\Model\User;
@@ -63,6 +64,7 @@ class AdminUser extends AdminController
     /**
      * @return string
      * @throws noRecipientFoundException
+     * @throws Exception
      */
     protected function sendMessage(): string
     {

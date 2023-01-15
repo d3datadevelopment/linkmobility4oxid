@@ -21,7 +21,6 @@ use D3\Linkmobility4OXID\Application\Model\MessageSender;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\Linkmobility4OXID\tests\unit\LMUnitTestCase;
 use D3\TestingTools\Development\CanAccessRestricted;
-use Hoa\Iterator\Mock;
 use OxidEsales\Eshop\Application\Model\Order;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;

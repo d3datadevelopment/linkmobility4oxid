@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace D3\Linkmobility4OXID\tests\integration;
 
 use D3\Linkmobility4OXID\Application\Model\Configuration;
-use D3\Linkmobility4OXID\Modules\Core\EmailCore;
 use Doctrine\DBAL\Exception as DoctrineException;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Exception;
@@ -27,7 +26,6 @@ use GuzzleHttp\Psr7\Response;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\Remark;
 use OxidEsales\Eshop\Application\Model\User;
-use OxidEsales\Eshop\Core\Email;
 use OxidEsales\EshopCommunity\Internal\Container\ContainerFactory;
 use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;

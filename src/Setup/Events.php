@@ -17,13 +17,6 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\Setup;
 
-use D3\ModCfg\Application\Model\Exception\d3ShopCompatibilityAdapterException;
-use D3\ModCfg\Application\Model\Install\d3install;
-use Doctrine\DBAL\DBALException;
-use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
-use OxidEsales\Eshop\Core\Exception\DatabaseErrorException;
-use OxidEsales\Eshop\Core\Exception\StandardException;
-use OxidEsales\Eshop\Core\Exception\SystemComponentException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 

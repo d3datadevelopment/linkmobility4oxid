@@ -17,6 +17,7 @@ namespace D3\Linkmobility4OXID\Modules\Application\Model;
 
 use D3\Linkmobility4OXID\Modules\Core\EmailCore;
 use D3\TestingTools\Production\IsMockable;
+use Exception;
 use OxidEsales\Eshop\Core\Email;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -29,6 +30,7 @@ class OrderModel extends OrderModel_parent
      * @return void
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function cancelOrder(): void
     {

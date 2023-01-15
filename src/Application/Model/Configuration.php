@@ -19,7 +19,6 @@ use Assert\Assert;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Config;
-use OxidEsales\Eshop\Core\Registry;
 
 class Configuration
 {

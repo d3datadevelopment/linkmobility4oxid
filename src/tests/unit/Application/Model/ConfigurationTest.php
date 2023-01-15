@@ -88,10 +88,11 @@ class ConfigurationTest extends LMUnitTestCase
     /**
      * @test
      * @param $testMode
+     * @param $expected
      * @return void
      * @throws ReflectionException
      * @dataProvider trueFalseDataProvider
-     * @covers \D3\Linkmobility4OXID\Application\Model\Configuration::getTestMode
+     * @covers       \D3\Linkmobility4OXID\Application\Model\Configuration::getTestMode
      */
     public function canGetTestMode($testMode, $expected)
     {

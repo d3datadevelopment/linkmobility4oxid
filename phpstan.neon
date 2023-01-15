@@ -11,3 +11,4 @@ parameters:
     ignoreErrors:
         - '#Psr\\Container\\ContainerExceptionInterface is not subtype of Throwable#'
         - '#Cannot cast mixed to string.#'
+        - '#Method D3\\Linkmobility4OXID\\Setup\\Actions::getUniqueFieldTypes\(\) should return array\<string\> but returns array\<int, string\|null\>.#'

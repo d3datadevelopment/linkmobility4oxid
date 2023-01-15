@@ -35,7 +35,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\RequestInterface;
-use Spipu\Html2Pdf\Tag\Html\Em;
 
 class finishedOrderTest extends LMIntegrationTestCase
 {

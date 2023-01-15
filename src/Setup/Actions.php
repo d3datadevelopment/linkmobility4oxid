@@ -194,15 +194,16 @@ class Actions
     }
 
     /**
-     * @param $checkIdent
+     * @param string $checkIdent
      * @return bool
      * @throws DoctrineDriverException
      * @throws DoctrineException
      */
-    protected function cmsMissing($checkIdent): bool
+    protected function cmsMissing(string $checkIdent): bool
     {
-        /** @var QueryBuilder $qb */
-        $qb = $this->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
+        /** @var QueryBuilderFactory $queryBuilderFactory */
+        $queryBuilderFactory = $this->getContainer()->get(QueryBuilderFactoryInterface::class);
+        $qb = $queryBuilderFactory->create();
         $qb->select('count(oxid)')
             ->from(oxNew(Content::class)->getViewName())
             ->where(
@@ -232,8 +233,9 @@ class Actions
      */
     protected function addCms1Item()
     {
-        /** @var QueryBuilder $qb */
-        $qb = $this->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
+        /** @var QueryBuilderFactory $queryBuilderFactory */
+        $queryBuilderFactory = $this->getContainer()->get(QueryBuilderFactoryInterface::class);
+        $qb = $queryBuilderFactory->create();
         $qb->insert('oxcontents')
             ->values([
                 'oxid'  => 'MD5(CONCAT('.$qb->createNamedParameter(__FUNCTION__).', NOW()))',
@@ -261,8 +263,9 @@ class Actions
      */
     protected function addCms2Item()
     {
-        /** @var QueryBuilder $qb */
-        $qb = $this->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
+        /** @var QueryBuilderFactory $queryBuilderFactory */
+        $queryBuilderFactory = $this->getContainer()->get(QueryBuilderFactoryInterface::class);
+        $qb = $queryBuilderFactory->create();
         $qb->insert('oxcontents')
             ->values([
                 'oxid'  => 'MD5(CONCAT('.$qb->createNamedParameter(__FUNCTION__).', NOW()))',
@@ -290,8 +293,9 @@ class Actions
      */
     protected function addCms3Item()
     {
-        /** @var QueryBuilder $qb */
-        $qb = $this->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
+        /** @var QueryBuilderFactory $queryBuilderFactory */
+        $queryBuilderFactory = $this->getContainer()->get(QueryBuilderFactoryInterface::class);
+        $qb = $queryBuilderFactory->create();
         $qb->insert('oxcontents')
             ->values([
                 'oxid'  => 'MD5(CONCAT('.$qb->createNamedParameter(__FUNCTION__).', NOW()))',

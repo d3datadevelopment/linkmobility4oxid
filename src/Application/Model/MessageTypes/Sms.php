@@ -183,9 +183,8 @@ class Sms extends AbstractMessage
     protected function getRequest(Configuration $configuration, Client $client): SmsRequestInterface
     {
         $requestFactory = $this->getRequestFactory($this->getMessage(), $client);
-        $sender = $this->getSender($configuration->getSmsSenderNumber(), $configuration->getSmsSenderCountry());
+        $sender = $this->getSender((string) $configuration->getSmsSenderNumber(), (string) $configuration->getSmsSenderCountry());
 
-        /** @var SmsRequestInterface $request */
         $request = $requestFactory->getSmsRequest();
         $request->setTestMode($configuration->getTestMode())->setMethod(RequestInterface::METHOD_POST)
             ->setSenderAddress($sender)
@@ -221,6 +220,8 @@ class Sms extends AbstractMessage
      * @return ResponseInterface
      * @throws ApiException
      * @throws GuzzleException
+     * @throws NumberParseException
+     * @throws RecipientException
      */
     protected function submitMessage(RecipientsListInterface $recipientsList): ResponseInterface
     {
@@ -257,7 +258,7 @@ class Sms extends AbstractMessage
     /**
      * @return LoggerInterface
      */
-    public function getLogger()
+    public function getLogger(): LoggerInterface
     {
         return Registry::getLogger();
     }

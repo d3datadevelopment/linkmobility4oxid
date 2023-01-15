@@ -40,7 +40,7 @@ class RequestFactory extends \D3\LinkmobilityClient\SMS\RequestFactory
         /** @var SmsRequestInterface $request */
         $request = $this->d3CallMockableFunction([\D3\LinkmobilityClient\SMS\RequestFactory::class, 'getSmsRequest']);
 
-        $sender = $this->getSender($configuration->getSmsSenderNumber(), $configuration->getSmsSenderCountry());
+        $sender = $this->getSender((string) $configuration->getSmsSenderNumber(), (string) $configuration->getSmsSenderCountry());
         $request->setTestMode($configuration->getTestMode())
             ->setSenderAddress($sender)
             ->setSenderAddressType(RequestInterface::SENDERADDRESSTYPE_INTERNATIONAL);

@@ -45,7 +45,7 @@ abstract class LMUnitTestCase extends UnitTestCase
      *
      * @return MockObject
      */
-    protected function getContainerMock($serviceName, $serviceMock)
+    protected function getContainerMock($serviceName, $serviceMock): MockObject
     {
         $container = $this->getMockBuilder(ContainerInterface::class)
             ->onlyMethods(['get', 'has'])

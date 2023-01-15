@@ -70,7 +70,7 @@ class OrderRecipients
                 /** @var string $countryId */
                 $countryId = $this->order->getFieldData(trim($countryIdFieldName));
                 $country->load($countryId);
-                return $this->getRecipient($content, $country->getFieldData('oxisoalpha2'));
+                return $this->getRecipient($content, (string) $country->getFieldData('oxisoalpha2'));
             }
         } catch (NumberParseException|RecipientException $e) {
             /** @var LoggerHandler $loggerHandler */

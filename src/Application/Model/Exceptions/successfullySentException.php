@@ -18,7 +18,6 @@ namespace D3\Linkmobility4OXID\Application\Model\Exceptions;
 use Exception;
 use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Language;
-use OxidEsales\Eshop\Core\Registry;
 
 class successfullySentException extends StandardException
 {

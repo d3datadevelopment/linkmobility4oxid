@@ -43,6 +43,7 @@ class EmailCore extends EmailCore_parent
      * @return bool
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function sendOrderEmailToUser($order, $subject = null)
     {
@@ -62,6 +63,7 @@ class EmailCore extends EmailCore_parent
      * @return bool
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function sendSendedNowMail($order, $subject = null)
     {

@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace D3\Linkmobility4OXID\tests;
 
 use D3\ModCfg\Tests\additional_abstract;
-use OxidEsales\Eshop\Core\Exception\StandardException;
 
 class additional extends additional_abstract
 {
