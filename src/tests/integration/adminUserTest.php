@@ -24,6 +24,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Monolog\Logger;
 use OxidEsales\Eshop\Application\Model\Remark;
 use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Registry;
@@ -33,6 +34,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Log\LoggerInterface;
 
 class adminUserTest extends LMIntegrationTestCase
 {
@@ -42,6 +44,8 @@ class adminUserTest extends LMIntegrationTestCase
 
     public function setUp(): void
     {
+        define('OX_IS_ADMIN', true);
+
         parent::setUp();
 
         /** @var Configuration|MockObject $configuration */
@@ -50,6 +54,14 @@ class adminUserTest extends LMIntegrationTestCase
             ->getMock();
         $configuration->method('getTestMode')->willReturn(true);
         d3GetOxidDIC()->set(Configuration::class, $configuration);
+
+        /** @var Logger|MockObject $loggerMock */
+        $loggerMock = $this->getMockBuilder(Logger::class)
+            ->onlyMethods(['error'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $loggerMock->method('error');
+        d3GetOxidDIC()->set('d3ox.linkmobility.'.LoggerInterface::class, $loggerMock);
 
         /** @var User $user */
         $this->user = $user = oxNew(User::class);
@@ -298,11 +310,7 @@ class adminUserTest extends LMIntegrationTestCase
         );
 
         // check return message
-        $search = sprintf(
-            Registry::getLang()->translateString('D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND'),
-            'no response'
-        );
-
+        $search = Registry::getLang()->translateString('D3LM_EXC_NO_RECIPIENT_SET', null, false);
         $this->assertTrue(
             (bool) strpos(serialize(Registry::getSession()->getVariable('Errors')), $search)
         );

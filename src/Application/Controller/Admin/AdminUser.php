@@ -19,6 +19,7 @@ use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\Linkmobility4OXID\Application\Model\UserRecipients;
+use D3\LinkmobilityClient\LoggerHandler;
 use D3\LinkmobilityClient\Response\ResponseInterface;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use Exception;
@@ -63,15 +64,26 @@ class AdminUser extends AdminController
 
     /**
      * @return string
-     * @throws noRecipientFoundException
      * @throws Exception
      */
     protected function sendMessage(): string
     {
-        $sms = $this->getSms($this->getMessageBody());
-        return $sms->sendUserAccountMessage($this->item) ?
-            $this->getSuccessSentMessage($sms)->getMessage() :
-            $this->getUnsuccessfullySentMessage($sms);
+        try {
+            $sms = $this->getSms( $this->getMessageBody() );
+
+            return $sms->sendUserAccountMessage( $this->item ) ?
+                $this->getSuccessSentMessage( $sms )->getMessage() :
+                $this->getUnsuccessfullySentMessage( $sms );
+        } catch (noRecipientFoundException $e) {
+            /** @var LoggerHandler $loggerHandler */
+            $loggerHandler = d3GetOxidDIC()->get(LoggerHandler::class);
+            $loggerHandler->getLogger()->warning($e->getMessage());
+            /** @var UtilsView $utilsView */
+            $utilsView = d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class);
+            $utilsView->addErrorToDisplay($e);
+        }
+
+        return '';
     }
 
     /**
@@ -107,6 +119,7 @@ class AdminUser extends AdminController
 
     /**
      * @return void
+     * @throws Exception
      */
     public function send(): void
     {
@@ -115,7 +128,7 @@ class AdminUser extends AdminController
 
         try {
             $utilsView->addErrorToDisplay($this->sendMessage());
-        } catch (noRecipientFoundException|InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $utilsView->addErrorToDisplay($e->getMessage());
         }
     }

@@ -19,9 +19,11 @@ use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\Linkmobility4OXID\Application\Model\OrderRecipients;
+use D3\LinkmobilityClient\LoggerHandler;
 use D3\LinkmobilityClient\Response\ResponseInterface;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\TestingTools\Production\IsMockable;
+use Exception;
 use InvalidArgumentException;
 use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
 use OxidEsales\Eshop\Application\Model\Order;
@@ -60,14 +62,25 @@ class AdminOrder extends AdminController
 
     /**
      * @return string
-     * @throws noRecipientFoundException
+     * @throws Exception
      */
     protected function sendMessage(): string
     {
-        $sms = $this->getSms($this->getMessageBody());
-        return $sms->sendOrderMessage($this->item) ?
-            $this->getSuccessSentMessage($sms)->getMessage() :
-            $this->getUnsuccessfullySentMessage($sms);
+        try {
+            $sms = $this->getSms( $this->getMessageBody() );
+            return $sms->sendOrderMessage( $this->item ) ?
+                $this->getSuccessSentMessage( $sms )->getMessage() :
+                $this->getUnsuccessfullySentMessage( $sms );
+        } catch (noRecipientFoundException $e) {
+            /** @var LoggerHandler $loggerHandler */
+            $loggerHandler = d3GetOxidDIC()->get(LoggerHandler::class);
+            $loggerHandler->getLogger()->warning($e->getMessage(), [$this->item]);
+            /** @var UtilsView $utilsView */
+            $utilsView = d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class);
+            $utilsView->addErrorToDisplay($e);
+        }
+
+        return '';
     }
 
     /**
@@ -103,6 +116,7 @@ class AdminOrder extends AdminController
 
     /**
      * @return void
+     * @throws Exception
      */
     public function send(): void
     {
@@ -111,7 +125,7 @@ class AdminOrder extends AdminController
 
         try {
             $utilsView->addErrorToDisplay($this->sendMessage());
-        } catch (noRecipientFoundException|InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $utilsView->addErrorToDisplay($e->getMessage());
         }
     }

@@ -17,8 +17,10 @@ namespace D3\Linkmobility4OXID\Application\Model;
 
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
+use D3\LinkmobilityClient\LoggerHandler;
 use Exception;
 use OxidEsales\Eshop\Application\Model\Order;
+use OxidEsales\Eshop\Core\Registry;
 
 class MessageSender
 {
@@ -30,8 +32,14 @@ class MessageSender
      */
     public function sendOrderFinishedMessage(Order $order, string $messageBody): void
     {
-        if ($this->getConfiguration()->sendOrderFinishedMessage()) {
-            $this->sendMessageByOrder($order, $messageBody);
+        try {
+            if ( $this->getConfiguration()->sendOrderFinishedMessage() ) {
+                $this->sendMessageByOrder( $order, $messageBody );
+            }
+        } catch (noRecipientFoundException $e) {
+            /** @var LoggerHandler $loggerHandler */
+            $loggerHandler = d3GetOxidDIC()->get(LoggerHandler::class);
+            $loggerHandler->getLogger()->debug($e->getMessage(), [$order]);
         }
     }
 
@@ -43,8 +51,14 @@ class MessageSender
      */
     public function sendSendedNowMessage(Order $order, string $messageBody): void
     {
-        if ($this->getConfiguration()->sendOrderSendedNowMessage()) {
-            $this->sendMessageByOrder($order, $messageBody);
+        try {
+            if ( $this->getConfiguration()->sendOrderSendedNowMessage() ) {
+                $this->sendMessageByOrder( $order, $messageBody );
+            }
+        } catch (noRecipientFoundException $e) {
+            /** @var LoggerHandler $loggerHandler */
+            $loggerHandler = d3GetOxidDIC()->get(LoggerHandler::class);
+            $loggerHandler->getLogger()->debug($e->getMessage(), [$order]);
         }
     }
 
@@ -56,16 +70,23 @@ class MessageSender
      */
     public function sendCancelOrderMessage(Order $order, string $messageBody): void
     {
-        if ($this->getConfiguration()->sendOrderCanceledMessage()) {
-            $this->sendMessageByOrder($order, $messageBody);
+        try {
+            if ($this->getConfiguration()->sendOrderCanceledMessage()) {
+                $this->sendMessageByOrder($order, $messageBody);
+            }
+        } catch (noRecipientFoundException $e) {
+            /** @var LoggerHandler $loggerHandler */
+            $loggerHandler = d3GetOxidDIC()->get(LoggerHandler::class);
+            $loggerHandler->getLogger()->debug($e->getMessage(), [$order]);
         }
     }
 
     /**
-     * @param Order $order
+     * @param Order  $order
      * @param string $messageBody
+     *
      * @return void
-     * @throws Exception
+     * @throws noRecipientFoundException
      */
     public function sendMessageByOrder(Order $order, string $messageBody): void
     {
@@ -73,11 +94,8 @@ class MessageSender
             return;
         }
 
-        try {
-            $sms = $this->getSms($messageBody);
-            $sms->sendOrderMessage($order);
-        } catch (noRecipientFoundException $e) {
-        }
+        $sms = $this->getSms($messageBody);
+        $sms->sendOrderMessage($order);
     }
 
     /**

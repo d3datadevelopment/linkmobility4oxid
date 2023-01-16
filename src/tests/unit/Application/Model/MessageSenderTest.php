@@ -20,7 +20,9 @@ use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\MessageSender;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\Linkmobility4OXID\tests\unit\LMUnitTestCase;
+use D3\LinkmobilityClient\LoggerHandler;
 use D3\TestingTools\Development\CanAccessRestricted;
+use Monolog\Logger;
 use OxidEsales\Eshop\Application\Model\Order;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionException;
@@ -31,15 +33,32 @@ class MessageSenderTest extends LMUnitTestCase
 
     /**
      * @test
+     *
      * @param $actionConfigured
      * @param $invocationCount
+     * @param $throwException
+     *
      * @return void
      * @throws ReflectionException
      * @dataProvider canSendOrderFinishedMessageDataProvider
-     * @covers \D3\Linkmobility4OXID\Application\Model\MessageSender::sendOrderFinishedMessage
+     * @covers       \D3\Linkmobility4OXID\Application\Model\MessageSender::sendOrderFinishedMessage
      */
-    public function canSendOrderFinishedMessage($actionConfigured, $invocationCount)
+    public function canSendOrderFinishedMessage($actionConfigured, $invocationCount, $throwException)
     {
+        /** @var Logger|MockObject $loggerMock */
+        $loggerMock = $this->getMockBuilder(Logger::class)
+            ->onlyMethods(['debug'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $loggerMock->expects($this->exactly((int) $throwException))->method('debug');
+
+        /** @var LoggerHandler|MockObject $loggerHandlerMock */
+        $loggerHandlerMock = $this->getMockBuilder(LoggerHandler::class)
+            ->onlyMethods(['getLogger'])
+            ->getMock();
+        $loggerHandlerMock->method('getLogger')->willReturn($loggerMock);
+        d3GetOxidDIC()->set(LoggerHandler::class, $loggerHandlerMock);
+
         /** @var Configuration|MockObject $configurationMock */
         $configurationMock = $this->getMockBuilder(Configuration::class)
             ->onlyMethods(['sendOrderFinishedMessage'])
@@ -56,7 +75,12 @@ class MessageSenderTest extends LMUnitTestCase
             ->onlyMethods(['getConfiguration', 'sendMessageByOrder'])
             ->getMock();
         $sut->method('getConfiguration')->willReturn($configurationMock);
-        $sut->expects($invocationCount)->method('sendMessageByOrder');
+        if ($throwException) {
+            $sut->expects( $invocationCount )->method( 'sendMessageByOrder' )
+                ->willThrowException( oxNew( noRecipientFoundException::class ) );
+        } else {
+            $sut->expects( $invocationCount )->method( 'sendMessageByOrder' );
+        }
 
         $this->callMethod(
             $sut,
@@ -67,15 +91,32 @@ class MessageSenderTest extends LMUnitTestCase
 
     /**
      * @test
+     *
      * @param $actionConfigured
      * @param $invocationCount
+     * @param $throwException
+     *
      * @return void
      * @throws ReflectionException
      * @dataProvider canSendOrderFinishedMessageDataProvider
-     * @covers \D3\Linkmobility4OXID\Application\Model\MessageSender::sendSendedNowMessage
+     * @covers       \D3\Linkmobility4OXID\Application\Model\MessageSender::sendSendedNowMessage
      */
-    public function canSendSendedNowMessage($actionConfigured, $invocationCount)
+    public function canSendSendedNowMessage($actionConfigured, $invocationCount, $throwException)
     {
+        /** @var Logger|MockObject $loggerMock */
+        $loggerMock = $this->getMockBuilder(Logger::class)
+            ->onlyMethods(['debug'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $loggerMock->expects($this->exactly((int) $throwException))->method('debug');
+
+        /** @var LoggerHandler|MockObject $loggerHandlerMock */
+        $loggerHandlerMock = $this->getMockBuilder(LoggerHandler::class)
+            ->onlyMethods(['getLogger'])
+            ->getMock();
+        $loggerHandlerMock->method('getLogger')->willReturn($loggerMock);
+        d3GetOxidDIC()->set(LoggerHandler::class, $loggerHandlerMock);
+
         /** @var Configuration|MockObject $configurationMock */
         $configurationMock = $this->getMockBuilder(Configuration::class)
             ->onlyMethods(['sendOrderSendedNowMessage'])
@@ -92,7 +133,12 @@ class MessageSenderTest extends LMUnitTestCase
             ->onlyMethods(['getConfiguration', 'sendMessageByOrder'])
             ->getMock();
         $sut->method('getConfiguration')->willReturn($configurationMock);
-        $sut->expects($invocationCount)->method('sendMessageByOrder');
+        if ($throwException) {
+            $sut->expects( $invocationCount )->method( 'sendMessageByOrder' )
+                ->willThrowException( oxNew( noRecipientFoundException::class ) );
+        } else {
+            $sut->expects( $invocationCount )->method( 'sendMessageByOrder' );
+        }
 
         $this->callMethod(
             $sut,
@@ -103,15 +149,32 @@ class MessageSenderTest extends LMUnitTestCase
 
     /**
      * @test
+     *
      * @param $actionConfigured
      * @param $invocationCount
+     * @param $throwException
+     *
      * @return void
      * @throws ReflectionException
      * @dataProvider canSendOrderFinishedMessageDataProvider
-     * @covers \D3\Linkmobility4OXID\Application\Model\MessageSender::sendCancelOrderMessage
+     * @covers       \D3\Linkmobility4OXID\Application\Model\MessageSender::sendCancelOrderMessage
      */
-    public function canSendCancelOrderMessage($actionConfigured, $invocationCount)
+    public function canSendCancelOrderMessage($actionConfigured, $invocationCount, $throwException)
     {
+        /** @var Logger|MockObject $loggerMock */
+        $loggerMock = $this->getMockBuilder(Logger::class)
+            ->onlyMethods(['debug'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $loggerMock->expects($this->exactly((int) $throwException))->method('debug');
+
+        /** @var LoggerHandler|MockObject $loggerHandlerMock */
+        $loggerHandlerMock = $this->getMockBuilder(LoggerHandler::class)
+            ->onlyMethods(['getLogger'])
+            ->getMock();
+        $loggerHandlerMock->method('getLogger')->willReturn($loggerMock);
+        d3GetOxidDIC()->set(LoggerHandler::class, $loggerHandlerMock);
+
         /** @var Configuration|MockObject $configurationMock */
         $configurationMock = $this->getMockBuilder(Configuration::class)
             ->onlyMethods(['sendOrderCanceledMessage'])
@@ -128,7 +191,12 @@ class MessageSenderTest extends LMUnitTestCase
             ->onlyMethods(['getConfiguration', 'sendMessageByOrder'])
             ->getMock();
         $sut->method('getConfiguration')->willReturn($configurationMock);
-        $sut->expects($invocationCount)->method('sendMessageByOrder');
+        if ($throwException) {
+            $sut->expects( $invocationCount )->method( 'sendMessageByOrder' )
+                ->willThrowException( oxNew( noRecipientFoundException::class ) );
+        } else {
+            $sut->expects( $invocationCount )->method( 'sendMessageByOrder' );
+        }
 
         $this->callMethod(
             $sut,
@@ -143,8 +211,9 @@ class MessageSenderTest extends LMUnitTestCase
     public function canSendOrderFinishedMessageDataProvider(): array
     {
         return [
-            'action configured'     => [true, $this->once()],
-            'action not configured' => [false, $this->never()],
+            'action configured, no exc'     => [true, $this->once(), false],
+            'action configured, throw exc'  => [true, $this->once(), true],
+            'action not configured'         => [false, $this->never(), false],
         ];
     }
 
@@ -152,24 +221,19 @@ class MessageSenderTest extends LMUnitTestCase
      * @test
      * @param $messageBody
      * @param $invocationCount
-     * @param $throwException
      * @return void
      * @throws ReflectionException
      * @dataProvider canSendMessageByOrderDataProvider
      * @covers \D3\Linkmobility4OXID\Application\Model\MessageSender::sendMessageByOrder
      */
-    public function canSendMessageByOrder($messageBody, $invocationCount, $throwException)
+    public function canSendMessageByOrder($messageBody, $invocationCount)
     {
         /** @var Sms|MockObject $smsMock */
         $smsMock = $this->getMockBuilder(Sms::class)
             ->onlyMethods(['sendOrderMessage'])
             ->disableOriginalConstructor()
             ->getMock();
-        $smsMock->expects($invocationCount)->method('sendOrderMessage')->will(
-            $throwException ?
-                $this->throwException(d3GetOxidDIC()->get(noRecipientFoundException::class)) :
-                $this->returnValue(true)
-        );
+        $smsMock->expects($invocationCount)->method('sendOrderMessage');
 
         /** @var Order|MockObject $orderMock */
         $orderMock = $this->getMockBuilder(Order::class)
@@ -195,10 +259,9 @@ class MessageSenderTest extends LMUnitTestCase
     public function canSendMessageByOrderDataProvider(): array
     {
         return [
-            'has message body no exc'   => ['body', $this->once(), false],
-            'has message body throw exc'=> ['body', $this->once(), true],
-            'spaced message body'   => ['    ', $this->never(), false],
-            'empty message body'    => ['', $this->never(), false],
+            'has message body'      => ['body', $this->once()],
+            'spaced message body'   => ['    ', $this->never()],
+            'empty message body'    => ['', $this->never()],
         ];
     }
 

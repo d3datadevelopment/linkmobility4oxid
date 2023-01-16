@@ -269,14 +269,13 @@ class SmsTest extends LMUnitTestCase
     /**
      * @test
      * @param $sendReturn
-     * @param $throwException
      * @param $setRemark
      * @return void
      * @throws ReflectionException
      * @dataProvider canSendUserAccountMessageDataProvider
      * @covers \D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms::sendUserAccountMessage
      */
-    public function canSendUserAccountMessage($sendReturn, $throwException, $setRemark)
+    public function canSendUserAccountMessage($sendReturn, $setRemark)
     {
         /** @var User|MockObject $userMock */
         $userMock = $this->getMockBuilder(User::class)
@@ -285,20 +284,6 @@ class SmsTest extends LMUnitTestCase
             ->getMock();
         $userMock->method('getId')->willReturn('userIdFixture');
 
-        /** @var Logger|MockObject $loggerMock */
-        $loggerMock = $this->getMockBuilder(Logger::class)
-            ->onlyMethods(['warning'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $loggerMock->expects($this->exactly((int) $throwException))->method('warning');
-
-        /** @var UtilsView|MockObject $utilsViewMock */
-        $utilsViewMock = $this->getMockBuilder(UtilsView::class)
-            ->onlyMethods(['addErrorToDisplay'])
-            ->getMock();
-        $utilsViewMock->expects($this->exactly((int) $throwException))->method('addErrorToDisplay');
-        d3GetOxidDIC()->set('d3ox.linkmobility.'.UtilsView::class, $utilsViewMock);
-
         /** @var RecipientsList|MockObject $recipientsListMock */
         $recipientsListMock = $this->getMockBuilder(RecipientsList::class)
             ->disableOriginalConstructor()
@@ -306,16 +291,11 @@ class SmsTest extends LMUnitTestCase
 
         /** @var Sms|MockObject $sut */
         $sut = $this->getMockBuilder(Sms::class)
-            ->onlyMethods(['getLogger', 'sendCustomRecipientMessage', 'getUserRecipientsList', 'setRemark',
+            ->onlyMethods(['sendCustomRecipientMessage', 'getUserRecipientsList', 'setRemark',
                 'getRecipientsList', 'getMessage'])
             ->disableOriginalConstructor()
             ->getMock();
-        $sut->method('getLogger')->willReturn($loggerMock);
-        $sut->method('sendCustomRecipientMessage')->will(
-            $throwException ?
-                $this->throwException(oxNew(noRecipientFoundException::class)) :
-                $this->returnValue($sendReturn)
-        );
+        $sut->method('sendCustomRecipientMessage')->willReturn($sendReturn);
         $sut->expects($setRemark ? $this->once() : $this->never())->method('setRemark');
         $sut->method('getUserRecipientsList')->willReturn($recipientsListMock);
         $sut->method('getRecipientsList')->willReturn('abc,def');
@@ -337,9 +317,8 @@ class SmsTest extends LMUnitTestCase
     public function canSendUserAccountMessageDataProvider(): array
     {
         return [
-            'can send'      => [true, false, true],
-            'cant send'     => [false, false, false],
-            'no recipient'  => [false, true, false]
+            'can send'      => [true, true],
+            'cant send'     => [false, false],
         ];
     }
 
@@ -399,14 +378,13 @@ class SmsTest extends LMUnitTestCase
     /**
      * @test
      * @param $sendReturn
-     * @param $throwException
      * @param $setRemark
      * @return void
      * @throws ReflectionException
      * @dataProvider canSendUserAccountMessageDataProvider
      * @covers \D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms::sendOrderMessage
      */
-    public function canSendOrderMessage($sendReturn, $throwException, $setRemark)
+    public function canSendOrderMessage($sendReturn, $setRemark)
     {
         /** @var User|MockObject $userMock */
         $userMock = $this->getMockBuilder(User::class)
@@ -423,20 +401,6 @@ class SmsTest extends LMUnitTestCase
         $orderMock->method('getId')->willReturn('userIdFixture');
         $orderMock->method('getOrderUser')->willReturn($userMock);
 
-        /** @var Logger|MockObject $loggerMock */
-        $loggerMock = $this->getMockBuilder(Logger::class)
-            ->onlyMethods(['warning'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $loggerMock->expects($this->exactly((int) $throwException))->method('warning');
-
-        /** @var UtilsView|MockObject $utilsViewMock */
-        $utilsViewMock = $this->getMockBuilder(UtilsView::class)
-            ->onlyMethods(['addErrorToDisplay'])
-            ->getMock();
-        $utilsViewMock->expects($this->exactly((int) $throwException))->method('addErrorToDisplay');
-        d3GetOxidDIC()->set('d3ox.linkmobility.'.UtilsView::class, $utilsViewMock);
-
         /** @var RecipientsList|MockObject $recipientsListMock */
         $recipientsListMock = $this->getMockBuilder(RecipientsList::class)
             ->disableOriginalConstructor()
@@ -444,16 +408,11 @@ class SmsTest extends LMUnitTestCase
 
         /** @var Sms|MockObject $sut */
         $sut = $this->getMockBuilder(Sms::class)
-            ->onlyMethods(['getLogger', 'sendCustomRecipientMessage', 'getOrderRecipientsList', 'setRemark',
+            ->onlyMethods(['sendCustomRecipientMessage', 'getOrderRecipientsList', 'setRemark',
                 'getRecipientsList', 'getMessage'])
             ->disableOriginalConstructor()
             ->getMock();
-        $sut->method('getLogger')->willReturn($loggerMock);
-        $sut->method('sendCustomRecipientMessage')->will(
-            $throwException ?
-                $this->throwException(oxNew(noRecipientFoundException::class)) :
-                $this->returnValue($sendReturn)
-        );
+        $sut->method('sendCustomRecipientMessage')->willReturn($sendReturn);
         $sut->expects($setRemark ? $this->once() : $this->never())->method('setRemark');
         $sut->method('getOrderRecipientsList')->willReturn($recipientsListMock);
         $sut->method('getRecipientsList')->willReturn('abc,def');
@@ -584,10 +543,10 @@ class SmsTest extends LMUnitTestCase
 
         /** @var Logger|MockObject $loggerMock */
         $loggerMock = $this->getMockBuilder(Logger::class)
-            ->onlyMethods(['warning'])
+            ->onlyMethods(['error'])
             ->disableOriginalConstructor()
             ->getMock();
-        $loggerMock->expects($this->exactly((int) $throwException))->method('warning');
+        $loggerMock->expects($this->exactly((int) $throwException))->method('error');
 
         /** @var UtilsView|MockObject $utilsViewMock */
         $utilsViewMock = $this->getMockBuilder(UtilsView::class)

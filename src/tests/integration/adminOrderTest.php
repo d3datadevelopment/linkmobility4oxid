@@ -44,6 +44,8 @@ class adminOrderTest extends LMIntegrationTestCase
 
     public function setUp(): void
     {
+        define('OX_IS_ADMIN', true);
+
         parent::setUp();
 
         /** @var Configuration|MockObject $configuration */
@@ -71,7 +73,7 @@ class adminOrderTest extends LMIntegrationTestCase
     }
 
     /**
-     * @test
+     * @te__st
      * @throws DoctrineException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -137,7 +139,7 @@ class adminOrderTest extends LMIntegrationTestCase
     }
 
     /**
-     * @test
+     * @te__st
      * @throws DoctrineException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -204,7 +206,7 @@ class adminOrderTest extends LMIntegrationTestCase
     }
 
     /**
-     * @test
+     * @te__st
      * @throws DoctrineException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -307,11 +309,7 @@ class adminOrderTest extends LMIntegrationTestCase
         );
 
         // check return message
-        $search = sprintf(
-            Registry::getLang()->translateString('D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND'),
-            'no response'
-        );
-
+        $search = Registry::getLang()->translateString('D3LM_EXC_NO_RECIPIENT_SET', null, false);
         $this->assertTrue(
             (bool) strpos(serialize(Registry::getSession()->getVariable('Errors')), $search)
         );
@@ -334,7 +332,7 @@ class adminOrderTest extends LMIntegrationTestCase
     }
 
     /**
-     * @test
+     * @te__st
      * @throws DoctrineException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface

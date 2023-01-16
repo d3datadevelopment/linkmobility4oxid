@@ -24,6 +24,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Monolog\Logger;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\Remark;
 use OxidEsales\Eshop\Application\Model\User;
@@ -34,6 +35,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Log\LoggerInterface;
 
 class sendedNowOrderTest extends LMIntegrationTestCase
 {
@@ -369,6 +371,14 @@ class sendedNowOrderTest extends LMIntegrationTestCase
         $history  =  Middleware::history($container);
 
         $this->deleteAllRemarksFrom($this->userId);
+
+        /** @var Logger|MockObject $loggerMock */
+        $loggerMock = $this->getMockBuilder(Logger::class)
+            ->onlyMethods(['error'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $loggerMock->method('error');
+        d3GetOxidDIC()->set('d3ox.linkmobility.'.LoggerInterface::class, $loggerMock);
 
         $this->setClientResponse(
             new RequestException(

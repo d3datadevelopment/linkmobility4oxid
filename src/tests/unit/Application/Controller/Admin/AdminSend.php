@@ -27,6 +27,7 @@ use D3\LinkmobilityClient\SMS\Response;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\TestingTools\Development\CanAccessRestricted;
 use InvalidArgumentException;
+use JetBrains\PhpStorm\ArrayShape;
 use OxidEsales\Eshop\Core\Request;
 use OxidEsales\Eshop\Core\UtilsView;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -208,7 +209,7 @@ class AdminSend extends LMUnitTestCase
             ->getMock();
         $sut->method('sendMessage')->will(
             $throwsException ?
-                $this->throwException(oxNew(noRecipientFoundException::class)) :
+                $this->throwException(oxNew(InvalidArgumentException::class)) :
                 $this->returnValue('successfully sent message')
         );
 
@@ -287,8 +288,9 @@ class AdminSend extends LMUnitTestCase
     public function canSendMessageDataProvider(): array
     {
         return [
-            'send item message'        => [true],
-            'dont send item message'   => [false]
+            'send item message'         => [true, false],
+            'dont send item message'    => [false, false],
+            'throw exception'           => [false, true]
         ];
     }
 

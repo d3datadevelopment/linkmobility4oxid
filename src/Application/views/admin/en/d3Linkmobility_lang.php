@@ -13,13 +13,11 @@
 
 declare(strict_types=1);
 
-$sLangName = "English";
-// -------------------------------
-// RESOURCE IDENTITFIER = STRING
-// -------------------------------
-$aLang = [
+// @codeCoverageIgnoreStart
 
-//Navigation
+$sLangName = "English";
+
+$aLang = [
     'charset'                                           => 'UTF-8',
 
     'SHOP_MODULE_GROUP_d3linkmobility_general'          => 'Basic settings',
@@ -54,9 +52,12 @@ $aLang = [
     'D3LM_EXC_SMS_SUCC_SENT'                            => 'The message was sent successfully. (%1$s message(s) used)',
     'D3LM_EXC_MESSAGE_UNEXPECTED_ERR_SEND'              => 'This error occurred while sending the message(s): %1$s',
     'D3LM_EXC_NO_RECIPIENT_SET'                         => 'No (usable) recipient number is set.',
+    'D3LM_EXC_REQUESTERROR'                             => 'An error occurred while querying the message service.',
 
     'D3LM_REMARK_SMS'                                   => 'SMS message',
 
     'tbcluser_linkmobility'                             => 'sending SMS',
     'tbclorder_linkmobility'                            => 'sending SMS'
 ];
+
+// @codeCoverageIgnoreEnd
