@@ -33,8 +33,8 @@ class MessageSender
     public function sendOrderFinishedMessage(Order $order, string $messageBody): void
     {
         try {
-            if ( $this->getConfiguration()->sendOrderFinishedMessage() ) {
-                $this->sendMessageByOrder( $order, $messageBody );
+            if ($this->getConfiguration()->sendOrderFinishedMessage()) {
+                $this->sendMessageByOrder($order, $messageBody);
             }
         } catch (noRecipientFoundException $e) {
             /** @var LoggerHandler $loggerHandler */
@@ -52,8 +52,8 @@ class MessageSender
     public function sendSendedNowMessage(Order $order, string $messageBody): void
     {
         try {
-            if ( $this->getConfiguration()->sendOrderSendedNowMessage() ) {
-                $this->sendMessageByOrder( $order, $messageBody );
+            if ($this->getConfiguration()->sendOrderSendedNowMessage()) {
+                $this->sendMessageByOrder($order, $messageBody);
             }
         } catch (noRecipientFoundException $e) {
             /** @var LoggerHandler $loggerHandler */

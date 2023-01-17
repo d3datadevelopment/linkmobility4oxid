@@ -71,9 +71,9 @@ class finishedOrderTest extends LMIntegrationTestCase
         $this->user = $user = oxNew(User::class);
         $user->setId($this->userId);
         $user->save();
-        
+
         /** @var Order $order */
-        $this->order = $order = oxNew( Order::class);
+        $this->order = $order = oxNew(Order::class);
         $order->setId($this->orderId);
         $order->assign([
             'oxordernr'         => '12345',
@@ -127,7 +127,7 @@ class finishedOrderTest extends LMIntegrationTestCase
             1,
             $container
         );
-        
+
         /** @var RequestInterface $request */
         $request = $container[0]['request'];
         $this->assertTrue(
@@ -173,7 +173,7 @@ class finishedOrderTest extends LMIntegrationTestCase
             $history
         );
 
-        $this->order->assign( [
+        $this->order->assign([
             'oxbillfon'         => '222',
             'oxbillcountryid'   => 'a7c40f631fc920687.20179984',
         ]);
@@ -356,7 +356,7 @@ class finishedOrderTest extends LMIntegrationTestCase
             $history
         );
 
-        $this->order->assign( [
+        $this->order->assign([
             'oxbillfon' => '',
             'oxbillcountryid'   => ''
         ]);

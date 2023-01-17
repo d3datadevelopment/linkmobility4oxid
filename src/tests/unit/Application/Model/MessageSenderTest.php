@@ -76,10 +76,10 @@ class MessageSenderTest extends LMUnitTestCase
             ->getMock();
         $sut->method('getConfiguration')->willReturn($configurationMock);
         if ($throwException) {
-            $sut->expects( $invocationCount )->method( 'sendMessageByOrder' )
-                ->willThrowException( oxNew( noRecipientFoundException::class ) );
+            $sut->expects($invocationCount)->method('sendMessageByOrder')
+                ->willThrowException(oxNew(noRecipientFoundException::class));
         } else {
-            $sut->expects( $invocationCount )->method( 'sendMessageByOrder' );
+            $sut->expects($invocationCount)->method('sendMessageByOrder');
         }
 
         $this->callMethod(
@@ -134,10 +134,10 @@ class MessageSenderTest extends LMUnitTestCase
             ->getMock();
         $sut->method('getConfiguration')->willReturn($configurationMock);
         if ($throwException) {
-            $sut->expects( $invocationCount )->method( 'sendMessageByOrder' )
-                ->willThrowException( oxNew( noRecipientFoundException::class ) );
+            $sut->expects($invocationCount)->method('sendMessageByOrder')
+                ->willThrowException(oxNew(noRecipientFoundException::class));
         } else {
-            $sut->expects( $invocationCount )->method( 'sendMessageByOrder' );
+            $sut->expects($invocationCount)->method('sendMessageByOrder');
         }
 
         $this->callMethod(
@@ -192,10 +192,10 @@ class MessageSenderTest extends LMUnitTestCase
             ->getMock();
         $sut->method('getConfiguration')->willReturn($configurationMock);
         if ($throwException) {
-            $sut->expects( $invocationCount )->method( 'sendMessageByOrder' )
-                ->willThrowException( oxNew( noRecipientFoundException::class ) );
+            $sut->expects($invocationCount)->method('sendMessageByOrder')
+                ->willThrowException(oxNew(noRecipientFoundException::class));
         } else {
-            $sut->expects( $invocationCount )->method( 'sendMessageByOrder' );
+            $sut->expects($invocationCount)->method('sendMessageByOrder');
         }
 
         $this->callMethod(

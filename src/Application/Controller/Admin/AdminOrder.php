@@ -67,10 +67,10 @@ class AdminOrder extends AdminController
     protected function sendMessage(): string
     {
         try {
-            $sms = $this->getSms( $this->getMessageBody() );
-            return $sms->sendOrderMessage( $this->item ) ?
-                $this->getSuccessSentMessage( $sms )->getMessage() :
-                $this->getUnsuccessfullySentMessage( $sms );
+            $sms = $this->getSms($this->getMessageBody());
+            return $sms->sendOrderMessage($this->item) ?
+                $this->getSuccessSentMessage($sms)->getMessage() :
+                $this->getUnsuccessfullySentMessage($sms);
         } catch (noRecipientFoundException $e) {
             /** @var LoggerHandler $loggerHandler */
             $loggerHandler = d3GetOxidDIC()->get(LoggerHandler::class);

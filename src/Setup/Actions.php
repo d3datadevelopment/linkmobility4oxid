@@ -180,7 +180,7 @@ class Actions
      */
     public function checkCmsItems()
     {
-        foreach(
+        foreach (
             [
                 'd3linkmobilityordercanceled' => 'addCms1Item',
                 'd3linkmobilityfinishedorder' => 'addCms2Item',

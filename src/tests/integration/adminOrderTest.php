@@ -57,7 +57,7 @@ class adminOrderTest extends LMIntegrationTestCase
         d3GetOxidDIC()->set(Configuration::class, $configuration);
 
         /** @var Order $order */
-        $this->order = $order = oxNew( Order::class);
+        $this->order = $order = oxNew(Order::class);
         $order->setId($this->orderId);
         $order->assign([
             'oxbillfon'         => '01512 3456789',
@@ -292,7 +292,7 @@ class adminOrderTest extends LMIntegrationTestCase
         $_POST['messagebody'] = 'testMessage';
         $_POST['oxid'] = $this->orderId;
 
-        $this->order->assign( [
+        $this->order->assign([
             'oxbillfon' => '',
             'oxbillcountryid'   => ''
         ]);

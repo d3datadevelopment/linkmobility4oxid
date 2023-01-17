@@ -89,8 +89,8 @@ class EmailCore extends EmailCore_parent
     public function d3SendOrderFinishedMessageToUser(Order $order): void
     {
         /** @var MessageSender $messageSender */
-        $messageSender = d3GetOxidDIC()->get( MessageSender::class );
-        $messageSender->sendOrderFinishedMessage( $order, $this->d3GetOrderFinishedSmsMessageBody( $order ) );
+        $messageSender = d3GetOxidDIC()->get(MessageSender::class);
+        $messageSender->sendOrderFinishedMessage($order, $this->d3GetOrderFinishedSmsMessageBody($order));
     }
 
     /**

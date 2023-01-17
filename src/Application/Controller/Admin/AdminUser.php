@@ -69,11 +69,11 @@ class AdminUser extends AdminController
     protected function sendMessage(): string
     {
         try {
-            $sms = $this->getSms( $this->getMessageBody() );
+            $sms = $this->getSms($this->getMessageBody());
 
-            return $sms->sendUserAccountMessage( $this->item ) ?
-                $this->getSuccessSentMessage( $sms )->getMessage() :
-                $this->getUnsuccessfullySentMessage( $sms );
+            return $sms->sendUserAccountMessage($this->item) ?
+                $this->getSuccessSentMessage($sms)->getMessage() :
+                $this->getUnsuccessfullySentMessage($sms);
         } catch (noRecipientFoundException $e) {
             /** @var LoggerHandler $loggerHandler */
             $loggerHandler = d3GetOxidDIC()->get(LoggerHandler::class);
