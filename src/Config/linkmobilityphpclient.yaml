@@ -24,6 +24,8 @@ services:
     factory:
       - 'D3\LinkmobilityClient\LoggerHandler'
       - 'getInstance'
+    calls:
+      - [setLogger, ['@d3ox.linkmobility.Psr\Log\LoggerInterface']]
     shared: true
 
   D3\LinkmobilityClient\Client:

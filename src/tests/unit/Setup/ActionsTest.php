@@ -17,6 +17,7 @@ namespace D3\Linkmobility4OXID\tests\unit\Setup;
 
 use D3\Linkmobility4OXID\Setup\Actions;
 use D3\Linkmobility4OXID\tests\unit\LMUnitTestCase;
+use D3\LinkmobilityClient\LoggerHandler;
 use D3\TestingTools\Development\CanAccessRestricted;
 use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -30,7 +31,6 @@ use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\UtilsView;
 use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactory;
 use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Log\LoggerInterface;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\Container;
 
@@ -56,7 +56,7 @@ class ActionsTest extends LMUnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $loggerMock->expects($this->exactly((int) $throwException))->method('error');
-        d3GetOxidDIC()->set('d3ox.linkmobility.'.LoggerInterface::class, $loggerMock);
+        d3GetOxidDIC()->get(LoggerHandler::class)->setLogger($loggerMock);
 
         /** @var UtilsView|MockObject $utilsViewMock */
         $utilsViewMock = $this->getMockBuilder(UtilsView::class)

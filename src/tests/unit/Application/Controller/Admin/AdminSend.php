@@ -27,7 +27,6 @@ use D3\LinkmobilityClient\SMS\Response;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\TestingTools\Development\CanAccessRestricted;
 use InvalidArgumentException;
-use JetBrains\PhpStorm\ArrayShape;
 use OxidEsales\Eshop\Core\Request;
 use OxidEsales\Eshop\Core\UtilsView;
 use PHPUnit\Framework\MockObject\MockObject;

@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace D3\Linkmobility4OXID\tests\unit\Application\Model\MessageTypes;
 
 use D3\Linkmobility4OXID\Application\Model\Configuration;
-use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\MessageClient;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\Linkmobility4OXID\Application\Model\OrderRecipients;

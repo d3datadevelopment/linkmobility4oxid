@@ -17,6 +17,7 @@ namespace D3\Linkmobility4OXID\tests\integration;
 
 use D3\Linkmobility4OXID\Application\Model\Configuration;
 use D3\Linkmobility4OXID\Application\Controller\Admin\AdminUser;
+use D3\LinkmobilityClient\LoggerHandler;
 use Doctrine\DBAL\Exception as DoctrineException;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Exception;
@@ -34,7 +35,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Log\LoggerInterface;
 
 class adminUserTest extends LMIntegrationTestCase
 {
@@ -61,7 +61,7 @@ class adminUserTest extends LMIntegrationTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $loggerMock->method('error');
-        d3GetOxidDIC()->set('d3ox.linkmobility.'.LoggerInterface::class, $loggerMock);
+        d3GetOxidDIC()->get(LoggerHandler::class)->setLogger($loggerMock);
 
         /** @var User $user */
         $this->user = $user = oxNew(User::class);

@@ -16,10 +16,10 @@ declare(strict_types=1);
 namespace D3\Linkmobility4OXID\Setup;
 
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\AbstractMessage;
+use D3\LinkmobilityClient\LoggerHandler;
 use Doctrine\DBAL\Driver\Exception as DoctrineDriverException;
 use Doctrine\DBAL\Exception as DoctrineException;
 use Doctrine\DBAL\ParameterType;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Statement;
 use Monolog\Logger;
 use OxidEsales\Eshop\Application\Model\Content;
@@ -37,7 +37,6 @@ use OxidEsales\EshopCommunity\Internal\Framework\Database\QueryBuilderFactoryInt
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Psr\Log\LoggerInterface;
 
 class Actions
 {
@@ -53,9 +52,9 @@ class Actions
                 $this->addRemarkTypeEnumValue();
             }
         } catch (StandardException|DoctrineDriverException|DoctrineException $e) {
-            /** @var Logger $logger */
-            $logger = d3GetOxidDIC()->get('d3ox.linkmobility.'.LoggerInterface::class);
-            $logger->error($e->getMessage());
+            /** @var LoggerHandler $loggerHandler */
+            $loggerHandler = d3GetOxidDIC()->get(LoggerHandler::class);
+            $loggerHandler->getLogger()->error($e->getMessage());
             /** @var UtilsView $utilsView */
             $utilsView = d3GetOxidDIC()->get('d3ox.linkmobility.'.UtilsView::class);
             $utilsView->addErrorToDisplay($e->getMessage());

@@ -24,6 +24,7 @@ use D3\Linkmobility4OXID\Application\Model\UserRecipients;
 use D3\LinkmobilityClient\Client;
 use D3\LinkmobilityClient\Exceptions\ApiException;
 use D3\LinkmobilityClient\Exceptions\RecipientException;
+use D3\LinkmobilityClient\LoggerHandler;
 use D3\LinkmobilityClient\RecipientsList\RecipientsList;
 use D3\LinkmobilityClient\RecipientsList\RecipientsListInterface;
 use D3\LinkmobilityClient\Request\RequestInterface;
@@ -51,12 +52,12 @@ class Sms extends AbstractMessage
      */
     public function sendUserAccountMessage(User $user): bool
     {
-        $this->getLogger()->debug('startRequest', ['userId' => $user->getId()]);
+        $this->getLogger()->debug('Linkmobility: startRequest', ['userId' => $user->getId()]);
         $return = $this->sendCustomRecipientMessage($this->getUserRecipientsList($user));
         if ($return) {
             $this->setRemark($user->getId(), $this->getRecipientsList(), $this->getMessage());
         }
-        $this->getLogger()->debug('finishRequest', ['userId' => $user->getId()]);
+        $this->getLogger()->debug('Linkmobility: finishRequest', ['userId' => $user->getId()]);
         return $return;
     }
 
@@ -91,12 +92,12 @@ class Sms extends AbstractMessage
      */
     public function sendOrderMessage(Order $order): bool
     {
-        $this->getLogger()->debug('startRequest', ['orderId' => $order->getId()]);
+        $this->getLogger()->debug('Linkmobility: startRequest', ['orderId' => $order->getId()]);
         $return = $this->sendCustomRecipientMessage($this->getOrderRecipientsList($order));
         if ($return) {
             $this->setRemark($order->getOrderUser()->getId(), $this->getRecipientsList(), $this->getMessage());
         }
-        $this->getLogger()->debug('finishRequest', ['orderId' => $order->getId()]);
+        $this->getLogger()->debug('Linkmobility: finishRequest', ['orderId' => $order->getId()]);
         return $return;
     }
 
@@ -245,8 +246,8 @@ class Sms extends AbstractMessage
      */
     public function getLogger(): LoggerInterface
     {
-        /** @var LoggerInterface $logger */
-        $logger = d3GetOxidDIC()->get('d3ox.linkmobility.'.LoggerInterface::class);
-        return $logger;
+        /** @var LoggerHandler $loggerHandler */
+        $loggerHandler = d3GetOxidDIC()->get(LoggerHandler::class);
+        return $loggerHandler->getLogger();
     }
 }

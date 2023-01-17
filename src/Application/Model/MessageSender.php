@@ -20,7 +20,6 @@ use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
 use D3\LinkmobilityClient\LoggerHandler;
 use Exception;
 use OxidEsales\Eshop\Application\Model\Order;
-use OxidEsales\Eshop\Core\Registry;
 
 class MessageSender
 {
