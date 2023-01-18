@@ -22,7 +22,6 @@ use D3\Linkmobility4OXID\Application\Model\OrderRecipients;
 use D3\Linkmobility4OXID\Application\Model\RequestFactory;
 use D3\Linkmobility4OXID\Application\Model\UserRecipients;
 use D3\LinkmobilityClient\Client;
-use D3\LinkmobilityClient\Exceptions\ApiException;
 use D3\LinkmobilityClient\Exceptions\RecipientException;
 use D3\LinkmobilityClient\LoggerHandler;
 use D3\LinkmobilityClient\RecipientsList\RecipientsList;
@@ -144,7 +143,7 @@ class Sms extends AbstractMessage
             $this->response = $response = $this->submitMessage($recipientsList);
 
             return $response->isSuccessful();
-        } catch (GuzzleException|ApiException|InvalidArgumentException $e) {
+        } catch (GuzzleException|InvalidArgumentException $e) {
             $this->getLogger()->error($e->getMessage());
             // Oxid does not accept throwable interface only exceptions according to definition
             /** @var UtilsView $utilsView */
@@ -204,7 +203,6 @@ class Sms extends AbstractMessage
     /**
      * @param RecipientsListInterface $recipientsList
      * @return ResponseInterface
-     * @throws ApiException
      * @throws GuzzleException
      * @throws NumberParseException
      * @throws RecipientException

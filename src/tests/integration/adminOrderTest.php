@@ -20,6 +20,7 @@ use D3\Linkmobility4OXID\Application\Model\Configuration;
 use Doctrine\DBAL\Exception as DoctrineException;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
@@ -73,7 +74,7 @@ class adminOrderTest extends LMIntegrationTestCase
     }
 
     /**
-     * @te__st
+     * @test
      * @throws DoctrineException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -139,7 +140,7 @@ class adminOrderTest extends LMIntegrationTestCase
     }
 
     /**
-     * @te__st
+     * @test
      * @throws DoctrineException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -206,7 +207,7 @@ class adminOrderTest extends LMIntegrationTestCase
     }
 
     /**
-     * @te__st
+     * @test
      * @throws DoctrineException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -245,6 +246,75 @@ class adminOrderTest extends LMIntegrationTestCase
             Registry::getLang()->translateString('D3LM_EXC_MESSAGE_NO_LENGTH'),
             1
         );
+
+        $this->assertTrue(
+            (bool) strpos(serialize(Registry::getSession()->getVariable('Errors')), $search)
+        );
+
+        // check remark
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = ContainerFactory::getInstance()->getContainer()->get(QueryBuilderFactoryInterface::class)->create();
+        $queryBuilder->select('oxid')
+                     ->from(oxNew(Remark::class)->getViewName())
+                     ->where(
+                         $queryBuilder->expr()->eq(
+                             'oxparentid',
+                             $queryBuilder->createNamedParameter($this->userId)
+                         )
+                     );
+        $remarkIds = $queryBuilder->execute()->fetchAll();
+        $this->assertEmpty($remarkIds);
+
+        $this->deleteAllRemarksFrom($this->userId);
+    }
+
+    /**
+     * @test
+     * @throws DoctrineException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function serverError()
+    {
+        $container  =  [];
+        $history  =  Middleware::history($container);
+
+        $this->deleteAllRemarksFrom($this->userId);
+
+        $this->setClientResponse(
+            new Response(
+                500,
+                [],
+                '{"statusCode": 4019, "statusMessage": "parameter \"messageContent\" invalid", "clientMessageId": null, "transferId": null, "smsCount": 0}'
+            ),
+            $history
+        );
+
+        $_POST['messagebody'] = 'testMessage';
+        $_POST['oxid'] = $this->orderId;
+
+        /** @var AdminOrder $controller */
+        try{
+            $controller = oxNew(AdminOrder::class);
+            $controller->send();
+
+        } catch (Exception $e) {
+            dumpvar(get_class($e));
+        }
+
+        // check requests
+        $this->assertCount(
+            1,
+            $container
+        );
+        /** @var RequestInterface $request */
+        $request = $container[0]['request'];
+        $this->assertTrue(
+            (bool) strpos(serialize($request->getBody()->getContents()), 'testMessage')
+        );
+
+        // check return message
+        $search = 'no response';
 
         $this->assertTrue(
             (bool) strpos(serialize(Registry::getSession()->getVariable('Errors')), $search)
@@ -332,7 +402,7 @@ class adminOrderTest extends LMIntegrationTestCase
     }
 
     /**
-     * @te__st
+     * @test
      * @throws DoctrineException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface

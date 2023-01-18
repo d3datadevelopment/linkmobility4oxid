@@ -18,6 +18,7 @@ namespace D3\Linkmobility4OXID\tests\integration;
 use D3\Linkmobility4OXID\Application\Model\MessageClient;
 use D3\Linkmobility4OXID\tests\unit\LMUnitTestCase;
 use D3\LinkmobilityClient\Client;
+use D3\LinkmobilityClient\LoggerHandler;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Query\QueryBuilder;
 use GuzzleHttp\Client as GuzzleClient;
@@ -31,9 +32,20 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\NullLogger;
 
 abstract class LMIntegrationTestCase extends LMUnitTestCase
 {
+    /**
+     * @throws \Exception
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        d3GetOxidDIC()->get(LoggerHandler::class)->setLogger(new NullLogger());
+    }
+
     /**
      * @param $userId
      *

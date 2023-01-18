@@ -23,13 +23,13 @@ use D3\Linkmobility4OXID\Application\Model\RequestFactory;
 use D3\Linkmobility4OXID\Application\Model\UserRecipients;
 use D3\Linkmobility4OXID\tests\unit\LMUnitTestCase;
 use D3\LinkmobilityClient\Client;
-use D3\LinkmobilityClient\Exceptions\ApiException;
 use D3\LinkmobilityClient\RecipientsList\RecipientsList;
 use D3\LinkmobilityClient\SMS\BinaryRequest;
 use D3\LinkmobilityClient\SMS\Response;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\LinkmobilityClient\ValueObject\Sender;
 use D3\TestingTools\Development\CanAccessRestricted;
+use GuzzleHttp\Exception\ServerException;
 use Monolog\Logger;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\Remark;
@@ -554,6 +554,11 @@ class SmsTest extends LMUnitTestCase
         $utilsViewMock->expects($this->exactly((int) $throwException))->method('addErrorToDisplay');
         d3GetOxidDIC()->set('d3ox.linkmobility.'.UtilsView::class, $utilsViewMock);
 
+        /** @var ServerException|MockObject $serverExceptionMock */
+        $serverExceptionMock = $this->getMockBuilder(ServerException::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         /** @var Sms|MockObject $sut */
         $sut = $this->getMockBuilder(Sms::class)
             ->onlyMethods(['submitMessage', 'getLogger'])
@@ -561,7 +566,7 @@ class SmsTest extends LMUnitTestCase
             ->getMock();
         $sut->method('submitMessage')->will(
             $throwException ?
-                $this->throwException(oxNew(ApiException::class)) :
+                $this->throwException($serverExceptionMock) :
                 $this->returnValue($smsResponseMock)
         );
         $sut->method('getLogger')->willReturn($loggerMock);
