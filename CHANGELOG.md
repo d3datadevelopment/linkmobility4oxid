@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://git.d3data.de/D3Private/linkmobility4oxid/compare/1.1.1.0...rel_1.x)
 
+## [1.1.2.0](https://git.d3data.de/D3Private/linkmobility4oxid/compare/1.1.1.0...1.1.2.0) - 2023-01-20
+### Added
+- more test scripts
+- preconfigure loggerhandler with current OXID logger
+
+### Changed
+- move message contents to CMS items
+- improve code
+- don't show recipient issues  and detailed request errors in shop frontend
+
+### Removed
+- unused ApiException class
+
 ## [1.1.1.0](https://git.d3data.de/D3Private/linkmobility4oxid/compare/1.1.0.1...1.1.1.0) - 2023-01-01
 ### Added
 - make installable in OXID 6.5.1 (CE 6.13)
