@@ -21,11 +21,12 @@
       "GPL-3.0-or-later"
     ],
     "require": {
-        "php": "^7.1 || ^8.0",
-        "oxid-esales/oxideshop-ce": "~6.7.0 || ~6.9.0 || 6.10 - 6.13",
-        "d3/linkmobility-php-client": "^1.2.0 || ^2.0.0",
-        "d3/oxid-dic-handler": "^1.0",
-        "d3/testingtools": "^1.1"
+      "php": "^7.1 || ^8.0",
+      "oxid-esales/oxideshop-ce": "~6.7.0 || ~6.9.0 || 6.10 - 6.13",
+      "d3/linkmobility-php-client": "^1.2.0 || ^2.0.0",
+      "d3/oxid-dic-handler": "^1.0",
+      "d3/testingtools": "^1.1",
+      "beberlei/assert": "^3.3"
     },
     "require-dev": {
       "oxid-esales/oxideshop-ce": "~6.10.0",

@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\Application\Model\MessageTypes;
 
+use Assert\AssertionFailedException;
 use D3\Linkmobility4OXID\Application\Model\Configuration;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\MessageClient;
@@ -33,7 +34,6 @@ use D3\LinkmobilityClient\ValueObject\Recipient;
 use D3\LinkmobilityClient\ValueObject\Sender;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
-use InvalidArgumentException;
 use libphonenumber\NumberParseException;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
@@ -143,7 +143,7 @@ class Sms extends AbstractMessage
             $this->response = $response = $this->submitMessage($recipientsList);
 
             return $response->isSuccessful();
-        } catch (GuzzleException|InvalidArgumentException $e) {
+        } catch (GuzzleException|AssertionFailedException $e) {
             $this->getLogger()->error($e->getMessage());
             // Oxid does not accept throwable interface only exceptions according to definition
             /** @var UtilsView $utilsView */

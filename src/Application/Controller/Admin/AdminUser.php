@@ -15,6 +15,9 @@ declare(strict_types=1);
 
 namespace D3\Linkmobility4OXID\Application\Controller\Admin;
 
+use Assert\Assert;
+use Assert\AssertionFailedException;
+use Assert\InvalidArgumentException;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\noRecipientFoundException;
 use D3\Linkmobility4OXID\Application\Model\Exceptions\successfullySentException;
 use D3\Linkmobility4OXID\Application\Model\MessageTypes\Sms;
@@ -23,7 +26,6 @@ use D3\LinkmobilityClient\LoggerHandler;
 use D3\LinkmobilityClient\Response\ResponseInterface;
 use D3\LinkmobilityClient\ValueObject\Recipient;
 use Exception;
-use InvalidArgumentException;
 use OxidEsales\Eshop\Application\Controller\Admin\AdminController;
 use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Language;
@@ -128,7 +130,7 @@ class AdminUser extends AdminController
 
         try {
             $utilsView->addErrorToDisplay($this->sendMessage());
-        } catch (InvalidArgumentException $e) {
+        } catch (AssertionFailedException $e) {
             $utilsView->addErrorToDisplay($e->getMessage());
         }
     }
@@ -143,14 +145,8 @@ class AdminUser extends AdminController
         $request = d3GetOxidDIC()->get('d3ox.linkmobility.'.Request::class);
         $messageBody = $request->getRequestEscapedParameter('messagebody');
 
-        if (false === is_string($messageBody) || strlen(trim($messageBody)) <= 1) {
-            /** @var InvalidArgumentException $exc */
-            $exc = oxNew(
-                InvalidArgumentException::class,
-                Registry::getLang()->translateString('D3LM_EXC_MESSAGE_NO_LENGTH')
-            );
-            throw $exc;
-        }
+        $excMessage = Registry::getLang()->translateString('D3LM_EXC_MESSAGE_NO_LENGTH');
+        Assert::that($messageBody)->string($excMessage)->minLength(2, $excMessage);
 
         return $messageBody;
     }
