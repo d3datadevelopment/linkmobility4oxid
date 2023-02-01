@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace D3\Linkmobility4OXID\Application\Model;
 
 use Assert\Assert;
+use Assert\InvalidArgumentException;
 use OxidEsales\Eshop\Application\Model\Order;
 use OxidEsales\Eshop\Application\Model\User;
 use OxidEsales\Eshop\Core\Config;
@@ -40,6 +41,7 @@ class Configuration
 
     /**
      * @return string
+     * @throws InvalidArgumentException
      */
     public function getApiToken(): string
     {
@@ -62,6 +64,7 @@ class Configuration
 
     /**
      * @return string|null
+     * @throws InvalidArgumentException
      */
     public function getSmsSenderNumber(): ?string
     {
@@ -75,6 +78,7 @@ class Configuration
 
     /**
      * @return string|null
+     * @throws InvalidArgumentException
      */
     public function getSmsSenderCountry(): ?string
     {
@@ -86,13 +90,14 @@ class Configuration
         $country = trim($country);
         $country = strlen($country) ? strtoupper($country) : null;
 
-        Assert::that($country)->nullOr()->string()->length(2);
+        Assert::thatNullOr($country)->string()->length(2);
 
         return $country;
     }
 
     /**
      * @return string[]
+     * @throws InvalidArgumentException
      */
     public function getOrderRecipientFields(): array
     {
@@ -113,6 +118,7 @@ class Configuration
 
     /**
      * @return string[]
+     * @throws InvalidArgumentException
      */
     public function getUserRecipientFields(): array
     {
